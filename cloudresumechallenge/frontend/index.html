@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!--- Basic Page Needs 
+    ================================================================================ -->
+    <meta charset="UTF-8">
+    <title>Carlandra Williams</title>
+    <meta name="description" content="Resume Website of Carlandra Williams">
+    <meta name="author" content="">
+    <link rel="stylesheet" href="./css/style.css" type="text/css">
+    <link rel="stylesheet" href="./mediaqueries/mediaqueries.css" type="text/css">
+    <script src="./js/script.js"></script>
+    <script src="https://kit.fontawesome.com/cc0438124d.js" crossorigin="anonymous"></script>
+
+    <!-- Mobile Specific Metas 
+    ================================================================================ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="" />
+    <style>
+    </style>
+</head>
+
+<body>
+    <!-------------------PAGE NAVIGATION---------------->
+    <nav id="desktop-nav">
+        <div class="logo"><img src="./images/project_folder logo.jpg" class="desktop-icon" /></div>
+        <div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#resume">Experience</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-------------------MOBILE NAV--------------------->
+    <nav id="hamburger-nav">
+        <div class="logo">
+            <img src="./images/theprojectfolder_logo.jpg" class="logo-icon" />
+        </div>
+        <div class="hamburger-menu">
+            <div class="hamburger-icon" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="menu-links">
+                <li><a href="#about" onclick="toggleMenu()">About</a></li>
+                <li><a href="#resume" onclick="toggleMenu()">Resume</a></li>
+                <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
+                <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+            </div>
+        </div>
+    </nav>
+    <!-------------------HERO SECTION------------------->
+    <section id="profile">
+        <div class="section__pic-container">
+            <img src="./images/profile_pic.jpg" alt="Carlandra profile_pic" />
+        </div>
+        <div class="section__text">
+            <p class="section__text__p1">Hello I'm</p>
+            <h1 class="title">Carlandra Williams</h1>
+            <p class="section__text__p2">Cloud FinOps Business Analyst</p>
+            <div class="btn-container">
+                <button class="btn btn-color-2"
+                    onclick="window.open ('https://s3.amazonaws.com/theprojectfolder.com/frontend/assets/CarlandraWilliams_Cloud+FinOps+Lead.pdf')">Download
+                    Resume
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> </button>
+                <!-- BUTTON DOES NOT WORK // COME BACK //-->
+                <button class="btn btn-color-1" onclick="location.href='./#contact'">Contact Info</button>
+            </div>
+            <div id="socials-container">
+                <img src="./images/linkedin-mark.png" class="social-icon"
+                    onclick="location.href='https://www.linkedin.com/in/carlandrawilliams'"></i>
+                <img src="./images/github-mark.png" class="social-icon"
+                    onclick="location.href='https://github.com/theDovelyDev/theprojectfolder/tree/main'" />
+            </div>
+        </div>
+    </section>
+    <!-------------------ABOUT ME SECTION--------------->
+    <section id="about">
+        <p class="section__text__p1">Get to Know More</p>
+        <h1 class="title">About Me</h1>
+        <div class="section-container">
+            <div class="section__pic-container">
+                <img src="./images/logo.png" alt="Profile picture" class="about-pic" />
+            </div>
+            <div class="about-details-container">
+                <div class="about-containers">
+                    <div class="details-container">
+                        <i class="fa-solid fa-id-badge fa-xl" style="color: #000000;"></i>
+                        <h3>Experience</h3>
+                        <p>2 years<br /> Cloud Financial Management</p>
+                        <br />
+                        <p> 10+ years<br /> Business Analytics</p>
+                    </div>
+                    <div class="details-container">
+                        <i class="fa-sharp fa-solid fa-award fa-xl" alt="ribbon icon"></i>
+                        <h3>Certifications</h3>
+                        <img src="./images/aws-certified-cloud-practitioner.png" alt="aws ccp cert" class="cert-icon">
+                        <!--<div class="cert__container">
+                            <p class="cert__text">Earners of this certification have a fundamental understanding of IT
+                                services and their uses in the AWS Cloud.</p>
+                            <br>
+                        </div> -->
+                        <img src="./images/finops-certified-practitioner.png" alt="focp cert" class="cert-icon">
+                        <!-- <div class="cert__container">
+                            <p class="cert__text"> These
+                                professionals make evidence-based decisions in near-real time to manage cloud use and
+                                increase business value.</p>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="text-container">
+                    <p>Results- driven Analyst with a decade plus of operational experience using data to make
+                        informed decisions, organizing information and data into easily understood concepts and
+                        actionable
+                        visualizations, while maximizing business productivity through process
+                        improvement.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <i class="fa-solid fa-angles-down fa-xl icon arrow" alt="arrow icon"
+            onclick="location.href='./#experience'"></i>
+    </section>
+    <!-------------------EXPERIENCE--------------------->
+    <section id="experience">
+        <p class="section__text__p1">Explore My</p>
+        <h1 class="title">Experience</h1>
+        <div class="experience-details-container">
+            <div class="about-containers">
+                <div class="details-container">
+                    <h2 class="experience-sub-title">Cloud FinOps</h2>
+                    <div class="article-container">
+                        <article>
+                            <i class="fa-solid fa-tags fa-xl icon"></i>
+                            <div>
+                                <h3>Tagging Strategy</h3>
+                                <p>Resource-Level Tagging</p>
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-file-invoice-dollar fa-xl icon"></i>
+                            <div>
+                                <h3>Showback & Chargeback</h3>
+                                <p>90% Cloud Cost Allocation</p>
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-gauge-high fa-xl icon"></i>
+                            <div>
+                                <h3>Cloud Efficiency</h3>
+                                <p>Rightsizing & Right-timing</p>
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-users-rectangle fa-xl icon"></i>
+                            <div>
+                                <h3>FinOps Tool Training</h3>
+                                <p>Clouability Administrator</p>
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-umbrella fa-xl icon"></i>
+                            <div>
+                                <h3>Forecasting</h3>
+                                <p>Pre-migration application cost forecasting</p>
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-chart-pie fa-xl icon"></i>
+                            <div>
+                                <h3>Cloud Cost Consumption Dashboards</h3>
+                                <p>Cost & Usage, KPIs, & Business Unit Scorecards</p>
+                            </div>
+                        </article>
+
+                    </div>
+                </div>
+                <div class="details-container">
+                    <h2 class="experience-sub-title">Business Analytics</h2>
+                    <div class="article-container">
+                        <article>
+                            <i class="fa-solid fa-circle-check fa-xl"></i>
+                            <div>
+                                <h3>Process Improvement</h3>
+                                <!--<p>45% improvement in process efficiency</p>-->
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-circle-check fa-xl"></i>
+                            <div>
+                                <h3>Reporting Solutions</h3>
+                                <!--<p>Actionable PowerBI dashabords</p>-->
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-circle-check fa-xl"></i>
+                            <div>
+                                <h3>Project & Program Management</h3>
+                                <!--<p>Managed multi-year IT application sunrise and 25+ National security installation projects </p>-->
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-circle-check fa-xl"></i>
+                            <div>
+                                <h3>Actionable Visualizations</h3>
+                                <!--<p>Statewise voter engagement program with 16k+ unique voters reached</p>-->
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-circle-check fa-xl"></i>
+                            <div>
+                                <h3>Business & Data Analysis</h3>
+                                <!--<p>KPIs, Business Unit Scorecards & </p>-->
+                            </div>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-circle-check fa-xl"></i>
+                            <div>
+                                <h3>Relationship Building & Management</h3>
+                                <!--<p>Pre-migration application cost forecasting</p>-->
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <i class="fa-solid fa-angles-down fa-xl icon arrow" alt="arrow icon" onclick="location.href='./#projects'"></i>
+    </section>
+    <!-------------------PROJECTS----------------------->
+    <section id="projects">
+        <p class="section__text__p1"> Browse My Upcoming</p>
+        <h1 class="title"> Projects</h1>
+        <div class="experience-details-container">
+            <div class="about-containers">
+                <div class="details-container color-container">
+                    <div class="article-container">
+                        <img src="./images/project-icon-29174.png" alt="Project 1" class="project-img" />
+                    </div>
+                    <h2 class="experience-sub-title project-title">Project One</h2>
+                    <div class="btn-container">
+                        <button class="btn btn-color-2 projct-btn"
+                            onclick="location.href='https://github.com/theDovelyDev/theprojectfolder/tree/main'">Github</button>
+                        <!-- <button class="btn btn-color-2 projct-btn"
+                        onclick="location.href=''">Live Demo or link to YT tutorial</button>-->
+                    </div>
+                </div>
+                <div class="details-container color-container">
+                    <div class="article-container">
+                        <img src="./images/business_analysis.jpg" alt="Project 2" class="project-img" />
+                    </div>
+                    <h2 class="experience-sub-title project-title">Project Two</h2>
+                    <div class="btn-container">
+                        <button class="btn btn-color-2 projct-btn"
+                            onclick="location.href='https://github.com/theDovelyDev/theprojectfolder/tree/main'">Github</button>
+                        <!-- <button class="btn btn-color-2 projct-btn"
+                        onclick="location.href=''">Live Demo or link to YT tutorial</button>-->
+                    </div>
+                </div>
+                <div class="details-container color-container">
+                    <div class="article-container">
+                        <img src="./images/web-application.jpg" alt="Project 3" class="project-img" />
+                    </div>
+                    <h2 class="experience-sub-title project-title">Project Three</h2>
+                    <div class="btn-container">
+                        <button class="btn btn-color-2 projct-btn"
+                            onclick="location.href='https://github.com/theDovelyDev/theprojectfolder/tree/main'">Github</button>
+                        <!-- <button class="btn btn-color-2 projct-btn"
+                        onclick="location.href=''">Live Demo or link to YT tutorial</button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <i class="fa-solid fa-angles-down fa-xl icon arrow" alt="arrow icon" onclick="location.href='./#contact'"></i>
+    </section>
+    <!-------------------CONTACT ME--------------------->
+    <section id="contact">
+        <p class="section__text__p1">Get In Touch</p>
+        <h1 class="title"> Contact Me</h1>
+        <div class="contact-info-upper-container">
+            <div class="contact-info-container">
+                <i class="fa-solid fa-square-envelope fa-2xl icon contact-icon"></i>
+                <p><a href="mailto:carlandra.williams@gmail.com">carlandra.williams@gmail.com</a></p>
+            </div>
+            <div class="contact-info-container">
+                <img src="./images/calendly_icon.png" class="calendar-icon contact-icon">
+                <p><a href="https://calendly.com/carlandrawilliams/30min">Schedule a Meeting</a>
+                </p>
+            </div>
+        </div>
+    </section>
+    <!-------------------FOOTER------------------------->
+    <footer>
+        <nav>
+            <div class="nav-links-container">
+                <ul class="nav-links">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#resume">Resume</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+        <p>Copyright &#169; 2024 Carlandra Williams. All Rights Reserved.</p>
+        <i class="fa-solid fa-square-caret-up icon arrow" alt="arrow icon" onclick="location.href='./#desktop-nav'"></i>
+    </footer>
+</body>
