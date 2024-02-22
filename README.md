@@ -1,7 +1,7 @@
-# theprojectfolder
+# Welcome to The Project Folder 📁
 
-## View all my current and past projects. 
+## What's the Project Folder?
+Simply, it is where I keep all my project documentation. 
 
-### Project One: Hosting a Static Site using Route53 and S3.
-### Project Two:
-### Project Three:
+### So what's the Project?
+The Project is me learning the Cloud through hands-on learning and courses. 
