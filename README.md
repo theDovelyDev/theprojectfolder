@@ -1,6 +1,4 @@
-# Welcome to The Project Folder 📁
-
-(![project_folder logo](https://github.com/theDovelyDev/theprojectfolder/assets/143884432/bce08090-2fa1-42a7-a4ec-53da30a616b1)
+![project_folder logo](https://github.com/theDovelyDev/theprojectfolder/assets/143884432/bce08090-2fa1-42a7-a4ec-53da30a616b1)
 
 
 
