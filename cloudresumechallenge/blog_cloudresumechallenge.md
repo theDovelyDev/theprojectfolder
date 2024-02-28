@@ -19,10 +19,14 @@ https://docs.aws.amazon.com/AmazonS3/latest/userguide/website-hosting-custom-dom
 
 ## Frontend
 
-Thi
+I worked through a YT video or two in order to create a HTML/CSS protfolio site before taking on the 
 
 
 I used [TechwithLucy](https://www.youtube.com/watch?v=sCQwEVhCvTg)'s S3 bucket policy. (You should check out her YT page.)
+
+
+While I struggled with securing my site with HTTPS, I took a break from 
+
 
 ## Backend 
 Need to learn Terraform
