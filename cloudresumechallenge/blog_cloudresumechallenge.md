@@ -19,13 +19,7 @@ https://docs.aws.amazon.com/AmazonS3/latest/userguide/website-hosting-custom-dom
 
 ## Frontend
 
-I worked through a YT video or two in order to create a HTML/CSS protfolio site before taking on the 
-
-
-I used [TechwithLucy](https://www.youtube.com/watch?v=sCQwEVhCvTg)'s S3 bucket policy. (You should check out her YT page.)
-
-
-While I struggled with securing my site with HTTPS, I took a break from 
+Having built an HTML/CSS website and hosted via S3 previously, I breezed through Steps 2-4. After reading some AWS documentation and skimming a video, I jumped into the next step and struggled thought securing my site with HTTPS because I'd orginally created a single bucket instead of two. After a week of mostly error, reading documentation and watching more videos, I finally sat down one day after work, deleted everything from both buckets and started over. Twenty minutes and a [great walkthrough](https://www.youtube.com/watch?v=mls8tiiI3uc) later, I had a freshly secured static site using Route53, ACM and Amazon CloudFront services. 
 
 
 ## Backend 
