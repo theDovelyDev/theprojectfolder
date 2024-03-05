@@ -30,3 +30,7 @@ Need to learn Terraform
 ## IaC & CI/CD
 
 ## Thoughts
+
+If you decided to complete the challenge, I've created a YouTube playlist of all the videos I found helpful. 
+
+I hope you decide to complete The Cloud Resume Challenge. 

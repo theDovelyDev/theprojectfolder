@@ -144,4 +144,14 @@
         height: 85px;
         width: 85px;
     }
+
+    .visitor-container {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .counter-container {
+        font-size: small;
+        width: 4rem;
+    }
 }

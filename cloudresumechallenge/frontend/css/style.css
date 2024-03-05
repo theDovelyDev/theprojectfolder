@@ -448,6 +448,40 @@ article .icon {
     cursor: pointer;
 }
 
+/* ======= PAGE COUNTER =======*/
+#visitor-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    color: #2c4697;
+}
+
+.counter-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 1rem;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 2px 16px;
+    padding: 1rem;
+    width: 7rem;
+}
+
+.counter-container span {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.counter-container h4 {
+    font-size: 1rem;
+    font-weight: normal;
+    margin: 0;
+    margin-top: 1rem;
+}
+
 /* ======== FOOTER =======*/
 footer {
     height: 26vh;
