@@ -5,24 +5,11 @@ function toggleMenu() {
     icon.classList.toggle("open");
 }
 
-const pageviewsCount = document.getElementsByClassName('pageviews-count');
-const visitsCount = document.getElementsByClassName('visits - count');
-
-if (sessionStorage.getItem('visit') === null) {
-    //New visit and pageview
-    updateCounter('type=visit-page-view');
-} else {
-    //Pageview
-    updateCounter('type=pageview');
+const counter = document.querySelector(".visit-counter");
+async function updateCounter() {
+    let response = await fetch("https://q5miqidsndmldlh5jbdlfchhlq0gnkvk.lambda-url.us-east-1.on.aws/");
+    let data = await response.json();
+    counter.innerHTML = '${data} Visits';
 }
 
-function updateCounter() {
-    fetch('https://www.theprojectfolder.com/?' + type)
-        .then(res => res.json())
-        .then(data => {
-            pageviewsCount.textContent = data.pageviews;
-            visitsCount.textContent = data.visits;
-        })
-}
-
-sessionStorage.setItem('visit', 'x');
+updateCounter();
