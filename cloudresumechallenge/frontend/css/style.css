@@ -464,13 +464,13 @@ article .icon {
     align-items: center;
     text-align: center;
     margin: 1rem;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    padding: 2px 16px;
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.2);
+    padding: 2px 8px;
     padding: 1rem;
     width: 7rem;
 }
 
-.counter-container h4 {
+.counter-container h5 {
     font-size: 1rem;
     font-weight: normal;
     margin: 0;

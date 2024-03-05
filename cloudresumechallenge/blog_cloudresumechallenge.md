@@ -23,7 +23,7 @@ Having built an HTML/CSS website and hosted via S3 previously, I breezed through
 ## Backend 
 Knowing zero Javascript, I approached the next steps out of order, first starting with creating my DynamoDB table, using a Lambda functional URL for my API, then finally Javascript. As a trained Data Analyst, who thought she wanted to be a DBA one day, setting up the DynamoDB table was a breeze.
 
-Because I selected for Lambda to create a new role for calling the function, my inital functions failed due to explicit permission denial. So my next step was a quick trick over to IAM to update the role permissions to allow the role to read and write to my DynamoDB table. Finally, I set the CORS orgin as the URL for my site making my Lambda function complete.
+Because I selected for Lambda to create a new role for calling the function, my inital functions failed due to explicit permission denial. So my next step was a quick trick over to IAM to update the role permissions to allow the role to read and write to my DynamoDB table. Finally, I set the CORS orgin as the URL for my site making my Lambda function complete. Then
 
 Need to learn Terraform
 

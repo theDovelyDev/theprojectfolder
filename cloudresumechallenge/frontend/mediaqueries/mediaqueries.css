@@ -57,6 +57,16 @@
         font-size: medium;
     }
 
+    .visitor-container {
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .counter-container {
+        font-size: small;
+        width: 4rem;
+    }
 }
 
 @media screen and (max-width:600px) {
@@ -148,10 +158,12 @@
     .visitor-container {
         flex-direction: row;
         align-items: center;
+        margin-bottom: 1rem;
     }
 
     .counter-container {
         font-size: small;
         width: 4rem;
+
     }
 }
