@@ -454,7 +454,14 @@ article .icon {
     justify-content: center;
     align-items: center;
     flex-direction: row;
+}
+
+.visit-counter {
     color: #2c4697;
+}
+
+#visits {
+    font-weight: 500;
 }
 
 .counter-container {
