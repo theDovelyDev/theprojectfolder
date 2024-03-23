@@ -7,11 +7,10 @@ function toggleMenu() {
 
 
 // Visitor Counter
+const counter = document.querySelector(".visit-counter");
 async function updateCounter() {
-    const counter = document.querySelector(".counter-number");
     let response = await fetch("https://q5miqidsndmldlh5jbdlfchhlq0gnkvk.lambda-url.us-east-1.on.aws/");
     let data = await response.json();
     counter.innerHTML = `${data}`;
-
 }
 updateCounter();
