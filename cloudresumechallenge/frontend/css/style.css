@@ -296,6 +296,11 @@ section {
     gap: 1rem;
 }
 
+.num {
+    font-size: x-large;
+    color: #2c4697;
+}
+
 .cert-icon {
     /*justify-content: center;*/
     height: 100px;
