@@ -28,7 +28,7 @@ Knowing zero Javascript, I approached the next steps out of order, first startin
 
 Because I selected for Lambda to create a new role for calling the function, my inital functions failed due to explicit permission denial. After a quick trip over to the IAM console to update the role permissions and allow the newly created role to read and write to my DynamoDB table. Finally, I set the CORS orgin as the URL for my site making my Lambda function complete. 
 
-![Lambda Functional URL architecture!](/cloudresumechallenge/frontend/images/)
+![Lambda Functional URL architecture!](/cloudresumechallenge/frontend/images/
 
 
 
