@@ -1,9 +1,12 @@
 # The Cloud Resume Challenge
 
 My first hands-on cloud project was
-This wasn't my first attempt at hosting my own portfolio online. I'd completed at few HTML/CSS resume YT videos
 
-The challenge consists of 16 total steps starting with becoming a certified AWS Cloud Practitioner, which I earned in 2023
+As a FinOps professional, hands on experience designing and building in the cloud benefits my conversations with Engineering and Product teams. For those not familiar with the term, FinOps is basically the intersection of Finance and DevOps to maximize the business value of the cloud. Check out the [FinOps Foundation](https://www.finops.org/framework/) to learn more about the framework.
+
+This wasn't my first attempt at hosting my own portfolio online. I've completed a few follow along HTML/CSS resume YT videos. Thanks to the hours I spent customizing my MySpace page (hello 2004 through 2007)
+
+The challenge consists of 16 total steps starting with becoming a certified AWS Cloud Practitioner, which I earned in 2023. After earning the AWS CCP, I immediately jumped into studying for the Solutions Architect cert. 
 
 
 * Deploy a HTML/CSS resume as a static website using Amazon S3 using a custom DNS domain name
@@ -23,7 +26,11 @@ Having built an HTML/CSS website and hosted via S3 previously, I breezed through
 ## Backend 
 Knowing zero Javascript, I approached the next steps out of order, first starting with creating my DynamoDB table, using a Lambda functional URL for my API, then finally Javascript. As a trained Data Analyst, who thought she wanted to be a DBA one day, setting up the DynamoDB table was a breeze.
 
-Because I selected for Lambda to create a new role for calling the function, my inital functions failed due to explicit permission denial. So my next step was a quick trick over to IAM to update the role permissions to allow the role to read and write to my DynamoDB table. Finally, I set the CORS orgin as the URL for my site making my Lambda function complete. Then
+Because I selected for Lambda to create a new role for calling the function, my inital functions failed due to explicit permission denial. After a quick trip over to the IAM console to update the role permissions and allow the newly created role to read and write to my DynamoDB table. Finally, I set the CORS orgin as the URL for my site making my Lambda function complete. 
+
+![Lambda Functional URL architecture!](/cloudresumechallenge/frontend/images/)
+
+
 
 Need to learn Terraform
 
@@ -33,6 +40,4 @@ Need to learn Terraform
 
 ## Thoughts
 
-If you decided to complete the challenge, I've created a YouTube playlist of all the videos I found helpful. 
-
-I hope you decide to complete The Cloud Resume Challenge. 
+If you decide to complete the challenge, I've created a YouTube playlist of all the videos I found helpful.
