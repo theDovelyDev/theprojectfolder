@@ -37,7 +37,15 @@ Need to learn Terraform
 ## Testing
 
 ## IaC & CI/CD
+When reviewing this challenge intially, I was most spektical about the IaC & CI/CD section. In a previous role, I was managing an application migration from on-prem to AWS. One of the areas where the project went off track was the IaC code creation and CI/CD testing. 
 
+Because I'm hosting the files for this site on [Github](https://github.com/theDovelyDev/theprojectfolder/tree/main/cloudresumechallengeloudresumechallenge), and I was tired of manually copying my index.html file after each update, I decided to explore Github Actions. 
+
+After doing some light research, I found several easy to understand solutions but they all required storing access keys to my S3 bucket. From my time handling Vulnerability Management for the Infrastructure & Relability org at a major airline, I learned to stay away from hardcoding my access keys because I didn't want to plan rotating keys into my life. So I set out to find a more secure solution. 
+
+Luckily, Guard Kite had a [solution](https://www.guardkite.com/blog/dont-use-iam-access-keys-in-github-actions/#:~:text=With%20GitHub%20OpenID%20Connect%20(OIDC,keys%20and%20simplifies%20security%20management)
+
+.
 ## Thoughts
 
 If you decide to complete the challenge, I've created a YouTube playlist of all the videos I found helpful.
