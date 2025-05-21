@@ -7,3 +7,4 @@ Simply, it is where I keep all my project documentation.
 The Project is me learning the Cloud through hands-on learning and courses. 
 
 #### 💻 Project One: The Cloud Resume Challenge
+#### 💻 Project Two: Cloud Cost Optimization
