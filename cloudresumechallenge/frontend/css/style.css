@@ -360,6 +360,11 @@ section {
     gap: 1rem;
 }
 
+.cert-icon1 {
+    height: 108px;
+    width: 108.5px;
+}
+
 .cert__text {
     font-size: .75rem;
 }
