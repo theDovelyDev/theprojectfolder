@@ -268,7 +268,7 @@ section {
 /* ======= ICON =======*/
 .social-icon {
     cursor: pointer;
-    height: 2rem;
+    height: 2.5rem;
 }
 
 /* ======== BUTTONS =======*/
@@ -416,7 +416,8 @@ section {
 }
 
 .text-container {
-    font-size: 1.10rem;
+    color: #2c4697;
+    font-size: 1rem;
 }
 
 /* ========EXPERIENCE ======*/
