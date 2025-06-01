@@ -549,8 +549,9 @@ article .icon {
     color: #2c4697;
 }
 
-#visits {
+#visitsCounter {
     font-weight: 500;
+    display: inline;
 }
 
 .counter-container {

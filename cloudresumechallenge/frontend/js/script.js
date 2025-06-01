@@ -7,9 +7,8 @@ function toggleMenu() {
 
 
 // Visitor Counter
-// function updateCounter() {
-// let data = fetch("https://bibrxksugh6draq2bukj2ai4ai0qqtfo.lambda-url.us-east-1.on.aws/").json();
-//const counter = document.getElementsByClassName(".visit-count");
-// counter.innerHTML = `${data}`;}
-
-//updateCounter();
+fetch('https://pyfq5y2b4j.execute-api.us-east-1.amazonaws.com/default/VisitorCounter')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("visitCounter").textContent = data["visitorcount"];
+    })
