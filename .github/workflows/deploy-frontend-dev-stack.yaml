@@ -38,3 +38,19 @@ jobs:
             --stack-name frontend-stack-dev \
             --capabilities CAPABILITY_NAMED_IAM
             --no-fail-on-empty-changeset
+
+      - name: Clean up pending change sets
+        run: |
+          echo "🧹 Cleaning up any pending change sets..."
+          aws cloudformation list-change-sets \
+            --stack-name frontend-stack-dev \
+            --query 'Summaries[?Status==`CREATE_COMPLETE`].ChangeSetName' \
+            --output text | tr '\t' '\n' | while read cs; do
+              if [ -n "$cs" ]; then
+                echo "  Deleting change set: $cs"
+                aws cloudformation delete-change-set \
+                  --stack-name frontend-stack-dev \
+                  --change-set-name "$cs"
+              fi
+          done
+        echo "✅ Change set cleanup complete"
