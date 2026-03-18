@@ -1,7 +1,7 @@
-name: Deploy Dev Frontend Stack
 # PURPOSE: Deploys CloudFormation stack for dev portfolio site
 # TRIGGER: Push to dev branch when infrastructure files change
 # MAINTAINS: dev.theprojectfolder.com CloudFormation stack
+name: Deploy Dev Frontend Stack
 
 on:
   push:
@@ -37,3 +37,4 @@ jobs:
             --template-file ./cloudresumechallenge/infrastructure/frontend-stack-dev.yaml \
             --stack-name frontend-stack-dev \
             --capabilities CAPABILITY_NAMED_IAM
+            --no-fail-on-empty-changeset

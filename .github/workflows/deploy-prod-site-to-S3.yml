@@ -1,7 +1,7 @@
-name: Deploy Prod Static Site to S3
 # PURPOSE: Deploys live portfolio site files to production S3 bucket
 # TRIGGER: Push to main branch
 # MAINTAINS: theprojectfolder.com live site
+name: Deploy Prod Static Site to S3
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Add Version Metadata to HTML
         run: |

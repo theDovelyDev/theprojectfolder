@@ -1,7 +1,7 @@
-name: Deploy Frontend Prod Stack
 # PURPOSE: Deploys CloudFormation stack for production portfolio site
 # TRIGGER: Push to main branch when infrastructure files change
 # MAINTAINS: theprojectfolder.com CloudFormation stack
+name: Deploy Frontend Prod Stack
 
 on:
   push:

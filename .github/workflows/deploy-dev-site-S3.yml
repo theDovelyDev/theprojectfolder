@@ -1,7 +1,7 @@
-name: Deploy Dev Static Site to S3
 # PURPOSE: Deploys dev branch portfolio site files to dev S3 bucket
 # TRIGGER: Push to dev branch
 # MAINTAINS: dev.theprojectfolder.com preview site
+name: Deploy Dev Static Site to S3
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       #################################################
       # CSS VERSIONING SECTION (added here)
