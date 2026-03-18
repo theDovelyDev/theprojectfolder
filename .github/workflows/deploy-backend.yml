@@ -14,7 +14,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install Dependencies
         run: |
@@ -43,7 +43,7 @@ jobs:
   deploy:
     needs: test
     runs-on: ubuntu-latest
-    
+
     permissions:
       id-token: write
       contents: read
@@ -72,7 +72,7 @@ jobs:
       - name: Deploy CloudFormation Stack
         run: |
           echo "🚀 Deploying backend CloudFormation stack..."
-          
+
           aws cloudformation deploy \
             --template-file cloudresumechallenge/backend/infrastructure/backend_stack.yaml \
             --stack-name TheProjectFolderBackend-prod \
@@ -85,12 +85,12 @@ jobs:
       - name: Update Lambda Function Code
         run: |
           echo "📤 Updating Lambda function code..."
-          
+
           FUNCTION_NAME=$(aws cloudformation describe-stacks \
             --stack-name TheProjectFolderBackend-prod \
             --query 'Stacks[0].Outputs[?OutputKey==`LambdaFunctionArn`].OutputValue' \
             --output text | cut -d: -f7)
-          
+
           aws lambda update-function-code \
             --function-name $FUNCTION_NAME \
             --zip-file fileb://cloudresumechallenge/backend/function.zip \
@@ -99,52 +99,80 @@ jobs:
       - name: Wait for Lambda Update
         run: |
           echo "⏳ Waiting for Lambda function to be ready..."
-          
+
           FUNCTION_NAME=$(aws cloudformation describe-stacks \
             --stack-name TheProjectFolderBackend-prod \
             --query 'Stacks[0].Outputs[?OutputKey==`LambdaFunctionArn`].OutputValue' \
             --output text | cut -d: -f7)
-          
+
           aws lambda wait function-updated-v2 --function-name $FUNCTION_NAME
 
       - name: Get Function URL
         run: |
           echo "🔗 Retrieving Lambda Function URL..."
-          
+
           FUNCTION_URL=$(aws cloudformation describe-stacks \
             --stack-name TheProjectFolderBackend-prod \
             --query 'Stacks[0].Outputs[?OutputKey==`FunctionUrl`].OutputValue' \
             --output text)
-          
+
           echo "Function URL: $FUNCTION_URL"
 
       - name: Test Deployed Function
         run: |
+          set -x  # Enable verbose mode to see every command
           echo "🧪 Testing deployed Lambda function..."
-          
-          FUNCTION_URL=$(aws cloudformation describe-stacks \
-            --stack-name TheProjectFolderBackend-prod \
-            --query 'Stacks[0].Outputs[?OutputKey==`FunctionUrl`].OutputValue' \
-            --output text)
-          
+
+          # Get Function URL from Lambda
+          echo "Getting Function URL from Lambda..."
+          FUNCTION_URL=$(aws lambda get-function-url-config \
+            --function-name VisitorCounter \
+            --query 'FunctionUrl' \
+            --output text 2>&1)
+
+          echo "Function URL result: $FUNCTION_URL"
+
+          if [ -z "$FUNCTION_URL" ] || [ "$FUNCTION_URL" = "None" ]; then
+            echo "❌ Could not retrieve Function URL"
+            echo "Checking if function has a URL configured..."
+            aws lambda list-function-url-configs --function-name VisitorCounter
+            exit 1
+          fi
+
+          echo "Function URL: $FUNCTION_URL"
+
           # Test GET request
           echo "Testing GET request..."
-          response=$(curl -s -X GET "$FUNCTION_URL")
-          echo "Response: $response"
-          
-          if echo "$response" | grep -q "visitorCount"; then
+          response=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X GET "$FUNCTION_URL")
+          echo "Full response: $response"
+
+          http_code=$(echo "$response" | grep "HTTP_CODE:" | cut -d: -f2)
+          body=$(echo "$response" | grep -v "HTTP_CODE:")
+
+          echo "HTTP Code: $http_code"
+          echo "Response body: $body"
+
+          if [ "$http_code" = "200" ] && echo "$body" | grep -q "visitorCount"; then
             echo "✅ GET request successful"
           else
             echo "❌ GET request failed"
+            echo "Expected: HTTP 200 with visitorCount in body"
+            echo "Got: HTTP $http_code"
             exit 1
           fi
-          
-          # Test POST request
+
+          # Test POST request  
           echo "Testing POST request..."
-          response=$(curl -s -X POST "$FUNCTION_URL")
-          echo "Response: $response"
-          
-          if echo "$response" | grep -q "visitorCount"; then
+          response=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST "$FUNCTION_URL")
+          echo "Full response: $response"
+
+          http_code=$(echo "$response" | grep "HTTP_CODE:" | cut -d: -f2)
+          body=$(echo "$response" | grep -v "HTTP_CODE:")
+
+          echo "HTTP Code: $http_code"
+          echo "Response body: $body"
+
+          if [ "$http_code" = "200" ] && echo "$body" | grep -q "visitorCount"; then
             echo "✅ POST request successful"
           else
             echo "❌ POST request failed"
@@ -163,17 +191,17 @@ jobs:
           echo "Branch:         ${{ github.ref_name }}"
           echo "Commit:         ${{ github.sha }}"
           echo ""
-          
+
           FUNCTION_URL=$(aws cloudformation describe-stacks \
             --stack-name TheProjectFolderBackend-prod \
             --query 'Stacks[0].Outputs[?OutputKey==`FunctionUrl`].OutputValue' \
             --output text)
-          
+
           TABLE_NAME=$(aws cloudformation describe-stacks \
             --stack-name TheProjectFolderBackend-prod \
             --query 'Stacks[0].Outputs[?OutputKey==`DynamoDBTableName`].OutputValue' \
             --output text)
-          
+
           echo "Function URL:   $FUNCTION_URL"
           echo "DynamoDB Table: $TABLE_NAME"
           echo ""

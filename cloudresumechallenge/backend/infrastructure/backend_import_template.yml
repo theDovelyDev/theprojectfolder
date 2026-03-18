@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Import existing backend resources into CloudFormation
+
+Parameters:
+  AllowedOrigin:
+    Type: String
+    Default: https://www.theprojectfolder.com
+    Description: Allowed CORS origin for the Lambda function
+
+Resources:
+  # Import existing DynamoDB Table
+  VisitorCountTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: VisitorCountTable
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: visitor_count_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: visitor_count_id
+          KeyType: HASH
+      Tags:
+        - Key: Project
+          Value: theprojectfolder
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  # Import existing Lambda Execution Role
+  VisitorCounterLambdaRole:
+    Type: AWS::IAM::Role
+    DeletionPolicy: Retain
+    Properties:
+      RoleName: visitCounterRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !GetAtt VisitorCountTable.Arn
+
+  # Import existing Lambda Function
+  VisitorCounterFunction:
+    Type: AWS::Lambda::Function
+    DeletionPolicy: Retain
+    Properties:
+      FunctionName: VisitorCounter
+      Runtime: python3.13
+      Handler: visitor_counter.lambda_handler
+      Role: !GetAtt VisitorCounterLambdaRole.Arn
+      Timeout: 3
+      MemorySize: 128
+      Environment:
+        Variables:
+          ALLOWED_ORIGIN: !Ref AllowedOrigin
+          DYNAMODB_TABLE: !Ref VisitorCountTable
+      Code:
+        ZipFile: |
+          # Placeholder code - will be updated via CI/CD
+          import json
+          def lambda_handler(event, context):
+              return {'statusCode': 200, 'body': json.dumps('Placeholder')}
+      Tags:
+        - Key: Project
+          Value: theprojectfolder
+        - Key: ManagedBy
+          Value: CloudFormation

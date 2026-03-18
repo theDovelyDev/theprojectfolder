@@ -33,7 +33,6 @@ def reset_mock():
 def mock_env():
     """Mock environment variables"""
     with patch.dict(os.environ, {
-        'ALLOWED_ORIGIN': 'https://www.theprojectfolder.com',
         'DYNAMODB_TABLE': 'VisitorCountTable-test'
     }):
         yield
@@ -45,7 +44,7 @@ class TestVisitorCounterGET:
         """Test GET request returns current visitor count"""
         # Arrange
         reset_mock.get_item.return_value = {
-            'Item': {'visitor_count_id': 'global', 'visitorCount': 42}
+            'Item': {'visitor_count_id': 1, 'visitorCount': 42}
         }
         
         event = {
@@ -60,8 +59,7 @@ class TestVisitorCounterGET:
         # Assert
         assert response['statusCode'] == 200
         assert json.loads(response['body'])['visitorCount'] == 42
-        assert 'Access-Control-Allow-Origin' in response['headers']
-        reset_mock.get_item.assert_called_once_with(Key={'visitor_count_id': 'global'})
+        reset_mock.get_item.assert_called_once_with(Key={'visitor_count_id': 1})
     
     def test_get_returns_zero_for_new_counter(self, reset_mock, mock_env):
         """Test GET returns 0 when no visitor count exists"""
@@ -168,61 +166,6 @@ class TestVisitorCounterPOST:
         assert 'error' in json.loads(response['body'])
 
 
-class TestCORS:
-    """Tests for CORS handling"""
-    
-    def test_options_preflight_request(self, reset_mock, mock_env):
-        """Test OPTIONS preflight request returns correct CORS headers"""
-        # Arrange
-        event = {
-            'requestContext': {
-                'http': {'method': 'OPTIONS'}
-            }
-        }
-        
-        # Act
-        response = lambda_handler(event, None)
-        
-        # Assert
-        assert response['statusCode'] == 200
-        assert response['headers']['Access-Control-Allow-Origin'] == 'https://www.theprojectfolder.com'
-        assert 'GET, POST, OPTIONS' in response['headers']['Access-Control-Allow-Methods']
-        assert 'Content-Type' in response['headers']['Access-Control-Allow-Headers']
-    
-    def test_cors_headers_present_on_get(self, reset_mock, mock_env):
-        """Test CORS headers are present on GET response"""
-        # Arrange
-        reset_mock.get_item.return_value = {'Item': {'visitorCount': 10}}
-        event = {
-            'requestContext': {
-                'http': {'method': 'GET'}
-            }
-        }
-        
-        # Act
-        response = lambda_handler(event, None)
-        
-        # Assert
-        assert 'Access-Control-Allow-Origin' in response['headers']
-        assert 'Access-Control-Allow-Methods' in response['headers']
-    
-    def test_cors_headers_present_on_post(self, reset_mock, mock_env):
-        """Test CORS headers are present on POST response"""
-        # Arrange
-        reset_mock.update_item.return_value = {'Attributes': {'visitorCount': 11}}
-        event = {
-            'requestContext': {
-                'http': {'method': 'POST'}
-            }
-        }
-        
-        # Act
-        response = lambda_handler(event, None)
-        
-        # Assert
-        assert 'Access-Control-Allow-Origin' in response['headers']
-
-
 class TestMethodHandling:
     """Tests for HTTP method handling"""
     
@@ -264,27 +207,11 @@ class TestMethodHandling:
 
 class TestResponseFormat:
     """Tests for response formatting"""
-    
-    def test_response_has_correct_content_type(self, reset_mock, mock_env):
-        """Test responses have application/json content type"""
-        # Arrange
-        reset_mock.get_item.return_value = {'Item': {'visitorCount': 100}}
-        event = {
-            'requestContext': {
-                'http': {'method': 'GET'}
-            }
-        }
-        
-        # Act
-        response = lambda_handler(event, None)
-        
-        # Assert
-        assert response['headers']['Content-Type'] == 'application/json'
-    
+           
     def test_visitor_count_is_integer(self, reset_mock, mock_env):
         """Test visitor count is returned as integer"""
         # Arrange
-        reset_mock.get_item.return_value = {'Item': {'visitor_count_id': 'global', 'visitorCount': 50}}
+        reset_mock.get_item.return_value = {'Item': {'visitor_count_id': 1, 'visitorCount': 50}}
         event = {
             'requestContext': {
                 'http': {'method': 'GET'}

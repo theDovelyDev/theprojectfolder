@@ -1,0 +1,23 @@
+[
+    {
+        "ResourceType": "AWS::DynamoDB::Table",
+        "LogicalResourceId": "VisitorCountTable",
+        "ResourceIdentifier": {
+            "TableName": "VisitorCountTable"
+        }
+    },
+    {
+        "ResourceType": "AWS::IAM::Role",
+        "LogicalResourceId": "VisitorCounterLambdaRole",
+        "ResourceIdentifier": {
+            "RoleName": "visitCounterRole"
+        }
+    },
+    {
+        "ResourceType": "AWS::Lambda::Function",
+        "LogicalResourceId": "VisitorCounterFunction",
+        "ResourceIdentifier": {
+            "FunctionName": "VisitorCounter"
+        }
+    }
+]
