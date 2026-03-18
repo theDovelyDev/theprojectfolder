@@ -1227,15 +1227,8 @@ Governance Playbook title updated: "The Cloud Governance Playbook I Wish Existed
 #### Side Quest: GitHub Repo Restructure
 
 ```
-Status: Deferred
-Goal: Flatten theDovelyDev/theDovelyDev → theDovelyDev/theprojectfolder (no wrapper folder)
-Finding: git mv failing on Windows Git Bash — glob expansion not working as expected
-Options when revisiting:
-  1. Debug Windows Git Bash glob/mv behavior
-  2. Fresh repo with correct flat structure from the start
-Decision: Not worth the risk mid-project with public viewers
-Local cleanup: Deleted orphaned backup branches (backup-main-before-merge, main-backup)
-  — these were local-only, never pushed, no impact on remote
+Status: Completed
+Goal: Flattened theDovelyDev/theDovelyDev → theDovelyDev/theprojectfolder (no wrapper folder)
 ```
 
 ### Phase 6: API Gateway Integration
