@@ -27,7 +27,7 @@ jobs:
       - name: Configure AWS credentials for GitHub Actions (Prod)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::102587257710:role/GitHubActionsProdRole
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsProdRole
           aws-region: us-east-1
 
       - name: Deploy frontend-stack-prod
