@@ -1,10 +1,13 @@
 name: Deploy Backend to AWS
+# PURPOSE: Tests and deploys visitor counter Lambda for portfolio site
+# TRIGGER: Push to main branch when backend files change
+# MAINTAINS: TheProjectFolderBackend-prod CloudFormation stack
 
 on:
   push:
     branches: [main]
     paths:
-      - 'theprojectfolder/cloudresumechallenge/backend/**'
+      - 'cloudresumechallenge/backend/**'
       - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
@@ -24,12 +27,12 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r theprojectfolder/cloudresumechallenge/backend/tests/requirements.txt
+          pip install -r cloudresumechallenge/backend/tests/requirements.txt
           pip install boto3
 
       - name: Run Unit Tests
         run: |
-          cd theprojectfolder/cloudresumechallenge/backend
+          cd cloudresumechallenge/backend
           pytest tests/ -v --cov=lambda --cov-report=term-missing
 
       - name: Test Summary
@@ -47,7 +50,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -61,7 +64,7 @@ jobs:
       - name: Package Lambda Function
         run: |
           echo "📦 Packaging Lambda function..."
-          cd theprojectfolder/cloudresumechallenge/theprojectfolder/cloudresumechallenge/backend/lambda
+          cd cloudresumechallenge/backend/lambda
           zip -r ../function.zip visitor_counter.py
           cd ..
           ls -lh function.zip
@@ -71,7 +74,7 @@ jobs:
           echo "🚀 Deploying backend CloudFormation stack..."
           
           aws cloudformation deploy \
-            --template-file theprojectfolder/cloudresumechallenge/backend/infrastructure/backend_stack.yaml \
+            --template-file cloudresumechallenge/backend/infrastructure/backend_stack.yaml \
             --stack-name TheProjectFolderBackend-prod \
             --parameter-overrides \
               AllowedOrigin=https://www.theprojectfolder.com \
@@ -90,7 +93,7 @@ jobs:
           
           aws lambda update-function-code \
             --function-name $FUNCTION_NAME \
-            --zip-file fileb://theprojectfolder/cloudresumechallenge/backend/function.zip \
+            --zip-file fileb://cloudresumechallenge/backend/function.zip \
             --no-cli-pager
 
       - name: Wait for Lambda Update
