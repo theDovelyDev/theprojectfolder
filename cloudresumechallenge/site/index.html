@@ -1836,6 +1836,40 @@
           nav.classList.remove("open");
         }),
       );
+      // Visitor Counter
+        const functionUrl = "https://ligzkttonselfrpj5d3266qb7a0imnhp.lambda-url.us-east-1.on.aws/";
+
+        // Log helper
+        const logError = (msg, err) => {
+          console.error(msg, err);
+          document.getElementById("visitor_counter").innerText = "Visitor Count Unavailable";
+        };
+
+        // 1. Increment visitor count (POST)
+        fetch(functionUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "cors"
+        }).catch(err => logError("POST failed", err));
+
+        // 2. Fetch current visitor count (GET)
+        fetch(functionUrl, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          mode: "cors"
+        })
+          .then(response => {
+            if (!response.ok) throw new Error("Response not OK");
+            return response.json();
+          })
+          .then(data => {
+            if (data.visitorCount !== undefined) {
+              document.getElementById("visitor_counter").innerText = data.visitorCount;
+            } else {
+              throw new Error("Missing visitorCount in response");
+            }
+          })
+          .catch(err => logError("GET failed", err));
     </script>
   </body>
 </html>
