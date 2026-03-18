@@ -1,0 +1,60 @@
+name: Deploy Dev Static Site to S3
+#test workflow
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:         # ✅ Required for OIDC
+      id-token: write    # ✅ Enables token exchange with AWS
+      contents: read     # ✅ Allows `actions/checkout` to work
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::102587257710:role/GitHubActionsDevRole
+          aws-region: us-east-1
+
+      - name: Debug AWS Identity
+        run: aws sts get-caller-identity
+
+      - name: Pre-Sync Safety Check
+        run: |
+          if [ -z "$(ls -A ./theprojectfolder/cloudresumechallenge/dev-site)" ]; then
+            echo "Local dev-site folder is empty. Aborting sync to prevent deletion."
+            exit 1
+          fi
+
+      - name: Dry Run Sync Preview
+        run: |
+          aws s3 sync ./theprojectfolder/cloudresumechallenge/dev-site/ s3://dev.theprojectfolder.com \
+            --exclude "*.pdf" \
+            --dryrun
+
+      - name: Deploy Website (Safe Upload)
+        run: |
+          aws s3 sync ./theprojectfolder/cloudresumechallenge/dev-site/ s3://dev.theprojectfolder.com \
+            --exclude "*.pdf"
+
+      - name: Upload PDFs with cache headers
+        run: |
+          pdfs=$(find "./theprojectfolder/cloudresumechallenge/dev-site/assets" -name "*.pdf")
+          if [ -z "$pdfs" ]; then
+            echo "No PDF files found. Skipping upload."
+            exit 0
+          fi
+
+          echo "$pdfs" | while IFS= read -r file; do
+            echo "Uploading: $file"
+            key="${file#./theprojectfolder/cloudresumechallenge/dev-site/assets/}"
+            aws s3 cp "$file" "s3://dev.theprojectfolder.com/assets/$key" \
+              --content-type application/pdf \
+              --cache-control "no-cache, no-store, must-revalidate"
+          done

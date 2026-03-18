@@ -1,0 +1,36 @@
+name: Deploy Dev Frontend Stack
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'theprojectfolder/cloudresumechallenge/infrastructure/frontend-stack-dev.yaml'
+      - '.github/workflows/deploy-dev-stack.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy frontend-stack-dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::102587257710:role/GitHubActionsDevRole
+          aws-region: us-east-1
+
+      - name: Deploy CloudFormation stack
+        run: |
+          aws cloudformation deploy \
+            --template-file ./theprojectfolder/cloudresumechallenge/infrastructure/frontend-stack-dev.yaml \
+            --stack-name frontend-stack-dev \
+            --capabilities CAPABILITY_NAMED_IAM
