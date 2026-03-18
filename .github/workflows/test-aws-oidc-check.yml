@@ -1,6 +1,7 @@
+# PURPOSE: Manual validation of OIDC authentication and AWS role permissions
+# TRIGGER: Manual only (workflow_dispatch)
+# USE WHEN: Verifying IAM roles before new deployments or after role changes
 name: 🔍 Validate AWS OIDC Connection & Role Permissions
-# Manual-only workflow to verify IAM trust policy, OIDC authentication,
-# and AWS resource permissions for GitHubActionsProdRole before deployment.
 
 on:
   workflow_dispatch:
@@ -22,7 +23,7 @@ jobs:
 
     steps:
       - name: 🧾 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🔐 Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4

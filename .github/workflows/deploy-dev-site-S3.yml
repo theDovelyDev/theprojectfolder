@@ -1,3 +1,6 @@
+# PURPOSE: Deploys dev branch portfolio site files to dev S3 bucket
+# TRIGGER: Push to dev branch
+# MAINTAINS: dev.theprojectfolder.com preview site
 name: Deploy Dev Static Site to S3
 
 on:
@@ -15,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       #################################################
       # CSS VERSIONING SECTION (added here)
@@ -25,13 +28,13 @@ jobs:
 
       - name: Update CSS Version in HTML files
         run: |
-          find ./theprojectfolder/cloudresumechallenge/site -name "*.html" -type f -print0 |
+          find ./cloudresumechallenge/site -name "*.html" -type f -print0 |
           while IFS= read -r -d '' file; do
             # Replace existing version
-            sed -i "s|style.css?v=[0-9A-Za-z.\-]*|style.css?v=20251210-2032|g" "$file"
+            sed -i "s|style.css?v=[0-9A-Za-z.\-]*|style.css?v=${{ steps.ts.outputs.TS }}|g" "$file"
 
             # Append version if missing
-            sed -i "s|style.css\"|style.css?v=20251210-2032\"|g" "$file"
+            sed -i "s|style.css\"|style.css?v=${{ steps.ts.outputs.TS }}\"|g" "$file"
           done
 
       - name: Commit versioned HTML changes
@@ -40,7 +43,7 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
 
             # Stage only HTML files (avoid committing anything else)
-            git add theprojectfolder/cloudresumechallenge/site/*.html
+            git add cloudresumechallenge/site/*.html
 
             # If there are no changes, exit gracefully
             if git diff --cached --quiet; then
@@ -64,7 +67,7 @@ jobs:
 
       - name: Pre-Sync Safety Check
         run: |
-          if [ -z "$(ls -A ./theprojectfolder/cloudresumechallenge/site)" ]; then
+          if [ -z "$(ls -A ./cloudresumechallenge/site)" ]; then
             echo "❌ Local site folder is empty. Aborting sync to prevent deletion."
             exit 1
           fi
@@ -73,13 +76,13 @@ jobs:
       - name: Dry Run Sync Preview
         run: |
           echo "📋 Preview of changes that will be synced:"
-          aws s3 sync ./theprojectfolder/cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
+          aws s3 sync ./cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
             --dryrun
 
       # Deploy HTML files with short cache
       - name: Deploy HTML Files
         run: |
-          aws s3 sync ./theprojectfolder/cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
+          aws s3 sync ./cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
             --exclude "*" \
             --include "*.html" \
             --content-type "text/html; charset=utf-8" \
@@ -89,7 +92,7 @@ jobs:
       # Deploy CSS/JS with long cache (assumes you use versioned filenames)
       - name: Deploy CSS and JavaScript
         run: |
-          aws s3 sync ./theprojectfolder/cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
+          aws s3 sync ./cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
             --exclude "*" \
             --include "*.css" \
             --include "*.js" \
@@ -97,8 +100,8 @@ jobs:
             --cache-control "public, max-age=31536000, immutable"
           
           # Set correct content-type for JS files separately
-          find ./theprojectfolder/cloudresumechallenge/site -name "*.js" -type f | while read file; do
-            key="${file#./theprojectfolder/cloudresumechallenge/site/}"
+          find ./cloudresumechallenge/site -name "*.js" -type f | while read file; do
+            key="${file#./cloudresumechallenge/site/}"
             aws s3 cp "$file" "s3://dev.theprojectfolder.com/$key" \
               --content-type "application/javascript" \
               --cache-control "public, max-age=31536000, immutable"
@@ -107,7 +110,7 @@ jobs:
       # Deploy images with long cache
       - name: Deploy Images
         run: |
-          aws s3 sync ./theprojectfolder/cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
+          aws s3 sync ./cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
             --exclude "*" \
             --include "*.jpg" \
             --include "*.jpeg" \
@@ -121,7 +124,7 @@ jobs:
       # Deploy fonts with long cache
       - name: Deploy Fonts
         run: |
-          aws s3 sync ./theprojectfolder/cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
+          aws s3 sync ./cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
             --exclude "*" \
             --include "*.woff" \
             --include "*.woff2" \
@@ -132,7 +135,7 @@ jobs:
       # Deploy PDFs with moderate cache
       - name: Deploy PDF Files
         run: |
-          cd ./theprojectfolder/cloudresumechallenge/site
+          cd ./cloudresumechallenge/site
           pdf_count=$(find . -name "*.pdf" -type f | wc -l)
           
           if [ "$pdf_count" -eq 0 ]; then
@@ -151,7 +154,7 @@ jobs:
       # Catch any remaining files
       - name: Deploy Other Files
         run: |
-          aws s3 sync ./theprojectfolder/cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
+          aws s3 sync ./cloudresumechallenge/site/ s3://dev.theprojectfolder.com \
             --exclude "*.html" \
             --exclude "*.css" \
             --exclude "*.js" \
