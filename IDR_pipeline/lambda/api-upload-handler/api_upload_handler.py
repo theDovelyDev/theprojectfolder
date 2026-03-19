@@ -1,5 +1,3 @@
-**api_upload_handler.py:**
-
 import json, boto3, base64, uuid
 from datetime import datetime
 
