@@ -17,12 +17,8 @@ echo "Applying standard tags to: $RESOURCE_ARN"
 # Apply all required tags
 aws resourcegroupstaggingapi tag-resources \
     --resource-arn-list "$RESOURCE_ARN" \
-    --tags \
-        Project=${PROJECT_TAG} \
-        CostCenter=${COST_CENTER} \
-        Environment=${ENVIRONMENT} \
-        CreatedDate=${CREATED_DATE} \
-        ManagedBy=${MANAGED_BY}
+    --tags "{\"Project\":\"${PROJECT_TAG}\",\"CostCenter\":\"${COST_CENTER}\",\"Environment\":\"${ENVIRONMENT}\",\"CreatedDate\":\"${CREATED_DATE}\",\"ManagedBy\":\"${MANAGED_BY}\"}" \
+    --profile doc-processing-dev
 
 if [ $? -eq 0 ]; then
     echo "✅ Tags applied successfully"

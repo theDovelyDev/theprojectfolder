@@ -10,7 +10,7 @@
 const CONFIG = {
   // Phase 6: replace with your API Gateway URL
   // e.g. https://abc123.execute-api.us-east-1.amazonaws.com/prod
-  API_ENDPOINT: null,
+  API_ENDPOINT: 'https://0r8p6ap199.execute-api.us-east-1.amazonaws.com/prod',
 
   // Your frontend + uploads bucket names (fill in your ACCOUNT_ID)
   UPLOAD_BUCKET: "doc-processing-demo-uploads-ACCOUNT_ID",
@@ -21,7 +21,7 @@ const CONFIG = {
   COST_PER_DOC: 0.034,
 
   // Phase 5: simulate processing (set false in Phase 6 when real API is wired)
-  SIMULATE: true,
+  SIMULATE: false,
 };
 
 // ─────────────────────────────────────────────────────────────
