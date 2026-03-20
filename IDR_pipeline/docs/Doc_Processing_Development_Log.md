@@ -1233,49 +1233,69 @@ Goal: Flattened theDovelyDev/theDovelyDev → theDovelyDev/theprojectfolder (no 
 
 ### Phase 6: API Gateway Integration
 
-**Date:** [DATE]  
-**Time Spent:** [HOURS]  
-**Status:** [ ] In Progress / [ ] Complete
+**Date:** 2026-03-18 / 2026-03-19  
+**Time Spent:** ~2.5 hours  
+**Status:** [x] Complete
 
 #### What I Did:
 
-- [ ] Created REST API
-- [ ] Set up POST /upload endpoint
-- [ ] Set up GET /results endpoint
-- [ ] Configured CORS
-- [ ] Created Lambda integration
-- [ ] Deployed to production stage
-- [ ] Updated frontend with API endpoint
+- [x] Created REST API (doc-processing-api, REGIONAL, ID: 0r8p6ap199)
+- [x] Set up POST /upload endpoint → APIUploadHandler Lambda
+- [x] Set up GET /results endpoint → APIResultsHandler Lambda
+- [x] Configured CORS on both resources (API Gateway + Lambda response headers)
+- [x] Created and deployed APIUploadHandler and APIResultsHandler Lambda functions
+- [x] Deployed to production stage
+- [x] Updated frontend with live API endpoint, flipped CONFIG.SIMULATE to false
+- [x] Applied resource tags to both Lambdas and API Gateway
+- [x] Smoke tested via CLI and UI — confirmed end-to-end
+- [x] Verified uploads and results in S3, confirmed invocations in CloudTrail
 
 #### API Testing:
-
 ```bash
-# Document your API tests
-curl -X POST https://[API-ID].execute-api.us-east-1.amazonaws.com/prod/upload \
+curl -X POST https://0r8p6ap199.execute-api.us-east-1.amazonaws.com/prod/upload \
   -H "Content-Type: application/json" \
-  -d '{"fileName": "test.pdf", "fileContent": "[base64]"}'
+  -d '{"fileName": "invoice_069_INV-2025-9308.pdf", "fileContent": "[base64]", "contentType": "application/pdf"}'
 
-Response: {"documentId": "abc-123", "status": "uploaded"}
+Response: {"message": "File uploaded successfully", "documentId": "3e618659-8fc7-4f2c-81b3-2428b64732b6", "s3Key": "uploads/3e618659-8fc7-4f2c-81b3-2428b64732b6_invoice_069_INV-2025-9308.pdf"}
+
+curl "https://0r8p6ap199.execute-api.us-east-1.amazonaws.com/prod/results?documentId=3e618659-8fc7-4f2c-81b3-2428b64732b6"
+
+Response: Full extraction + Comprehend analysis returned — 94.74% confidence, status: success
 ```
 
 #### Cost Tracker:
 
-- API Gateway requests: $[AMOUNT]
-- Running total: $[TOTAL]
+- API Gateway requests: <$0.01 (well within free tier)
+- Running total: ~$0.038
 
 #### Challenges Faced:
-
 ```
-Challenge: CORS errors blocking frontend requests
-- Error: "No 'Access-Control-Allow-Origin' header"
-- Solution: Added CORS configuration to API Gateway AND Lambda responses
-- Lesson: CORS needs to be configured in multiple places for Lambda proxy integration
+Challenge: Lambda zip packaged wrong handler file + nested zip
+- Error: Runtime.ImportModuleError
+- Root cause: shutil.make_archive() picked up all files in folder including
+  the zip itself; handler files had been placed in wrong directories
+- Solution: Rebuilt zips using zipfile module, explicitly targeting each handler file
+- Lesson: Always verify zip contents with zipfile.namelist() before deploying
+
+Challenge: Syntax error in api_upload_handler.py
+- Error: Runtime.UserCodeSyntaxError on line 1
+- Root cause: Filename header from context file formatting copied into the file
+- Solution: Removed the **api_upload_handler.py:** line, file started with import json
+- Lesson: Verify file contents in VSCode before zipping
+
+Challenge: CloudWatch logs failing in Git Bash
+- Error: AWS CLI converting /aws/lambda/... to a Windows path
+- Solution: Use MSYS_NO_PATHCONV=1 prefix, or check logs via console
+- Lesson: Console is faster for one-off log checks on Windows
 ```
 
 #### Screenshots Captured:
 
 - [ ] API Gateway configuration
-- [ ] Successful API test in Postman/curl
+- [ ] Successful curl smoke test output
+- [ ] UI end-to-end document upload
+- [ ] S3 uploads and processed buckets confirmed
+- [ ] CloudTrail invocation logs
 
 ---
 
@@ -1756,7 +1776,7 @@ Example:
 **February 2026** - Completed Phase 3 (Textract integration - 80% success rate, 12/15 docs)  
 **March 4, 2026** - Completed Phase 4 (Lambda Optimization & PDF Preprocessing - PyPDF2 layer, preprocessing pipeline, 80% success rate maintained)  
 **March 5, 2026** - Completed Phase 5 (DocFlow frontend deployed to S3 — drag-and-drop upload, animated pipeline visualization, simulated 80% success rate, Phase 6 API stubs pre-wired. Portfolio project cards updated. Demo video recorded.)
-**[DATE]** - Completed Phase 6 (API Gateway)  
+**March 18, 20226** - Completed Phase 6 (API Gateway)  
 **[DATE]** - Completed Phase 7 (End-to-end testing)  
 **[DATE]** - Completed Phase 8 (Optimization)  
 **[DATE]** - Completed Phase 9 (Documentation & portfolio prep)  

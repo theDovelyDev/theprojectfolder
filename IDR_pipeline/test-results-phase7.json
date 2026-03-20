@@ -1,0 +1,756 @@
+{
+  "passed": [
+    {
+      "file": "invoice_001_DOC-2025-2288.pdf",
+      "documentId": "be9aab55-2c9b-482a-840e-67668ed57f72",
+      "confidence": 94.94
+    },
+    {
+      "file": "invoice_002_BILL-2024-4920.pdf",
+      "documentId": "d7746a04-14c3-4b41-a8b1-6e7304b77f14",
+      "confidence": 95.39
+    },
+    {
+      "file": "invoice_003_BILL-2025-5192.pdf",
+      "documentId": "e787d8ba-07e7-4714-aa99-e83705a4e4db",
+      "confidence": 94.94
+    },
+    {
+      "file": "invoice_004_INV-2024-1633.pdf",
+      "documentId": "1a591c31-a3b9-42ff-b1a6-e4bb060606e5",
+      "confidence": 94.37
+    },
+    {
+      "file": "invoice_005_INV-2024-2126.pdf",
+      "documentId": "196a3b64-25bc-4627-94a3-7a153acb02e4",
+      "confidence": 95.26
+    },
+    {
+      "file": "invoice_006_INV-2024-5225.pdf",
+      "documentId": "b061d9f0-f757-49ed-bc83-35419e1cd025",
+      "confidence": 94.05
+    },
+    {
+      "file": "invoice_007_BILL-2024-4387.pdf",
+      "documentId": "59bd21a7-6e16-44df-a2a0-da2740c2b522",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_008_INV-2025-1294.pdf",
+      "documentId": "915dd44a-bb5d-4782-af1a-2d9619a5f7a5",
+      "confidence": 95.0
+    },
+    {
+      "file": "invoice_009_INV-2025-4948.pdf",
+      "documentId": "c5dac4df-9949-49e7-9e22-7ac72aef4c46",
+      "confidence": 94.61
+    },
+    {
+      "file": "invoice_010_DOC-2024-2045.pdf",
+      "documentId": "33baa922-d6f2-446a-8b49-b46def082db1",
+      "confidence": 94.2
+    },
+    {
+      "file": "invoice_011_INV-2025-9996.pdf",
+      "documentId": "59358eae-5662-4402-8d81-85bffa8c50e6",
+      "confidence": 94.95
+    },
+    {
+      "file": "invoice_012_INV-2025-4794.pdf",
+      "documentId": "154af893-fc61-44ee-9897-762565bfd403",
+      "confidence": 94.49
+    },
+    {
+      "file": "invoice_013_DOC-2025-7211.pdf",
+      "documentId": "502fcc0b-ef51-43a9-bddf-473430f9fb0d",
+      "confidence": 95.01
+    },
+    {
+      "file": "invoice_014_BILL-2025-3248.pdf",
+      "documentId": "06fefa7c-7499-4c36-8a07-4a013260e807",
+      "confidence": 95.35
+    },
+    {
+      "file": "invoice_015_INV-2025-2848.pdf",
+      "documentId": "23c43390-e3f8-4a8f-b3e8-07830b55d4bb",
+      "confidence": 94.96
+    },
+    {
+      "file": "invoice_016_DOC-2024-6900.pdf",
+      "documentId": "73be6d6e-531f-4d36-a119-85824845fbd6",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_017_INV-2024-4069.pdf",
+      "documentId": "a1a7b278-53f9-487f-a2b8-15e5c2ee6213",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_018_DOC-2025-3943.pdf",
+      "documentId": "3a49b1fd-9489-4dce-af56-8140223ff7f4",
+      "confidence": 94.36
+    },
+    {
+      "file": "invoice_019_INV-2025-7004.pdf",
+      "documentId": "7ed9944e-d679-4088-8f58-e66bf21db609",
+      "confidence": 94.73
+    },
+    {
+      "file": "invoice_020_DOC-2024-3113.pdf",
+      "documentId": "33d92d18-977a-4fce-8f0f-fe3987e0f10c",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_021_BILL-2025-3512.pdf",
+      "documentId": "0a6fb4f9-7052-467a-89e8-ca52826cc150",
+      "confidence": 94.77
+    },
+    {
+      "file": "invoice_022_INV-2024-9793.pdf",
+      "documentId": "a6ccac27-6ec4-4c5f-baef-98ec4e207c56",
+      "confidence": 94.15
+    },
+    {
+      "file": "invoice_023_BILL-2025-8787.pdf",
+      "documentId": "b5183320-dae6-408f-b7cb-9a24a76e0a7c",
+      "confidence": 94.63
+    },
+    {
+      "file": "invoice_024_DOC-2025-6442.pdf",
+      "documentId": "09538239-2d8c-4403-8149-da2b2465f98b",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_025_DOC-2025-1505.pdf",
+      "documentId": "2ff5b455-975d-42b6-a244-eddb0078fe05",
+      "confidence": 94.86
+    },
+    {
+      "file": "invoice_026_DOC-2025-9672.pdf",
+      "documentId": "b1e087a6-cad6-457a-a7d1-a8a0e16dac66",
+      "confidence": 94.21
+    },
+    {
+      "file": "invoice_027_INV-2025-9445.pdf",
+      "documentId": "59f736a6-3713-4b0c-89a7-797199fde18e",
+      "confidence": 95.36
+    },
+    {
+      "file": "invoice_028_INV-2024-8911.pdf",
+      "documentId": "39321034-07b3-4036-a546-86b064237d74",
+      "confidence": 94.98
+    },
+    {
+      "file": "invoice_029_DOC-2025-2350.pdf",
+      "documentId": "ee17ba56-a916-407d-a9c8-c59bc32c5a44",
+      "confidence": 94.94
+    },
+    {
+      "file": "invoice_030_DOC-2024-1041.pdf",
+      "documentId": "6b8f5514-c57a-4c8c-9235-0b120cc9c22c",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_031_BILL-2025-6967.pdf",
+      "documentId": "5442ffdd-6939-4d5e-a0b9-b8deee556cf0",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_032_DOC-2024-6572.pdf",
+      "documentId": "f30d7ce9-c3aa-4d82-9756-013ba20f06ea",
+      "confidence": 94.89
+    },
+    {
+      "file": "invoice_033_INV-2025-6755.pdf",
+      "documentId": "9fbcdee6-a09e-47b7-a386-faa31736027a",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_034_BILL-2025-5967.pdf",
+      "documentId": "bc23ed7c-a3ad-4d32-a0b5-5b6b591fb403",
+      "confidence": 95.02
+    },
+    {
+      "file": "invoice_035_INV-2025-3774.pdf",
+      "documentId": "55ab3cb8-d939-4bc3-96ad-32262abffa83",
+      "confidence": 94.88
+    },
+    {
+      "file": "invoice_036_INV-2025-5079.pdf",
+      "documentId": "337a5293-5ef3-4a01-9eb3-ac91b59f2b7c",
+      "confidence": 95.39
+    },
+    {
+      "file": "invoice_037_BILL-2025-6781.pdf",
+      "documentId": "e5de597e-4b10-416a-85d0-aebfc886a811",
+      "confidence": 95.12
+    },
+    {
+      "file": "invoice_038_DOC-2025-9843.pdf",
+      "documentId": "d1f3618b-a0e9-4548-be6c-02473edc6cb7",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_039_BILL-2024-4945.pdf",
+      "documentId": "cc545418-fbe5-4a36-bf67-b68a9bd1a061",
+      "confidence": 93.26
+    },
+    {
+      "file": "invoice_040_DOC-2025-9263.pdf",
+      "documentId": "fb554ec2-7ec2-4529-8b0a-2180cf2c58f9",
+      "confidence": 94.99
+    },
+    {
+      "file": "invoice_041_BILL-2024-9367.pdf",
+      "documentId": "62c741b2-b6a0-46af-b100-32cb89030129",
+      "confidence": 95.27
+    },
+    {
+      "file": "invoice_042_INV-2025-4953.pdf",
+      "documentId": "32cbc9b3-5ad7-4b0a-9849-58d9d3141b7b",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_043_BILL-2025-3442.pdf",
+      "documentId": "25516fef-8bcb-4380-bfab-fa0df9aa247c",
+      "confidence": 92.99
+    },
+    {
+      "file": "invoice_044_INV-2025-8766.pdf",
+      "documentId": "43ede621-4e05-4d2d-9735-fb5e98d2a7bf",
+      "confidence": 94.91
+    },
+    {
+      "file": "invoice_045_INV-2025-6668.pdf",
+      "documentId": "a3819f01-338a-4842-bc00-7b9b235d519c",
+      "confidence": 95.01
+    },
+    {
+      "file": "invoice_046_INV-2025-4971.pdf",
+      "documentId": "44f7f96e-91bf-497f-b2a9-630dc619db92",
+      "confidence": 94.81
+    },
+    {
+      "file": "invoice_047_INV-2024-4198.pdf",
+      "documentId": "75698cd9-c9a1-4469-a380-0df856d041a0",
+      "confidence": 94.29
+    },
+    {
+      "file": "invoice_048_BILL-2025-5647.pdf",
+      "documentId": "b1d7b336-6ad5-4549-b3c8-d19be48e2926",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_049_INV-2025-4037.pdf",
+      "documentId": "a7c766e0-bc9f-4df2-8efd-4f2ef24dd23e",
+      "confidence": 93.38
+    },
+    {
+      "file": "invoice_050_INV-2024-1649.pdf",
+      "documentId": "6fbce1fc-01ea-4479-8757-7063f6bacef3",
+      "confidence": 94.32
+    },
+    {
+      "file": "invoice_051_DOC-2024-6579.pdf",
+      "documentId": "0a5e3ffd-c3c1-41dc-ac30-f601ed679f85",
+      "confidence": 93.92
+    },
+    {
+      "file": "invoice_052_BILL-2024-1636.pdf",
+      "documentId": "a21e75cc-103b-4673-aa3c-63fed2e448a5",
+      "confidence": 93.51
+    },
+    {
+      "file": "invoice_053_INV-2025-8340.pdf",
+      "documentId": "284977db-0d89-4295-906b-a62b5984cb91",
+      "confidence": 94.28
+    },
+    {
+      "file": "invoice_054_DOC-2025-1193.pdf",
+      "documentId": "d06abf20-6152-426a-a68a-6b36184389cd",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_055_INV-2025-2654.pdf",
+      "documentId": "1ae7270a-b4ed-488d-bb60-335e509fca4c",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_056_INV-2025-6298.pdf",
+      "documentId": "643137db-944d-4015-a519-a32109afa078",
+      "confidence": 95.11
+    },
+    {
+      "file": "invoice_057_BILL-2025-8842.pdf",
+      "documentId": "5d8a4ede-1204-40af-a5f8-9752aea1d4bf",
+      "confidence": 95.01
+    },
+    {
+      "file": "invoice_058_INV-2025-4740.pdf",
+      "documentId": "15534798-2c3c-4904-b88d-df3f38286c91",
+      "confidence": 94.2
+    },
+    {
+      "file": "invoice_059_BILL-2025-4499.pdf",
+      "documentId": "3622d821-860f-48ab-8018-7d5d06ef32a9",
+      "confidence": 95.15
+    },
+    {
+      "file": "invoice_060_INV-2024-9552.pdf",
+      "documentId": "71d5f6bf-e4e6-43f1-a9e9-dddf8fb36911",
+      "confidence": 94.74
+    },
+    {
+      "file": "invoice_061_DOC-2025-8844.pdf",
+      "documentId": "b09e3259-b52c-4e05-8962-7afcbac8c30c",
+      "confidence": 94.99
+    },
+    {
+      "file": "invoice_062_INV-2025-1089.pdf",
+      "documentId": "a7ee07e6-505d-4431-898d-4dbb9b7b2a41",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_063_BILL-2025-8000.pdf",
+      "documentId": "5f19cbe6-dd04-4d5f-9ca2-abe82f569462",
+      "confidence": 94.74
+    },
+    {
+      "file": "invoice_064_INV-2024-6373.pdf",
+      "documentId": "35190980-c8cc-4b95-afe2-41d4602117db",
+      "confidence": 94.64
+    },
+    {
+      "file": "invoice_065_DOC-2024-1621.pdf",
+      "documentId": "eecad69f-ee77-4a80-905c-a2c5404a5ee5",
+      "confidence": 95.25
+    },
+    {
+      "file": "invoice_066_DOC-2024-1090.pdf",
+      "documentId": "c2cb7783-186a-486b-a829-17118b32b979",
+      "confidence": 93.27
+    },
+    {
+      "file": "invoice_067_BILL-2025-6589.pdf",
+      "documentId": "cc43ec67-fd7a-48e5-b5b9-ecd1ddd8e842",
+      "confidence": 94.96
+    },
+    {
+      "file": "invoice_068_BILL-2025-5485.pdf",
+      "documentId": "8416df2c-7448-40b9-bebe-07579a71ec17",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_069_INV-2025-9308.pdf",
+      "documentId": "3998fad3-7830-4350-b0eb-0e481aab35ef",
+      "confidence": 94.74
+    },
+    {
+      "file": "invoice_070_DOC-2025-3406.pdf",
+      "documentId": "8154c226-667d-477a-b8c8-5e0b9f188e83",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_071_BILL-2024-3739.pdf",
+      "documentId": "ae9f12f9-90fe-4506-882e-f51c555bc830",
+      "confidence": 95.14
+    },
+    {
+      "file": "invoice_072_DOC-2024-2067.pdf",
+      "documentId": "c9f17495-2d6b-4ad5-a12b-464da5f448b6",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_073_INV-2024-4704.pdf",
+      "documentId": "733d9b68-4387-48bf-ab45-cf2854a7961e",
+      "confidence": 95.17
+    },
+    {
+      "file": "invoice_074_BILL-2025-7938.pdf",
+      "documentId": "6494d3ef-5668-405e-812c-162277b3f32e",
+      "confidence": 94.45
+    },
+    {
+      "file": "invoice_075_BILL-2025-4724.pdf",
+      "documentId": "9da07a5a-47ba-4a6c-a1e0-1868faa622ea",
+      "confidence": 94.05
+    },
+    {
+      "file": "invoice_076_DOC-2024-1920.pdf",
+      "documentId": "a53eecda-0ec5-4295-bc41-a57ad1dbef01",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_077_INV-2025-4982.pdf",
+      "documentId": "fd4564ba-c913-41c6-83d5-5da3f148305f",
+      "confidence": 94.94
+    },
+    {
+      "file": "invoice_078_DOC-2024-4871.pdf",
+      "documentId": "9d289691-bff6-453d-921e-9e71b876f974",
+      "confidence": 95.15
+    },
+    {
+      "file": "invoice_079_INV-2024-7379.pdf",
+      "documentId": "18904929-dfda-4adb-8a96-add37827bea2",
+      "confidence": 94.51
+    },
+    {
+      "file": "invoice_080_DOC-2024-1598.pdf",
+      "documentId": "e5170831-2b48-4a25-91b3-81358c7d5766",
+      "confidence": 94.24
+    },
+    {
+      "file": "invoice_081_BILL-2024-3859.pdf",
+      "documentId": "524934b8-8152-4751-b282-4f70d1ff8c27",
+      "confidence": 94.9
+    },
+    {
+      "file": "invoice_082_BILL-2024-7684.pdf",
+      "documentId": "bd47ed10-8f5c-4bba-8cf6-fed56be94201",
+      "confidence": 93.5
+    },
+    {
+      "file": "invoice_083_INV-2024-6162.pdf",
+      "documentId": "37d0f526-f43e-4375-8479-eab08b9f6e43",
+      "confidence": 93.56
+    },
+    {
+      "file": "invoice_084_INV-2025-7663.pdf",
+      "documentId": "97e8f0a0-942a-4d5c-878f-26e9fa293729",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_085_INV-2024-6705.pdf",
+      "documentId": "d86313b4-b8f3-48c1-92dd-6e0879dd6a07",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_086_DOC-2025-2354.pdf",
+      "documentId": "785985d8-4542-45eb-a800-32ad6b0f759e",
+      "confidence": 93.27
+    },
+    {
+      "file": "invoice_087_BILL-2025-5230.pdf",
+      "documentId": "debb9089-a31f-46eb-922b-917f0bcead2c",
+      "confidence": 94.64
+    },
+    {
+      "file": "invoice_088_INV-2025-8457.pdf",
+      "documentId": "edf7ccde-4bad-4e75-9f57-54bd75cd22d9",
+      "confidence": 94.57
+    },
+    {
+      "file": "invoice_089_DOC-2025-7508.pdf",
+      "documentId": "16bdb6af-8d80-4c13-8dfc-d58daf27b33a",
+      "confidence": 93.67
+    },
+    {
+      "file": "invoice_090_BILL-2024-2371.pdf",
+      "documentId": "ccb65a36-c9ea-4caf-87f0-04234fde0331",
+      "confidence": 93.73
+    },
+    {
+      "file": "invoice_091_INV-2025-1137.pdf",
+      "documentId": "0f5cdf99-bbf6-4da3-a752-49e1329ba092",
+      "confidence": 95.28
+    },
+    {
+      "file": "invoice_092_BILL-2024-4508.pdf",
+      "documentId": "bbcffa15-0acd-4879-9353-4f0ba5888909",
+      "confidence": 95.08
+    },
+    {
+      "file": "invoice_093_INV-2024-5902.pdf",
+      "documentId": "cd2160ec-3b0f-4f83-90bd-1de602e7573d",
+      "confidence": 94.45
+    },
+    {
+      "file": "invoice_094_INV-2024-8828.pdf",
+      "documentId": "25d1fcc7-a4ff-4e61-b2b9-f7d7e358adc8",
+      "confidence": 94.21
+    },
+    {
+      "file": "invoice_095_BILL-2024-6026.pdf",
+      "documentId": "a5efe36e-8fba-42cf-92f3-79c78afb90be",
+      "confidence": 93.4
+    },
+    {
+      "file": "invoice_096_BILL-2025-1702.pdf",
+      "documentId": "cc0955ef-59ea-4d96-8bd0-ed92234ecd9b",
+      "confidence": 94.74
+    },
+    {
+      "file": "invoice_097_INV-2025-8583.pdf",
+      "documentId": "116da223-61c4-4b90-a9db-f2386fc1fe34",
+      "confidence": 94.75
+    },
+    {
+      "file": "invoice_098_INV-2024-3492.pdf",
+      "documentId": "125c1c71-3270-4099-ae97-47dbe172cf79",
+      "confidence": 0
+    },
+    {
+      "file": "invoice_099_INV-2024-6585.pdf",
+      "documentId": "dd8a10ab-b1fb-4cc6-86f6-4a4357714bcd",
+      "confidence": 94.98
+    },
+    {
+      "file": "invoice_100_INV-2025-2495.pdf",
+      "documentId": "e7280c6b-206c-4830-a899-24588d5c0131",
+      "confidence": 94.08
+    },
+    {
+      "file": "receipt_001_RCP-103406.pdf",
+      "documentId": "7799387b-2715-469a-907e-6655c9414591",
+      "confidence": 91.77
+    },
+    {
+      "file": "receipt_002_RCP-857812.pdf",
+      "documentId": "36548142-b29c-4479-b3ce-66fc6a52411b",
+      "confidence": 95.81
+    },
+    {
+      "file": "receipt_003_RCP-432911.pdf",
+      "documentId": "01957a15-87c2-4414-a483-723e37ff6496",
+      "confidence": 91.65
+    },
+    {
+      "file": "receipt_004_RCP-766911.pdf",
+      "documentId": "0a5fb51a-2172-4d81-8660-4ddbc05e4cec",
+      "confidence": 91.38
+    },
+    {
+      "file": "receipt_005_RCP-387097.pdf",
+      "documentId": "d56fa1a3-0d96-4da9-8d27-15b7998b1ce0",
+      "confidence": 94.91
+    },
+    {
+      "file": "receipt_006_RCP-667966.pdf",
+      "documentId": "7ded4cd0-2712-44bc-9d8a-4803d78e2bba",
+      "confidence": 95.58
+    },
+    {
+      "file": "receipt_007_RCP-672862.pdf",
+      "documentId": "e1b1dce0-406d-4845-8cb4-a1b6d5cf0a81",
+      "confidence": 84.82
+    },
+    {
+      "file": "receipt_008_RCP-200757.pdf",
+      "documentId": "7df34177-5680-4550-a28a-8e555f9008ab",
+      "confidence": 91.42
+    },
+    {
+      "file": "receipt_009_RCP-951845.pdf",
+      "documentId": "f7dc8093-0543-4de5-8733-83ab1786bd6a",
+      "confidence": 96.22
+    },
+    {
+      "file": "receipt_010_RCP-548882.pdf",
+      "documentId": "2f098f81-47f6-48ee-921e-927ec5546174",
+      "confidence": 96.73
+    },
+    {
+      "file": "receipt_011_RCP-190403.pdf",
+      "documentId": "f1b45af9-e05c-414d-9ddd-ac7ede686bfc",
+      "confidence": 91.92
+    },
+    {
+      "file": "receipt_012_RCP-361849.pdf",
+      "documentId": "4a4c2d87-6417-4114-b373-a086097b50a9",
+      "confidence": 96.77
+    },
+    {
+      "file": "receipt_013_RCP-568456.pdf",
+      "documentId": "19e82b8e-a119-4f6e-981d-62ba8005e59f",
+      "confidence": 96.2
+    },
+    {
+      "file": "receipt_014_RCP-538383.pdf",
+      "documentId": "f5f7ebab-3f7f-45e5-86ec-aa294e887203",
+      "confidence": 95.19
+    },
+    {
+      "file": "receipt_015_RCP-835536.pdf",
+      "documentId": "7c356472-c34d-4c25-830a-4d3413d16214",
+      "confidence": 95.45
+    },
+    {
+      "file": "receipt_016_RCP-291809.pdf",
+      "documentId": "1345ce6d-107d-47da-873f-77ae59549f34",
+      "confidence": 90.92
+    },
+    {
+      "file": "receipt_017_RCP-436143.pdf",
+      "documentId": "dccdfbb7-97a4-42ff-984d-8ec53a9e310e",
+      "confidence": 87.94
+    },
+    {
+      "file": "receipt_018_RCP-845066.pdf",
+      "documentId": "9fa196dd-fc5c-4bd6-a50b-634b05eb49f5",
+      "confidence": 96.83
+    },
+    {
+      "file": "receipt_019_RCP-703694.pdf",
+      "documentId": "438080c7-339e-4d26-966d-f54aad4f57a4",
+      "confidence": 90.04
+    },
+    {
+      "file": "receipt_020_RCP-690264.pdf",
+      "documentId": "4652f5bb-b1b0-4a0a-9047-b829096dd9f8",
+      "confidence": 95.61
+    },
+    {
+      "file": "receipt_021_RCP-144171.pdf",
+      "documentId": "12a97539-14a3-4386-bd9d-0421f213f265",
+      "confidence": 97.09
+    },
+    {
+      "file": "receipt_022_RCP-407617.pdf",
+      "documentId": "6ee4abdf-c3f6-43b2-ae50-77a0d2f1c5b1",
+      "confidence": 96.85
+    },
+    {
+      "file": "receipt_023_RCP-812654.pdf",
+      "documentId": "39d9a51a-94bf-4c2a-8c03-a1e72d40cef3",
+      "confidence": 92.36
+    },
+    {
+      "file": "receipt_024_RCP-972506.pdf",
+      "documentId": "47efdd57-95bd-4feb-b25f-cfbc1752a34e",
+      "confidence": 94.69
+    },
+    {
+      "file": "receipt_025_RCP-793318.pdf",
+      "documentId": "52434d19-83e3-4bb3-9b30-a0145348966f",
+      "confidence": 92.01
+    },
+    {
+      "file": "receipt_026_RCP-612921.pdf",
+      "documentId": "0c5adc75-7e97-4259-8bdc-735b742f39b4",
+      "confidence": 97.08
+    },
+    {
+      "file": "receipt_027_RCP-589433.pdf",
+      "documentId": "bf49d72f-0238-4bec-a27d-dea649038bc4",
+      "confidence": 86.61
+    },
+    {
+      "file": "receipt_028_RCP-691538.pdf",
+      "documentId": "6b7053b0-c451-4a64-87c9-04188eb79c9d",
+      "confidence": 92.41
+    },
+    {
+      "file": "receipt_029_RCP-440770.pdf",
+      "documentId": "f9198f9b-8ac9-44d3-9ec4-699fede4a86b",
+      "confidence": 91.44
+    },
+    {
+      "file": "receipt_030_RCP-256647.pdf",
+      "documentId": "994bfe2b-f0cd-4b5f-ad07-947021d8231b",
+      "confidence": 96.16
+    },
+    {
+      "file": "receipt_031_RCP-718121.pdf",
+      "documentId": "9deb0c39-bb12-490c-82be-4285aa7793c4",
+      "confidence": 95.61
+    },
+    {
+      "file": "receipt_032_RCP-784357.pdf",
+      "documentId": "eab432e2-5c87-4ebc-9ca0-67626550f356",
+      "confidence": 96.84
+    },
+    {
+      "file": "receipt_033_RCP-289084.pdf",
+      "documentId": "625c70ee-427f-4534-b924-7bcd4a1a04fe",
+      "confidence": 88.37
+    },
+    {
+      "file": "receipt_034_RCP-984044.pdf",
+      "documentId": "fad55903-5421-4fdd-99f4-51dfa066d57b",
+      "confidence": 90.62
+    },
+    {
+      "file": "receipt_035_RCP-372637.pdf",
+      "documentId": "4f22d395-2715-47f0-954c-78c425a287e7",
+      "confidence": 97.43
+    },
+    {
+      "file": "receipt_036_RCP-642425.pdf",
+      "documentId": "cdaf2aec-58fe-47a3-8a3b-4dcc53f3fafa",
+      "confidence": 92.89
+    },
+    {
+      "file": "receipt_037_RCP-761933.pdf",
+      "documentId": "617dfa1c-4957-40ab-a60e-0afd1b90d494",
+      "confidence": 89.28
+    },
+    {
+      "file": "receipt_038_RCP-613218.pdf",
+      "documentId": "7daa6a8a-699b-4bd1-900e-94a2149f8001",
+      "confidence": 92.19
+    },
+    {
+      "file": "receipt_039_RCP-463732.pdf",
+      "documentId": "5e51473c-f606-4cb5-b701-06b2ea4e561e",
+      "confidence": 95.79
+    },
+    {
+      "file": "receipt_040_RCP-416441.pdf",
+      "documentId": "00ab7ac6-b7e1-4679-93b2-c3ffa06dbf97",
+      "confidence": 91.39
+    },
+    {
+      "file": "receipt_041_RCP-887295.pdf",
+      "documentId": "9130814e-59e6-4462-abc3-c1e068332c74",
+      "confidence": 97.28
+    },
+    {
+      "file": "receipt_042_RCP-201163.pdf",
+      "documentId": "a3c25c8c-3f45-4f84-8a17-b2c8265f6bfb",
+      "confidence": 90.87
+    },
+    {
+      "file": "receipt_043_RCP-138094.pdf",
+      "documentId": "3a2bc3eb-fc28-4bc8-9bd1-aded39badb42",
+      "confidence": 88.3
+    },
+    {
+      "file": "receipt_044_RCP-150960.pdf",
+      "documentId": "7a1a6385-516c-48ac-8d27-e6f93dc987e7",
+      "confidence": 91.03
+    },
+    {
+      "file": "receipt_045_RCP-938348.pdf",
+      "documentId": "3dad4e35-2ec3-4f11-a8bd-317eb7dcf320",
+      "confidence": 90.52
+    },
+    {
+      "file": "receipt_046_RCP-523008.pdf",
+      "documentId": "5b3eac5e-2de3-4419-9590-7b40d6a58ba5",
+      "confidence": 96.35
+    },
+    {
+      "file": "receipt_047_RCP-443053.pdf",
+      "documentId": "55c95017-daa2-46e5-b15e-836d06a0c928",
+      "confidence": 96.91
+    },
+    {
+      "file": "receipt_048_RCP-122158.pdf",
+      "documentId": "53c4cb44-a798-430b-9651-e5103685e1b1",
+      "confidence": 97.59
+    },
+    {
+      "file": "receipt_049_RCP-972774.pdf",
+      "documentId": "c75399e5-6132-4aff-af20-e1813b261f2b",
+      "confidence": 90.91
+    },
+    {
+      "file": "receipt_050_RCP-177941.pdf",
+      "documentId": "d7a32a95-d953-4c65-97a7-02e5417a1c77",
+      "confidence": 86.68
+    }
+  ],
+  "failed": [],
+  "errors": []
+}
