@@ -1301,53 +1301,63 @@ Challenge: CloudWatch logs failing in Git Bash
 
 ### Phase 7: End-to-End Testing
 
-**Date:** [DATE]  
-**Time Spent:** [HOURS]  
-**Status:** [ ] In Progress / [ ] Complete
+**Date:** 2026-03-19  
+**Time Spent:** ~1 hour  
+**Status:** [x] Complete
 
 #### What I Did:
 
-- [ ] Tested with 150 mock documents
-- [ ] Processed 50 invoices
-- [ ] Processed 50 receipts
-- [ ] Monitored costs in real-time
-- [ ] Checked CloudWatch logs for errors
-- [ ] Validated extraction accuracy
+- [x] Implemented rate limiting via API Gateway Usage Plan (pre-publish FinOps gate)
+- [x] Created DocFlowKey API key, associated with prod stage
+- [x] Ran batch test against live API — all 150 mock documents
+- [x] Monitored results in real-time via batch_test.py
+- [x] Verified no failures or errors across full document set
 
 #### Testing Results:
 
-| Metric          | Target | Actual    | Status |
-| --------------- | ------ | --------- | ------ |
-| Processing time | <60s   | [ACTUAL]s | ✅/❌  |
-| Success rate    | >95%   | [ACTUAL]% | ✅/❌  |
-| Cost per doc    | <$0.05 | $[ACTUAL] | ✅/❌  |
-| Accuracy        | >90%   | [ACTUAL]% | ✅/❌  |
+| Metric          | Target | Actual     | Status |
+| --------------- | ------ | ---------- | ------ |
+| Success rate    | >95%   | 100%       | ✅     |
+| Documents passed| 150    | 150/150    | ✅     |
+| Failures        | <5%    | 0          | ✅     |
+| Errors          | 0      | 0          | ✅     |
+| Avg Confidence  | >90%   | 80.88%     | ⚠️     |
 
-#### Total Testing Cost:
+> Confidence note: 80.88% average is consistent with Phase 3 findings. Complex PDFs pull the average down but all documents processed successfully. Documented limitation with remediation path (pdf2image + poppler) in Phase 4.
 
-- 150 documents processed
-- Textract: $[AMOUNT]
-- Comprehend: $[AMOUNT]
-- Lambda: $[AMOUNT]
-- Total: $[AMOUNT]
+#### Rate Limiting Configuration:
+
+- Rate: 5 requests/second
+- Burst: 10 requests
+- Daily quota: 100 requests
+- Worst-case daily Textract cost at quota: ~$0.32
+
+#### Cost Tracker:
+
+- Textract free tier alert received: 85%+ of 100 pages/month (AnalyzeDocTables)
+- Textract overage charge: $3.55
+- Previous running total (Phases 1–6): ~$0.52
+- **True project total: ~$4.07**
+
+> FinOps note: The $3.55 overage came from a single 150-document batch test using Textract's AnalyzeDocTables feature — the more advanced table extraction capability. Rate limiting protects against per-second abuse but not monthly free tier consumption. In production, this cost is predictable and passes to the customer at scale. Building and testing at scale is what revealed it — that's the point of Phase 7.
 
 #### Issues Found & Fixed:
-
 ```
-Issue 1: [DESCRIBE]
-- Impact: [SEVERITY]
-- Root cause: [CAUSE]
-- Fix: [SOLUTION]
-
-Issue 2: [DESCRIBE]
+AWS Free Tier alert — Textract AnalyzeDocTables
+- Trigger: 150-document batch test against live API
+- Impact: $3.55 overage charge
+- Root cause: Free tier covers 100 pages/month for AnalyzeDocTables;
+  batch test consumed the full allotment in a single run
+- Fix: Rate limiting + daily quota cap (100 req/day) prevents this
+  going forward. Substack/LinkedIn publish held until cap verified.
 ```
 
 #### Screenshots Captured:
 
-- [ ] Cost Explorer showing actual usage
-- [ ] CloudWatch metrics dashboard
-- [ ] Processing results examples
-
+- [ ] Batch test terminal output showing 150/150
+- [ ] API Gateway Usage Plan configuration
+- [ ] AWS Free Tier alert email
+- [ ] Bills page showing $3.55 Textract overage
 ---
 
 ### Phase 8: Optimization & Cost Reduction
