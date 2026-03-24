@@ -2,6 +2,7 @@ import json
 import boto3
 import os
 import io
+import uuid
 from datetime import datetime
 
 # PyPDF2 is available via Lambda layer
@@ -10,8 +11,12 @@ import PyPDF2
 s3_client = boto3.client('s3')
 textract_client = boto3.client('textract')
 comprehend_client = boto3.client('comprehend')
+dynamodb = boto3.resource('dynamodb')
+sns_client = boto3.client('sns')
 
 PROCESSED_BUCKET = os.environ.get('PROCESSED_BUCKET', '')
+DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE', 'DocFlowRecords')
+SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN', '')
 
 
 def lambda_handler(event, context):
@@ -26,19 +31,21 @@ def lambda_handler(event, context):
 
         print(f"Processing document: {key} from bucket: {bucket}")
 
-        # Step 1: Preprocess document (NEW - Phase 4)
-        # Only applies to PDFs - images pass through unchanged
+        # Step 1: Preprocess document (Phase 4)
         processed_bucket, processed_key = preprocess_document(bucket, key)
 
         # Step 2: Extract text using Textract
-        # Now uses preprocessed version if PDF was normalized
         extracted_data = extract_text_from_document(processed_bucket, processed_key)
 
         # Step 3: Analyze text using Comprehend
         analysis_results = analyze_text(extracted_data['full_text'])
 
         # Step 4: Combine results
+        # Extract documentId from S3 key — format: uploads/{documentId}_{fileName}
+        key_filename = key.split('/')[-1]
+        doc_id = key_filename.split('_')[0]
         final_result = {
+            'documentId': doc_id,
             'document_name': key,
             'processed_at': datetime.now().isoformat(),
             'extraction': extracted_data,
@@ -58,6 +65,12 @@ def lambda_handler(event, context):
         print(f"Successfully processed {key}")
         print(f"Results saved to: {result_key}")
 
+        # Step 5a: Write record to DynamoDB (Phase 10)
+        write_to_dynamodb(doc_id, key, extracted_data, analysis_results)
+
+        # Step 5b: Send SNS notification (Phase 10)
+        send_notification(key, extracted_data)
+
         return {
             'statusCode': 200,
             'body': json.dumps(final_result)
@@ -69,6 +82,89 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': json.dumps({'error': str(e)})
         }
+
+
+# -------------------------------------------------------
+# NEW IN PHASE 10: DynamoDB Write
+# -------------------------------------------------------
+
+def write_to_dynamodb(doc_id, key, extracted_data, analysis_results):
+    """
+    Write extracted record to DynamoDB after successful processing.
+    Stores the full extraction and analysis results in a generic schema
+    so any document type is supported.
+    """
+    try:
+        table = dynamodb.Table(DYNAMODB_TABLE)
+
+        # Pull top 3 key-value pairs for quick reference
+        key_value_pairs = extracted_data.get('key_value_pairs', {})
+        top_pairs = dict(list(key_value_pairs.items())[:3])
+
+        table.put_item(Item={
+            'documentId': doc_id,
+            'documentName': key.split('/')[-1],
+            'processedAt': datetime.now().isoformat(),
+            'status': 'success',
+            'extractionConfidence': str(extracted_data.get('extraction_confidence', 0)),
+            'pageCount': extracted_data.get('page_count', 0),
+            'fullText': extracted_data.get('full_text', ''),
+            'keyValuePairs': key_value_pairs,
+            'topKeyValues': top_pairs,
+            'entities': [e['text'] for e in analysis_results.get('entities', [])[:5]],
+            'sentiment': analysis_results.get('sentiment', {}).get('overall', 'NEUTRAL'),
+            'keyPhrases': [p['text'] for p in analysis_results.get('key_phrases', [])[:5]]
+        })
+
+        print(f"Record written to DynamoDB: {doc_id}")
+
+    except Exception as e:
+        # Don't fail the whole pipeline if DynamoDB write fails
+        print(f"DynamoDB write error: {str(e)}")
+
+
+# -------------------------------------------------------
+# NEW IN PHASE 10: SNS Notification
+# -------------------------------------------------------
+
+def send_notification(key, extracted_data):
+    """
+    Send SNS email notification after successful processing.
+    Only fires if SNS_TOPIC_ARN is configured.
+    """
+    if not SNS_TOPIC_ARN:
+        print("SNS_TOPIC_ARN not set, skipping notification")
+        return
+
+    try:
+        doc_name = key.split('/')[-1]
+        confidence = extracted_data.get('extraction_confidence', 0)
+        key_value_pairs = extracted_data.get('key_value_pairs', {})
+        top_pairs = list(key_value_pairs.items())[:3]
+
+        top_pairs_text = '\n'.join([f"  {k}: {v}" for k, v in top_pairs]) if top_pairs else '  No key-value pairs extracted'
+
+        message = f"""DocFlow — Document Processed Successfully
+
+Document: {doc_name}
+Processed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC
+Confidence: {confidence}%
+
+Top extracted fields:
+{top_pairs_text}
+"""
+
+        sns_client.publish(
+            TopicArn=SNS_TOPIC_ARN,
+            Subject=f"DocFlow — {doc_name} processed",
+            Message=message
+        )
+
+        print(f"SNS notification sent for {doc_name}")
+
+    except Exception as e:
+        # Don't fail the pipeline if notification fails
+        print(f"SNS notification error: {str(e)}")
 
 
 # -------------------------------------------------------
@@ -90,7 +186,6 @@ def preprocess_document(bucket, key):
     (for non-PDFs or already-clean PDFs) or a normalized version.
     """
 
-    # Only preprocess PDFs — images (JPEG, PNG) go straight to Textract
     if not key.lower().endswith('.pdf'):
         print(f"Non-PDF file detected ({key}), skipping preprocessing")
         return bucket, key
@@ -98,20 +193,15 @@ def preprocess_document(bucket, key):
     print(f"PDF detected, starting preprocessing for {key}")
 
     try:
-        # Download the PDF from S3 into memory
         response = s3_client.get_object(Bucket=bucket, Key=key)
         pdf_bytes = response['Body'].read()
 
-        # Run validation and normalization
         normalized_bytes = validate_and_normalize_pdf(pdf_bytes, key)
 
         if normalized_bytes is None:
-            # Normalization failed — fall back to original and let
-            # Textract try. Better to attempt than silently drop the doc.
             print(f"Normalization failed for {key}, falling back to original")
             return bucket, key
 
-        # Upload normalized PDF back to S3 under a temp prefix
         normalized_key = f"preprocessed/{key.split('/')[-1]}"
         s3_client.put_object(
             Bucket=bucket,
@@ -150,17 +240,14 @@ def validate_and_normalize_pdf(pdf_bytes, key):
         input_buffer = io.BytesIO(pdf_bytes)
         reader = PyPDF2.PdfReader(input_buffer)
 
-        # Check for encryption
         if reader.is_encrypted:
             print(f"Encrypted PDF detected: {key}, attempting decryption")
-            decrypt_result = reader.decrypt('')  # Try empty password first
+            decrypt_result = reader.decrypt('')
             if decrypt_result == 0:
-                # Empty password failed — document is password protected
                 print(f"PDF {key} is password protected, cannot decrypt")
                 return None
             print(f"PDF decrypted successfully: {key}")
 
-        # Check the PDF has at least one page
         page_count = len(reader.pages)
         if page_count == 0:
             print(f"PDF {key} has no pages, skipping")
@@ -168,14 +255,10 @@ def validate_and_normalize_pdf(pdf_bytes, key):
 
         print(f"PDF {key} has {page_count} page(s), normalizing...")
 
-        # Rewrite the PDF page by page
-        # This is the core normalization step — PyPDF2 reads the existing
-        # structure and writes it back out in clean, standard format
         writer = PyPDF2.PdfWriter()
         for page in reader.pages:
             writer.add_page(page)
 
-        # Write normalized PDF to a bytes buffer
         output_buffer = io.BytesIO()
         writer.write(output_buffer)
         output_buffer.seek(0)
@@ -197,7 +280,6 @@ def validate_and_normalize_pdf(pdf_bytes, key):
 def extract_text_from_document(bucket, key):
     """
     Extract text from document using AWS Textract
-    Supports both synchronous and asynchronous processing
     """
     print(f"Starting Textract analysis on {key}")
 
@@ -277,7 +359,6 @@ def calculate_average_confidence(blocks):
 def analyze_text(text):
     """
     Analyze text using AWS Comprehend
-    Extracts entities, sentiment, and key phrases
     """
     if not text or len(text.strip()) < 3:
         return {'error': 'Text too short for analysis'}

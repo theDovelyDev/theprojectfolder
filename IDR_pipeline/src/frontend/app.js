@@ -1,26 +1,18 @@
 /* ============================================================
    DocFlow — app.js
-   Phase 5: Frontend logic with simulated pipeline
-   Phase 6 TODO markers clearly indicate API wiring points
+   Phase 6: Live API wired
+   Phase 10: Dashboard link added to result cards
    ============================================================ */
 
 // ─────────────────────────────────────────────────────────────
-// CONFIG — update these in Phase 6 when API Gateway is live
+// CONFIG
 // ─────────────────────────────────────────────────────────────
 const CONFIG = {
-  // Phase 6: replace with your API Gateway URL
-  // e.g. https://abc123.execute-api.us-east-1.amazonaws.com/prod
   API_ENDPOINT: 'https://0r8p6ap199.execute-api.us-east-1.amazonaws.com/prod',
-
-  // Your frontend + uploads bucket names (fill in your ACCOUNT_ID)
-  UPLOAD_BUCKET: "doc-processing-demo-uploads-ACCOUNT_ID",
-  FRONTEND_BUCKET: "doc-processing-demo-frontend-ACCOUNT_ID",
+  UPLOAD_BUCKET: "doc-processing-demo-uploads-848747536965",
+  FRONTEND_BUCKET: "doc-processing-demo-frontend-848747536965",
   AWS_REGION: "us-east-1",
-
-  // Cost estimate per document ($0.034 based on Phase 3 actuals)
   COST_PER_DOC: 0.034,
-
-  // Phase 5: simulate processing (set false in Phase 6 when real API is wired)
   SIMULATE: false,
 };
 
@@ -28,9 +20,9 @@ const CONFIG = {
 // STATE
 // ─────────────────────────────────────────────────────────────
 const state = {
-  files: [], // File objects queued for processing
+  files: [],
   totalDocs: 0,
-  totalTime: 0, // ms
+  totalTime: 0,
   successCount: 0,
   totalCost: 0,
 };
@@ -52,7 +44,6 @@ const resultsContainer = document.getElementById("resultsContainer");
 const clearBtn = document.getElementById("clearBtn");
 const statusBadge = document.getElementById("statusBadge");
 
-// Stats
 const statDocs = document.getElementById("statDocs");
 const statTime = document.getElementById("statTime");
 const statRate = document.getElementById("statRate");
@@ -68,7 +59,7 @@ uploadBox.addEventListener("keydown", (e) => {
 
 fileInput.addEventListener("change", (e) => {
   addFiles(Array.from(e.target.files));
-  fileInput.value = ""; // reset so same file can be re-added
+  fileInput.value = "";
 });
 
 uploadBox.addEventListener("dragover", (e) => {
@@ -108,9 +99,8 @@ function fileIcon(file) {
 
 function addFiles(newFiles) {
   newFiles.forEach((file) => {
-    // Deduplicate by name + size
     const exists = state.files.some(
-      (f) => f.name === file.name && f.size === file.size,
+      (f) => f.name === file.name && f.size === file.size
     );
     if (!exists && isValidFile(file)) state.files.push(file);
   });
@@ -123,17 +113,16 @@ function renderFileQueue() {
     const item = document.createElement("div");
     item.className = "file-item";
     item.innerHTML = `
-            <span class="file-item-icon">${fileIcon(file)}</span>
-            <div class="file-item-info">
-                <div class="file-item-name">${file.name}</div>
-                <div class="file-item-meta">${formatBytes(file.size)} · ${file.type.split("/")[1].toUpperCase()}</div>
-            </div>
-            <button class="file-item-remove" data-index="${i}" title="Remove">✕</button>
-        `;
+      <span class="file-item-icon">${fileIcon(file)}</span>
+      <div class="file-item-info">
+        <div class="file-item-name">${file.name}</div>
+        <div class="file-item-meta">${formatBytes(file.size)} · ${file.type.split("/")[1].toUpperCase()}</div>
+      </div>
+      <button class="file-item-remove" data-index="${i}" title="Remove">✕</button>
+    `;
     fileQueue.appendChild(item);
   });
 
-  // Remove buttons
   fileQueue.querySelectorAll(".file-item-remove").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const idx = parseInt(e.currentTarget.dataset.index);
@@ -142,7 +131,6 @@ function renderFileQueue() {
     });
   });
 
-  // Process button state
   processBtn.disabled = state.files.length === 0;
   btnCount.textContent = state.files.length > 0 ? `${state.files.length}` : "";
 }
@@ -172,14 +160,7 @@ processBtn.addEventListener("click", async () => {
       if (CONFIG.SIMULATE) {
         result = await simulatePipeline(file, i);
       } else {
-        // ── PHASE 6 TODO ──────────────────────────────────
-        // Replace simulatePipeline with real API calls:
-        // 1. Get presigned URL from POST /upload
-        // 2. PUT file bytes to presigned URL (direct to S3)
-        // 3. Poll GET /results/{documentId} until done
-        // result = await runRealPipeline(file);
-        // ─────────────────────────────────────────────────
-        result = await simulatePipeline(file, i);
+        result = await runRealPipeline(file);
       }
       results.push(result);
       if (result.success) state.successCount++;
@@ -202,22 +183,109 @@ processBtn.addEventListener("click", async () => {
 });
 
 // ─────────────────────────────────────────────────────────────
-// PIPELINE — SIMULATED (Phase 5)
-// Mimics the real pipeline stages with realistic timing
+// PIPELINE — REAL (Phase 6)
+// ─────────────────────────────────────────────────────────────
+async function runRealPipeline(file) {
+  setStageActive("step-upload");
+  processingStatus.textContent = "Uploading to S3...";
+
+  // Step 1: encode file as base64 and POST to /upload
+  const base64 = await fileToBase64(file);
+  const uploadResp = await fetch(`${CONFIG.API_ENDPOINT}/upload`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fileName: file.name,
+      fileContent: base64,
+      contentType: file.type,
+    }),
+  });
+  if (!uploadResp.ok) throw new Error(`Upload failed: ${uploadResp.status}`);
+  const { documentId, s3Key } = await uploadResp.json();
+  setStageComplete("step-upload");
+
+  // Step 2: poll /results?documentId= until processing completes
+  setStageActive("step-textract");
+  processingStatus.textContent = "Textract OCR in progress…";
+
+  for (let attempt = 0; attempt < 20; attempt++) {
+    await sleep(3000);
+
+    if (attempt === 3) {
+      setStageComplete("step-textract");
+      setStageActive("step-comprehend");
+      processingStatus.textContent = "Comprehend NLP running…";
+    }
+
+    const resultResp = await fetch(
+      `${CONFIG.API_ENDPOINT}/results?documentId=${documentId}`
+    );
+
+    if (resultResp.status === 404) continue; // still processing
+
+    if (!resultResp.ok) throw new Error(`Results fetch failed: ${resultResp.status}`);
+
+    const data = await resultResp.json();
+
+    if (data.status === "success") {
+      setStageComplete("step-comprehend");
+      setStageActive("step-store");
+      processingStatus.textContent = "Storing results…";
+      await sleep(400);
+      setStageComplete("step-store");
+
+      return {
+        file,
+        success: true,
+        documentId,
+        s3Key,
+        textract: {
+          documentType: "DOCUMENT",
+          fields: data.extraction?.key_value_pairs || {},
+          confidence: `${data.extraction?.extraction_confidence || 0}%`,
+          pages: data.extraction?.page_count || 1,
+        },
+        comprehend: {
+          sentiment: data.analysis?.sentiment?.overall || "NEUTRAL",
+          confidence: Math.round(
+            (data.analysis?.sentiment?.scores?.[
+              data.analysis?.sentiment?.overall
+            ] || 0) * 100
+          ),
+          entities: (data.analysis?.entities || []).map((e) => ({
+            type: e.type,
+            text: e.text,
+          })),
+          keyPhrases: (data.analysis?.key_phrases || []).map((p) => p.text),
+        },
+      };
+    }
+
+    if (data.status === "failed") {
+      return { file, success: false, error: data.error || "Processing failed" };
+    }
+  }
+
+  throw new Error("Timed out waiting for processing results");
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// PIPELINE — SIMULATED (Phase 5 — kept for reference/testing)
 // ─────────────────────────────────────────────────────────────
 async function simulatePipeline(file, index) {
   const stages = [
     { id: "step-upload", label: "Uploading to S3...", ms: 600 + rand(400) },
-    {
-      id: "step-textract",
-      label: "Textract OCR in progress…",
-      ms: 900 + rand(600),
-    },
-    {
-      id: "step-comprehend",
-      label: "Comprehend NLP running…",
-      ms: 700 + rand(400),
-    },
+    { id: "step-textract", label: "Textract OCR in progress…", ms: 900 + rand(600) },
+    { id: "step-comprehend", label: "Comprehend NLP running…", ms: 700 + rand(400) },
     { id: "step-store", label: "Storing results to S3…", ms: 300 + rand(200) },
   ];
 
@@ -228,16 +296,14 @@ async function simulatePipeline(file, index) {
     setStageComplete(stage.id);
   }
 
-  // 80% success rate — matches Phase 3/4 actuals
   const isPdf = file.type === "application/pdf";
-  const isComplexPdf = isPdf && index % 5 === 4; // simulate the known 20% failure
+  const isComplexPdf = isPdf && index % 5 === 4;
 
   if (isComplexPdf) {
     return {
       file,
       success: false,
-      error:
-        "UnsupportedDocumentException — complex PDF encoding. Known limitation: requires pdf2image + poppler fallback (Phase 4 remediation path).",
+      error: "UnsupportedDocumentException — complex PDF encoding. Known limitation: requires pdf2image + poppler fallback.",
     };
   }
 
@@ -252,58 +318,7 @@ async function simulatePipeline(file, index) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// PIPELINE — REAL (Phase 6 implementation)
-// ─────────────────────────────────────────────────────────────
-
-/* ── PHASE 6 TODO ──────────────────────────────────────────
-   Uncomment and implement when API Gateway is deployed.
-
-async function runRealPipeline(file) {
-    // Step 1: Request a presigned URL from your upload Lambda
-    //
-    // WHY presigned URLs?
-    // The browser can't hold AWS credentials safely. Instead, your
-    // Lambda generates a temporary signed URL that lets the browser
-    // PUT the file directly to S3 — no credentials exposed client-side.
-    //
-    const uploadResp = await fetch(`${CONFIG.API_ENDPOINT}/upload`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileName: file.name, fileType: file.type }),
-    });
-    if (!uploadResp.ok) throw new Error(`Upload request failed: ${uploadResp.status}`);
-    const { presignedUrl, documentId } = await uploadResp.json();
-
-    // Step 2: PUT the file directly to S3 via presigned URL
-    const s3Resp = await fetch(presignedUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file,
-    });
-    if (!s3Resp.ok) throw new Error(`S3 upload failed: ${s3Resp.status}`);
-
-    // Step 3: Poll GET /results/{documentId} until Lambda finishes
-    //
-    // WHY polling?
-    // Textract + Comprehend take seconds to run. The browser can't
-    // hold a connection open that long reliably. Instead, we ask
-    // "is it done yet?" every 2 seconds. WebSockets/EventBridge would
-    // be the production upgrade, but polling is simple and correct here.
-    //
-    for (let attempt = 0; attempt < 20; attempt++) {
-        await sleep(2000);
-        const resultResp = await fetch(`${CONFIG.API_ENDPOINT}/results/${documentId}`);
-        if (!resultResp.ok) continue;
-        const data = await resultResp.json();
-        if (data.status === 'complete') return { file, success: true, ...data };
-        if (data.status === 'failed')   return { file, success: false, error: data.error };
-    }
-    throw new Error('Timed out waiting for processing results');
-}
-─────────────────────────────────────────────────────────── */
-
-// ─────────────────────────────────────────────────────────────
-// MOCK DATA GENERATORS (realistic Phase 5 simulation)
+// MOCK DATA GENERATORS
 // ─────────────────────────────────────────────────────────────
 function generateMockTextract(file) {
   const docTypes = ["INVOICE", "RECEIPT", "FORM", "CONTRACT"];
@@ -356,30 +371,21 @@ function generateMockComprehend() {
   const sentiments = ["POSITIVE", "NEUTRAL", "NEGATIVE", "MIXED"];
   const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
   const confidence = (75 + Math.random() * 24).toFixed(0);
-  const entities = randomEntities();
-  const keyPhrases = randomKeyPhrases();
-
-  return { sentiment, confidence: parseInt(confidence), entities, keyPhrases };
+  return {
+    sentiment,
+    confidence: parseInt(confidence),
+    entities: randomEntities(),
+    keyPhrases: randomKeyPhrases(),
+  };
 }
 
 function randomEntities() {
-  const names = [
-    "Acme Corp",
-    "GlobalTech Inc",
-    "Smith & Associates",
-    "Patel Consulting",
-  ];
+  const names = ["Acme Corp", "GlobalTech Inc", "Smith & Associates", "Patel Consulting"];
   const orgs = ["Finance Dept", "Procurement", "Accounts Payable"];
   const locs = ["New York, NY", "San Francisco, CA", "Chicago, IL"];
   return [
-    {
-      type: "ORGANIZATION",
-      text: names[Math.floor(Math.random() * names.length)],
-    },
-    {
-      type: "ORGANIZATION",
-      text: orgs[Math.floor(Math.random() * orgs.length)],
-    },
+    { type: "ORGANIZATION", text: names[Math.floor(Math.random() * names.length)] },
+    { type: "ORGANIZATION", text: orgs[Math.floor(Math.random() * orgs.length)] },
     { type: "LOCATION", text: locs[Math.floor(Math.random() * locs.length)] },
     { type: "DATE", text: randomDate() },
   ];
@@ -387,26 +393,16 @@ function randomEntities() {
 
 function randomKeyPhrases() {
   const pool = [
-    "payment terms",
-    "net 30",
-    "accounts payable",
-    "invoice total",
-    "tax exempt",
-    "purchase order",
-    "vendor code",
-    "billing address",
-    "due date",
+    "payment terms", "net 30", "accounts payable", "invoice total",
+    "tax exempt", "purchase order", "vendor code", "billing address", "due date",
   ];
   return pool.sort(() => Math.random() - 0.5).slice(0, 4);
 }
 
 function randomVendor() {
   const v = [
-    "Acme Supplies Co.",
-    "TechVendor Inc.",
-    "Consolidated Services",
-    "Pacific Materials LLC",
-    "Northeast Distributors",
+    "Acme Supplies Co.", "TechVendor Inc.", "Consolidated Services",
+    "Pacific Materials LLC", "Northeast Distributors",
   ];
   return v[Math.floor(Math.random() * v.length)];
 }
@@ -414,18 +410,121 @@ function randomVendor() {
 function randomDate(offsetDays = 0) {
   const d = new Date();
   d.setDate(d.getDate() - Math.floor(Math.random() * 60) + offsetDays);
-  return d.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
-function rand(n) {
-  return Math.floor(Math.random() * n);
-}
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
+function rand(n) { return Math.floor(Math.random() * n); }
+function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+// ─────────────────────────────────────────────────────────────
+// RESULTS — render cards
+// ─────────────────────────────────────────────────────────────
+function showResults(results, elapsedMs, count) {
+  resultsSection.style.display = "block";
+  resultsContainer.innerHTML = "";
+
+  results.forEach((result) => {
+    const card = document.createElement("div");
+    card.className = "result-card";
+
+    const badgeClass = result.success ? "success" : "error";
+    const badgeLabel = result.success ? "✓ Processed" : "✗ Failed";
+
+    card.innerHTML = `
+      <div class="result-card-header">
+        <span class="result-card-icon">${fileIcon(result.file)}</span>
+        <span class="result-card-title">${result.file.name}</span>
+        <span class="result-card-badge ${badgeClass}">${badgeLabel}</span>
+      </div>
+    `;
+
+    if (result.success) {
+      const t = result.textract;
+      const c = result.comprehend;
+      const sentimentClass = c.sentiment.toLowerCase();
+
+      const fieldsHtml = Object.entries(t.fields)
+        .map(([k, v]) => `
+          <div class="result-row">
+            <span class="result-key">${k}</span>
+            <span class="result-val">${v}</span>
+          </div>`)
+        .join("");
+
+      const tagsHtml = c.keyPhrases.map((p) => `<span class="tag">${p}</span>`).join("");
+      const entitiesHtml = c.entities.map((e) => `<span class="tag">${e.text}</span>`).join("");
+
+      const body = document.createElement("div");
+      body.className = "result-card-body";
+      body.innerHTML = `
+        <div class="result-row">
+          <span class="result-key">Document Type</span>
+          <span class="result-val">${t.documentType}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-key">OCR Confidence</span>
+          <span class="result-val">${t.confidence} · ${t.pages} page${t.pages !== 1 ? "s" : ""}</span>
+        </div>
+        ${fieldsHtml}
+        <div class="result-row">
+          <span class="result-key">S3 Key</span>
+          <span class="result-val mono">${result.s3Key}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-key">Sentiment</span>
+          <span class="result-val">
+            <div class="sentiment-bar">
+              <span class="sentiment-label ${sentimentClass}">${c.sentiment}</span>
+              <div class="sentiment-track">
+                <div class="sentiment-fill ${sentimentClass}" style="width:${c.confidence}%"></div>
+              </div>
+              <span class="result-key">${c.confidence}%</span>
+            </div>
+          </span>
+        </div>
+        <div class="result-row">
+          <span class="result-key">Entities</span>
+          <span class="result-val"><div class="tag-list">${entitiesHtml}</div></span>
+        </div>
+        <div class="result-row">
+          <span class="result-key">Key Phrases</span>
+          <span class="result-val"><div class="tag-list">${tagsHtml}</div></span>
+        </div>
+        <div class="result-row" style="padding-top: 8px; border-top: 1px solid var(--border); margin-top: 4px;">
+          <span class="result-key">Output</span>
+          <span class="result-val">
+            <a href="dashboard.html" style="
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              font-family: var(--font-mono);
+              font-size: 0.78rem;
+              color: var(--accent);
+              text-decoration: none;
+              border: 1px solid rgba(0,229,160,0.3);
+              background: var(--accent-dim);
+              border-radius: 8px;
+              padding: 6px 14px;
+              transition: opacity 0.2s ease;
+            " onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
+              View in Dashboard →
+            </a>
+          </span>
+        </div>
+      `;
+      card.appendChild(body);
+    } else {
+      const err = document.createElement("div");
+      err.className = "result-error";
+      err.innerHTML = `
+        <span class="result-key">Could not process this document.</span>
+        <div class="error-msg">${result.error}</div>
+      `;
+      card.appendChild(err);
+    }
+
+    resultsContainer.appendChild(card);
+  });
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -447,99 +546,6 @@ function hideProcessing() {
   statusBadge.classList.remove("processing");
 }
 
-function showResults(results, elapsedMs, count) {
-  resultsSection.style.display = "block";
-  resultsContainer.innerHTML = "";
-
-  results.forEach((result) => {
-    const card = document.createElement("div");
-    card.className = "result-card";
-
-    const badgeClass = result.success ? "success" : "error";
-    const badgeLabel = result.success ? "✓ Processed" : "✗ Failed";
-
-    card.innerHTML = `
-            <div class="result-card-header">
-                <span class="result-card-icon">${fileIcon(result.file)}</span>
-                <span class="result-card-title">${result.file.name}</span>
-                <span class="result-card-badge ${badgeClass}">${badgeLabel}</span>
-            </div>
-        `;
-
-    if (result.success) {
-      const t = result.textract;
-      const c = result.comprehend;
-      const sentimentClass = c.sentiment.toLowerCase();
-
-      const fieldsHtml = Object.entries(t.fields)
-        .map(
-          ([k, v]) => `
-                    <div class="result-row">
-                        <span class="result-key">${k}</span>
-                        <span class="result-val">${v}</span>
-                    </div>`,
-        )
-        .join("");
-
-      const tagsHtml = c.keyPhrases
-        .map((p) => `<span class="tag">${p}</span>`)
-        .join("");
-      const entitiesHtml = c.entities
-        .map((e) => `<span class="tag">${e.text}</span>`)
-        .join("");
-
-      const body = document.createElement("div");
-      body.className = "result-card-body";
-      body.innerHTML = `
-                <div class="result-row">
-                    <span class="result-key">Document Type</span>
-                    <span class="result-val">${t.documentType}</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-key">OCR Confidence</span>
-                    <span class="result-val">${t.confidence} · ${t.pages} page${t.pages !== 1 ? "s" : ""}</span>
-                </div>
-                ${fieldsHtml}
-                <div class="result-row">
-                    <span class="result-key">S3 Key</span>
-                    <span class="result-val mono">${result.s3Key}</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-key">Sentiment</span>
-                    <span class="result-val">
-                        <div class="sentiment-bar">
-                            <span class="sentiment-label ${sentimentClass}">${c.sentiment}</span>
-                            <div class="sentiment-track">
-                                <div class="sentiment-fill ${sentimentClass}" style="width:${c.confidence}%"></div>
-                            </div>
-                            <span class="result-key">${c.confidence}%</span>
-                        </div>
-                    </span>
-                </div>
-                <div class="result-row">
-                    <span class="result-key">Entities</span>
-                    <span class="result-val"><div class="tag-list">${entitiesHtml}</div></span>
-                </div>
-                <div class="result-row">
-                    <span class="result-key">Key Phrases</span>
-                    <span class="result-val"><div class="tag-list">${tagsHtml}</div></span>
-                </div>
-            `;
-      card.appendChild(body);
-    } else {
-      const err = document.createElement("div");
-      err.className = "result-error";
-      err.innerHTML = `
-                <span class="result-key">Could not process this document.</span>
-                <div class="error-msg">${result.error}</div>
-            `;
-      card.appendChild(err);
-    }
-
-    resultsContainer.appendChild(card);
-  });
-}
-
 // ─────────────────────────────────────────────────────────────
 // CLEAR / RESET
 // ─────────────────────────────────────────────────────────────
@@ -555,16 +561,11 @@ clearBtn.addEventListener("click", () => {
 // ─────────────────────────────────────────────────────────────
 function updateStats() {
   statDocs.textContent = state.totalDocs;
-
   const avgMs = state.totalDocs > 0 ? state.totalTime / state.totalDocs : 0;
-  statTime.textContent =
-    state.totalDocs > 0 ? `${(avgMs / 1000).toFixed(1)}s` : "—";
-
-  statRate.textContent =
-    state.totalDocs > 0
-      ? `${Math.round((state.successCount / state.totalDocs) * 100)}%`
-      : "—";
-
+  statTime.textContent = state.totalDocs > 0 ? `${(avgMs / 1000).toFixed(1)}s` : "—";
+  statRate.textContent = state.totalDocs > 0
+    ? `${Math.round((state.successCount / state.totalDocs) * 100)}%`
+    : "—";
   statCost.textContent = `$${state.totalCost.toFixed(3)}`;
 }
 
@@ -572,7 +573,7 @@ function updateStats() {
 // PROGRESS RING
 // ─────────────────────────────────────────────────────────────
 function setRingProgress(pct) {
-  const circumference = 163.4; // 2π × r=26
+  const circumference = 163.4;
   const offset = circumference - (pct / 100) * circumference;
   ringProgress.style.strokeDashoffset = offset;
   ringLabel.textContent = `${pct}%`;
@@ -581,12 +582,7 @@ function setRingProgress(pct) {
 // ─────────────────────────────────────────────────────────────
 // PIPELINE STEP INDICATORS
 // ─────────────────────────────────────────────────────────────
-const stepIds = [
-  "step-upload",
-  "step-textract",
-  "step-comprehend",
-  "step-store",
-];
+const stepIds = ["step-upload", "step-textract", "step-comprehend", "step-store"];
 
 function resetSteps() {
   stepIds.forEach((id) => {
@@ -596,7 +592,6 @@ function resetSteps() {
 }
 
 function setStageActive(id) {
-  // Mark previous steps done
   const idx = stepIds.indexOf(id);
   stepIds.slice(0, idx).forEach((prev) => {
     document.getElementById(prev).classList.remove("active");
@@ -610,3 +605,8 @@ function setStageComplete(id) {
   el.classList.remove("active");
   el.classList.add("done");
 }
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+renderFileQueue();

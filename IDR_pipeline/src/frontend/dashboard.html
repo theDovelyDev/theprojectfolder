@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DocFlow — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0a0c0f;
+      --surface: #111418;
+      --surface-2: #181c22;
+      --border: #1f2530;
+      --border-2: #2a3040;
+      --accent: #00e5a0;
+      --accent-dim: rgba(0, 229, 160, 0.12);
+      --accent-glow: rgba(0, 229, 160, 0.25);
+      --text: #e8ecf0;
+      --text-2: #8a9ab0;
+      --text-3: #4a5568;
+      --danger: #ff4d6d;
+      --warn: #ffb347;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --font-display: "Syne", sans-serif;
+      --font-body: "DM Sans", sans-serif;
+      --font-mono: "DM Mono", monospace;
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.4;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-icon { font-size: 1.4rem; color: var(--accent); line-height: 1; }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-2);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      text-decoration: none;
+      transition: var(--transition);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-link:hover { color: var(--text); border-color: var(--border-2); }
+    .nav-link.active { color: var(--accent); border-color: rgba(0,229,160,0.3); background: var(--accent-dim); }
+
+    /* ── Page Title ── */
+    .page-title {
+      margin-bottom: 32px;
+    }
+
+    .page-title h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .page-title h1 em { font-style: normal; color: var(--accent); }
+
+    .page-title p {
+      color: var(--text-2);
+      font-size: 0.9rem;
+    }
+
+    /* ── Stats Grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-value.accent { color: var(--accent); }
+    .stat-value.warn { color: var(--warn); }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text);
+      width: 260px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-input::placeholder { color: var(--text-3); }
+    .search-input:focus { border-color: var(--accent); }
+
+    .export-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #0a0c0f;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      padding: 9px 18px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+      letter-spacing: 0.02em;
+    }
+
+    .export-btn:hover { opacity: 0.88; }
+    .export-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .record-count {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-3);
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      animation: fadeIn 0.4s ease 0.25s both;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 400;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: color var(--transition);
+    }
+
+    th:hover { color: var(--text-2); }
+    th.sorted { color: var(--accent); }
+
+    th .sort-icon { margin-left: 4px; opacity: 0.5; }
+    th.sorted .sort-icon { opacity: 1; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+      cursor: pointer;
+      animation: slideIn 0.2s ease both;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface-2); }
+
+    td {
+      padding: 14px 16px;
+      font-size: 0.875rem;
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    .td-name {
+      font-weight: 500;
+      max-width: 240px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .td-date {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-2);
+      white-space: nowrap;
+    }
+
+    .td-confidence {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+
+    .confidence-high { color: var(--accent); }
+    .confidence-mid { color: var(--warn); }
+    .confidence-low { color: var(--danger); }
+
+    .td-sentiment {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .sentiment-neutral { color: var(--text-2); border-color: var(--border-2); background: var(--surface-2); }
+    .sentiment-positive { color: var(--accent); border-color: rgba(0,229,160,0.3); background: var(--accent-dim); }
+    .sentiment-negative { color: var(--danger); border-color: rgba(255,77,109,0.3); background: rgba(255,77,109,0.08); }
+    .sentiment-mixed { color: var(--warn); border-color: rgba(255,179,71,0.3); background: rgba(255,179,71,0.08); }
+
+    .td-status {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid;
+      display: inline-block;
+    }
+
+    .status-success { color: var(--accent); border-color: rgba(0,229,160,0.3); background: var(--accent-dim); }
+    .status-failed { color: var(--danger); border-color: rgba(255,77,109,0.3); background: rgba(255,77,109,0.08); }
+
+    /* ── Empty / Loading States ── */
+    .state-empty, .state-loading, .state-error {
+      padding: 64px 40px;
+      text-align: center;
+    }
+
+    .state-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .state-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .state-sub {
+      font-size: 0.875rem;
+      color: var(--text-2);
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border-2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    /* ── Detail Modal ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 12, 15, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 680px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+      position: sticky;
+      top: 0;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 480px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-3);
+      cursor: pointer;
+      font-size: 1.4rem;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover { color: var(--text); background: var(--border); }
+
+    .modal-body { padding: 24px; display: grid; gap: 20px; }
+
+    .modal-section-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .kv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .kv-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+    }
+
+    .kv-key {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .kv-val {
+      font-size: 0.875rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .entity-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .entity-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 9px;
+      color: var(--text-2);
+    }
+
+    .full-text-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-2);
+      line-height: 1.7;
+      max-height: 160px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-3);
+      letter-spacing: 0.04em;
+      margin-top: 48px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .search-input { width: 180px; }
+      .kv-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 500px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .container { padding: 24px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <a href="index.html" class="logo">
+        <span class="logo-icon">⚡</span>
+        DocFlow
+      </a>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Upload</a>
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+      </nav>
+    </header>
+
+    <!-- Page Title -->
+    <div class="page-title">
+      <h1>Document <em>Records</em></h1>
+      <p>All processed documents — searchable, exportable, queryable.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Documents</div>
+        <div class="stat-value accent" id="statTotal">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Success Rate</div>
+        <div class="stat-value" id="statSuccess">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Confidence</div>
+        <div class="stat-value" id="statConfidence">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Processed</div>
+        <div class="stat-value" id="statLast" style="font-size:1.1rem; padding-top:4px;">—</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input
+          type="text"
+          class="search-input"
+          id="searchInput"
+          placeholder="Search documents..."
+        />
+        <span class="record-count" id="recordCount"></span>
+      </div>
+      <button class="export-btn" id="exportBtn" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export CSV
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div id="tableContent">
+        <div class="state-loading">
+          <div class="spinner"></div>
+          <div class="state-title">Loading records</div>
+          <div class="state-sub">Fetching from DocFlowRecords...</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      DocFlow &nbsp;·&nbsp; Intelligent Document Processing &nbsp;·&nbsp; <a href="https://carlandrainthecloud.substack.com" style="color: var(--text-3); text-decoration: none;">carlandrainthecloud.substack.com</a>
+    </footer>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="modalOverlay" style="display:none;">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Document Detail</div>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://0r8p6ap199.execute-api.us-east-1.amazonaws.com/prod';
+    let allRecords = [];
+    let sortCol = 'processedAt';
+    let sortDir = -1;
+
+    // ── Fetch Records ──────────────────────────────────────
+    async function fetchRecords() {
+      try {
+        const res = await fetch(`${API}/records`);
+        const data = await res.json();
+        allRecords = data.records || [];
+        renderStats(allRecords);
+        renderTable(allRecords);
+        document.getElementById('exportBtn').disabled = allRecords.length === 0;
+      } catch (err) {
+        document.getElementById('tableContent').innerHTML = `
+          <div class="state-error">
+            <span class="state-icon">⚠️</span>
+            <div class="state-title">Failed to load records</div>
+            <div class="state-sub">${err.message}</div>
+          </div>`;
+      }
+    }
+
+    // ── Stats ──────────────────────────────────────────────
+    function renderStats(records) {
+      const total = records.length;
+      const successful = records.filter(r => r.status === 'success').length;
+      const successRate = total > 0 ? Math.round((successful / total) * 100) : 0;
+      const avgConf = total > 0
+        ? (records.reduce((s, r) => s + parseFloat(r.extractionConfidence || 0), 0) / total).toFixed(1)
+        : 0;
+      const last = records.length > 0
+        ? formatDate(records.sort((a, b) => b.processedAt.localeCompare(a.processedAt))[0].processedAt)
+        : '—';
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statSuccess').textContent = `${successRate}%`;
+      document.getElementById('statConfidence').textContent = `${avgConf}%`;
+      document.getElementById('statLast').textContent = last;
+    }
+
+    // ── Table ──────────────────────────────────────────────
+    function renderTable(records) {
+      if (records.length === 0) {
+        document.getElementById('tableContent').innerHTML = `
+          <div class="state-empty">
+            <span class="state-icon">📭</span>
+            <div class="state-title">No records yet</div>
+            <div class="state-sub">Upload and process a document to see it here.</div>
+          </div>`;
+        document.getElementById('recordCount').textContent = '';
+        return;
+      }
+
+      const sorted = [...records].sort((a, b) => {
+        const av = a[sortCol] ?? '';
+        const bv = b[sortCol] ?? '';
+        return av < bv ? sortDir : av > bv ? -sortDir : 0;
+      });
+
+      document.getElementById('recordCount').textContent = `${sorted.length} record${sorted.length !== 1 ? 's' : ''}`;
+
+      const cols = [
+        { key: 'documentName', label: 'Document' },
+        { key: 'processedAt', label: 'Processed' },
+        { key: 'extractionConfidence', label: 'Confidence' },
+        { key: 'sentiment', label: 'Sentiment' },
+        { key: 'pageCount', label: 'Pages' },
+        { key: 'status', label: 'Status' },
+      ];
+
+      const thead = cols.map(c => {
+        const isSorted = sortCol === c.key;
+        const icon = isSorted ? (sortDir === -1 ? '↓' : '↑') : '↕';
+        return `<th class="${isSorted ? 'sorted' : ''}" data-col="${c.key}">
+          ${c.label} <span class="sort-icon">${icon}</span>
+        </th>`;
+      }).join('');
+
+      const tbody = sorted.map((r, i) => {
+        const conf = parseFloat(r.extractionConfidence || 0);
+        const confClass = conf >= 90 ? 'confidence-high' : conf >= 70 ? 'confidence-mid' : 'confidence-low';
+        const sentiment = (r.sentiment || 'NEUTRAL').toLowerCase();
+        const statusClass = r.status === 'success' ? 'status-success' : 'status-failed';
+
+        return `<tr data-index="${i}" style="animation-delay:${i * 0.03}s">
+          <td><div class="td-name">${r.documentName || '—'}</div></td>
+          <td><div class="td-date">${formatDate(r.processedAt)}</div></td>
+          <td><div class="td-confidence ${confClass}">${conf.toFixed(1)}%</div></td>
+          <td><span class="td-sentiment sentiment-${sentiment}">${r.sentiment || 'NEUTRAL'}</span></td>
+          <td style="color:var(--text-2); font-family:var(--font-mono); font-size:0.82rem;">${r.pageCount || 1}</td>
+          <td><span class="td-status ${statusClass}">${r.status || 'unknown'}</span></td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('tableContent').innerHTML = `
+        <table>
+          <thead><tr>${thead}</tr></thead>
+          <tbody>${tbody}</tbody>
+        </table>`;
+
+      // Sort handlers
+      document.querySelectorAll('th[data-col]').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.col;
+          if (sortCol === col) sortDir *= -1;
+          else { sortCol = col; sortDir = -1; }
+          renderTable(getFilteredRecords());
+        });
+      });
+
+      // Row click → modal
+      document.querySelectorAll('tbody tr').forEach(tr => {
+        tr.addEventListener('click', () => {
+          const rec = sorted[parseInt(tr.dataset.index)];
+          openModal(rec);
+        });
+      });
+    }
+
+    // ── Search ─────────────────────────────────────────────
+    function getFilteredRecords() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      if (!q) return allRecords;
+      return allRecords.filter(r =>
+        (r.documentName || '').toLowerCase().includes(q) ||
+        (r.sentiment || '').toLowerCase().includes(q) ||
+        (r.status || '').toLowerCase().includes(q)
+      );
+    }
+
+    document.getElementById('searchInput').addEventListener('input', () => {
+      renderTable(getFilteredRecords());
+    });
+
+    // ── Export ─────────────────────────────────────────────
+    document.getElementById('exportBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('exportBtn');
+      btn.disabled = true;
+      btn.textContent = 'Exporting...';
+      try {
+        const res = await fetch(`${API}/export`);
+        const csv = await res.text();
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `docflow-export-${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Export failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV`;
+      }
+    });
+
+    // ── Modal ──────────────────────────────────────────────
+    function openModal(rec) {
+      document.getElementById('modalTitle').textContent = rec.documentName || 'Document Detail';
+
+      const kvPairs = rec.keyValuePairs || {};
+      const kvHtml = Object.entries(kvPairs).length > 0
+        ? `<div class="kv-grid">${Object.entries(kvPairs).map(([k, v]) => `
+            <div class="kv-item">
+              <div class="kv-key">${k}</div>
+              <div class="kv-val">${v}</div>
+            </div>`).join('')}</div>`
+        : '<div style="color:var(--text-3);font-size:0.875rem;">No key-value pairs extracted.</div>';
+
+      const entities = rec.entities || [];
+      const entitiesHtml = entities.length > 0
+        ? `<div class="entity-list">${entities.map(e => `<span class="entity-tag">${e}</span>`).join('')}</div>`
+        : '<div style="color:var(--text-3);font-size:0.875rem;">No entities detected.</div>';
+
+      document.getElementById('modalBody').innerHTML = `
+        <div>
+          <div class="modal-section-title">Document Info</div>
+          <div class="kv-grid">
+            <div class="kv-item"><div class="kv-key">Document ID</div><div class="kv-val" style="font-family:var(--font-mono);font-size:0.75rem;">${rec.documentId || '—'}</div></div>
+            <div class="kv-item"><div class="kv-key">Processed</div><div class="kv-val">${formatDate(rec.processedAt)}</div></div>
+            <div class="kv-item"><div class="kv-key">Confidence</div><div class="kv-val">${parseFloat(rec.extractionConfidence || 0).toFixed(1)}%</div></div>
+            <div class="kv-item"><div class="kv-key">Pages</div><div class="kv-val">${rec.pageCount || 1}</div></div>
+            <div class="kv-item"><div class="kv-key">Sentiment</div><div class="kv-val">${rec.sentiment || 'NEUTRAL'}</div></div>
+            <div class="kv-item"><div class="kv-key">Status</div><div class="kv-val">${rec.status || '—'}</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="modal-section-title">Extracted Key-Value Pairs</div>
+          ${kvHtml}
+        </div>
+        <div>
+          <div class="modal-section-title">Entities Detected</div>
+          ${entitiesHtml}
+        </div>
+        <div>
+          <div class="modal-section-title">Full Extracted Text</div>
+          <div class="full-text-box">${rec.fullText || 'No text extracted.'}</div>
+        </div>`;
+
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('modalOverlay')) closeModal();
+    });
+
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    // ── Helpers ────────────────────────────────────────────
+    function formatDate(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // ── Init ───────────────────────────────────────────────
+    fetchRecords();
+  </script>
+</body>
+</html>
