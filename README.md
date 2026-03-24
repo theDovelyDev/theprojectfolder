@@ -37,12 +37,12 @@ Serverless frontend (S3 + CloudFront), API Gateway + Lambda backend, DynamoDB vi
 **Tech:** AWS (S3, CloudFront, Lambda, DynamoDB, Route53), JavaScript, Python, Terraform  
 🔗 [Live Site](https://www.theprojectfolder.com) | [GitHub](./cloudresumechallenge)
 
-#### [Intelligent Document Processing Pipeline](./IDP_pipeline)
+#### [Intelligent Document Processing Pipeline](./IDR_pipeline)
 
 **Serverless AI pipeline for automated document extraction and analysis**
 Event-driven architecture that processes invoices, receipts, and forms in 30 seconds at $0.034/doc — versus 3 minutes and $1.25 manually. Because if you can automate it, you should.
 **Tech:** AWS (S3, Lambda, Textract, Comprehend, API Gateway, EventBridge), Python, FinOps
-🔗 [GitHub](./IDP_pipeline) | Project writeup on Substack coming soon.
+🔗 [GitHub](./IDR_pipeline) | Project writeup on Substack coming soon.
 
 ---
 
