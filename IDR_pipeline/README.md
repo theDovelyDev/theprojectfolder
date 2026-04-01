@@ -291,6 +291,6 @@ Follow the [Implementation Guide](docs/Document_Processing_Implementation_Guide.
 
 ---
 
-*Built with ☁️ AWS, 🐍 Python, and the honest acknowledgment that $3.55 of the $5.90 total came from proving it actually works at scale.*
+*Built with ☁️ AWS, 🐍 Python, and the honest acknowledgment that $3.55 of the $6.90 total came from proving it actually works at scale.*
 
 *Last Updated: March 23, 2026*
