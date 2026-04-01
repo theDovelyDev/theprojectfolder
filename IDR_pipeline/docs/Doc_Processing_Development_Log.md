@@ -4,12 +4,12 @@
 
 ---
 
-## 📝 Development Log & Substack Article Draft
+## 📝 Development Log
 
-**Project:** Intelligent Document Processing Pipeline  
-**Duration:** January 16, 2026 - [END DATE]  
-**Total Hours:** 7 hours (1 pre-dev + 2 Phase 1 + 1 tag governance + 3 Phase 2)  
-**Final Cost:** $0.00 (so far)
+**Project:** Intelligent Document Processing Pipeline (DocFlow)
+**Duration:** January 16, 2026 - March 24, 2026
+**Total Hours:** ~35 hours
+**Final Cost:** $6.90
 
 ---
 
@@ -17,11 +17,10 @@
 
 1. [Project Overview](#project-overview)
 2. [Why I Built This](#why-i-built-this)
-3. [Day-by-Day Development Log](#development-log)
-4. [Technical Challenges & Solutions](#challenges)
-5. [Key Learnings](#learnings)
-6. [Results & Impact](#results)
-7. [What's Next](#whats-next)
+3. [Development Log](#development-log)
+4. [Key Learnings](#key-learnings)
+5. [Results & Impact](#results)
+6. [What's Next](#whats-next)
 
 ---
 
@@ -33,26 +32,27 @@
 
 **Tech Stack:**
 
-- AWS Services: S3, Lambda, Textract, Comprehend, API Gateway, CloudWatch
+- AWS Services: S3, Lambda, Textract, Comprehend, API Gateway, DynamoDB, SNS, CloudWatch, EventBridge
 - Languages: Python 3.11, JavaScript (ES6+)
 - Tools: AWS CLI, Boto3, Git
 
 **Key Metrics:**
 
-- 80% reduction in processing time
-- 97% cost reduction per document
-- Processes 500 documents/month for $17
-- ROI: 3,558% annually
+- 100% success rate on 150-document live batch test
+- 80.88% average extraction confidence
+- 97% cost reduction per document vs. manual processing
+- $6.90 total build cost
+- ROI: 3,558% annually at 500 docs/month
 
 ---
 
 ## Why I Built This
 
-[FILL IN YOUR PERSONAL MOTIVATION]
+My partner used to own three businesses at the same time — not three locations, three different businesses. For all three, he maintained invoicing manually. Spreadsheets, paper trails, hours of work every month that existed purely because no one had built him a better option.
 
-Example:
+That's the SMB reality that gets skipped in most AI conversations. I wanted to build something that made sense for a business like his.
 
-> As someone transitioning into AI/ML engineering, I wanted hands-on experience with AWS AI services. I chose document processing because it's a real business problem with measurable ROI—something I could discuss confidently in interviews.
+The other honest reason: I had just passed my AWS AI Practitioner exam with barely-basic Python skills, and I wanted to know if I could build something real — not follow a tutorial, but actually build something — using what I knew and AI as a thought partner from conception to production.
 
 ---
 
@@ -60,947 +60,158 @@ Example:
 
 ### Pre-Development Setup
 
-**Date:** January 16, 2026  
-**Time Spent:** 1 hour  
+**Date:** January 16, 2026
+**Time Spent:** 1 hour
 **Status:** ✅ Complete
 
 #### What I Did:
 
 - [x] Created AWS account (ensured Free Tier eligibility)
 - [x] Set up IAM user with proper permissions
-- [x] Enabled MFA (Multi-Factor Authentication) for security
+- [x] Enabled MFA for security
 - [x] Created CLI access keys
 - [x] Configured AWS CLI in VSCode (switched from PowerShell to Bash)
 - [x] Created cost budget alerts ($25 threshold)
 - [x] Set up environment variables (PROJECT_NAME, REGION, ACCOUNT_ID)
 - [x] Created setup.sh script for easy environment loading
 - [x] Tested CLI with test S3 bucket creation/deletion
-- [ ] Set up GitHub repository
-- [ ] Created `dev` branch for active development
-- [ ] Added comprehensive `.gitignore`
+- [x] Set up GitHub repository
+- [x] Created `dev` branch for active development
+- [x] Added comprehensive `.gitignore`
 
 #### Cost Tracker:
 
 - AWS charges so far: $0.00
 - Budget remaining: $25.00
-- Free Tier status: Active
-
-#### Notes & Observations:
-
-```
-CLI Configuration Journey:
-- Initially unfamiliar with bash/CLI but walked through step-by-step
-- Switched VSCode terminal from PowerShell to Bash for project consistency
-- Learned that environment variables reset when terminal closes - created setup.sh to solve this
-- MFA setup adds extra security layer (good practice!)
-- Test bucket creation/deletion worked perfectly - CLI is configured correctly
-- Used us-east-1 region for best Free Tier coverage
-- Access keys stored securely, not in any git repo
-
-Key Commands Learned:
-- aws configure (initial setup)
-- aws sts get-caller-identity (verify credentials)
-- aws s3 mb/rb (make/remove bucket)
-- source setup.sh (load environment variables)
-- export VARIABLE="value" (set env variables)
-
-Aha Moment:
-- Environment variables make scripts reusable and keep account IDs out of code
-- The ${VARIABLE} syntax in bash is actually pretty straightforward once you try it
-```
-
-#### Screenshots Captured:
-
-- [x] AWS Budget alert confirmation ($25 threshold, 50%, 80%, 100% alerts)
-- [x] IAM user created with MFA enabled
-- [x] CLI configuration successful (aws sts get-caller-identity output)
-- [ ] Cost Explorer enabled (will capture after 24 hours when data populates)
-
-#### Setup Files Created:
-
-```bash
-# setup.sh - Load environment variables
-#!/bin/bash
-export PROJECT_NAME="doc-processing-demo"
-export REGION="us-east-1"
-export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-echo "✅ Environment variables loaded"
-echo "PROJECT_NAME: $PROJECT_NAME"
-echo "REGION: $REGION"
-echo "ACCOUNT_ID: $ACCOUNT_ID"
-```
 
 ---
 
 ### Phase 1: S3 Bucket Configuration
 
-**Date:** January 16, 2026  
-**Time Spent:** 2 hours  
+**Date:** January 16, 2026
+**Time Spent:** 2 hours
 **Status:** ✅ Complete
 
 #### What I Did:
 
 - [x] Implemented comprehensive tagging strategy (TAGGING_STRATEGY.md)
 - [x] Updated setup.sh with tag variables for cost tracking
-- [x] Created setup.sh.example template with tagging best practices
 - [x] Created 3 S3 buckets with proper tags:
-  - doc-processing-demo-uploads-[ACCOUNT_ID]
-  - doc-processing-demo-processed-[ACCOUNT_ID]
-  - doc-processing-demo-frontend-[ACCOUNT_ID]
-- [x] Applied comprehensive tags to all buckets:
-  - Project: doc-processing-pipeline
-  - CostCenter: Project1
-  - Environment: dev
-  - Owner: YourName
-  - Component: uploads/processed/frontend
-  - CreatedDate: 2026-01-16
-  - ManagedBy: manual
+  - doc-processing-demo-uploads-848747536965
+  - doc-processing-demo-processed-848747536965
+  - doc-processing-demo-frontend-848747536965
 - [x] Enabled versioning on uploads bucket
 - [x] Configured Lambda access policy for uploads bucket
-- [x] Created lifecycle policy for cost optimization (applied via console)
+- [x] Created lifecycle policy (90 days → Glacier, applied via console)
 - [x] Tested upload/download functionality
 - [x] Committed all configuration files to Git
 
-#### Commands Used:
-
-```bash
-# Load environment with tags
-source setup.sh
-
-# Create buckets with tags
-aws s3 mb s3://${PROJECT_NAME}-uploads-${ACCOUNT_ID} --region ${REGION}
-aws s3api put-bucket-tagging \
-  --bucket ${PROJECT_NAME}-uploads-${ACCOUNT_ID} \
-  --tagging "TagSet=[{Key=Project,Value=${PROJECT_TAG}},{Key=CostCenter,Value=${COST_CENTER}},{Key=Environment,Value=${ENVIRONMENT}},{Key=Owner,Value=${OWNER}},{Key=Component,Value=uploads},{Key=CreatedDate,Value=${CREATED_DATE}},{Key=ManagedBy,Value=${MANAGED_BY}}]"
-
-# Enable versioning
-aws s3api put-bucket-versioning \
-  --bucket ${PROJECT_NAME}-uploads-${ACCOUNT_ID} \
-  --versioning-configuration Status=Enabled
-
-# Apply bucket policy
-aws s3api put-bucket-policy \
-  --bucket ${PROJECT_NAME}-uploads-${ACCOUNT_ID} \
-  --policy file://bucket-policy-uploads.json
-
-# Verify tags
-aws s3api get-bucket-tagging --bucket ${PROJECT_NAME}-uploads-${ACCOUNT_ID}
-
-# Test upload
-echo "Test" > test.txt
-aws s3 cp test.txt s3://${PROJECT_NAME}-uploads-${ACCOUNT_ID}/test/
-aws s3 ls s3://${PROJECT_NAME}-uploads-${ACCOUNT_ID}/test/
-```
-
 #### Cost Tracker:
 
-- S3 bucket creation: $0.00 (free)
-- S3 storage: $0.00 (no significant data yet)
-- S3 requests: $0.00 (minimal test uploads)
 - Running total: $0.00
 - Budget remaining: $25.00
 
 #### Challenges Faced:
 
 ```
-Challenge 1: Lifecycle policy CLI command failed
-- Command: aws s3api put-bucket-lifecycle-configuration
-- Issue: CLI command encountered configuration/syntax issues
-- Attempted troubleshooting: Checked JSON formatting, permissions, syntax
-- Solution: Applied lifecycle policy directly through AWS Console instead
-- Time spent: ~10 minutes trying CLI, 2 minutes in console
-- Lesson: Don't be dogmatic about "CLI only" - sometimes the console is faster
-  and more reliable, especially for one-time configurations during learning
-- Result: Lifecycle policy successfully configured via console:
-  * Rule: Archive documents to Glacier after 90 days
-  * Applied to: processed bucket, prefix: processed/
-  * Status: Enabled
-  * Purpose: Reduce storage costs by ~83% for old documents
-
-Challenge 2: Understanding tag structure for CLI
-- Initially confused about TagSet JSON formatting
-- Used environment variables to make it cleaner and reusable
-- Created ${TAGS} variable for easy copy-paste
-- This made applying tags to future resources much simpler
+Challenge: Lifecycle policy CLI command failed
+- Solution: Applied via AWS Console instead
+- Lesson: Don't be dogmatic about CLI only — sometimes the console is faster
 ```
-
-#### What Worked Well:
-
-```
-Success 1: Comprehensive tagging strategy from day one
-- Created TAGGING_STRATEGY.md documenting all standards
-- Used consistent tags across all resources
-- Set up for easy year-end cost analysis by project
-- Template (setup.sh.example) will help anyone following this project
-- Future me (December 2026) will thank present me!
-
-Success 2: Environment variables made everything reusable
-- setup.sh loads all configuration with one command: source setup.sh
-- No hardcoded values in any commands
-- Easy to adapt for future projects (just change variables)
-- PROJECT_NAME, REGION, ACCOUNT_ID, and all tags centralized
-
-Success 3: Git workflow running smoothly
-- Successfully using dev branch for all development
-- .gitignore protecting sensitive setup.sh file
-- Only committing safe templates (setup.sh.example)
-- Clear, descriptive commit messages following conventions
-- Good foundation for the rest of the project
-
-Success 4: Bucket policy and versioning worked perfectly via CLI
-- Policy correctly allows Lambda to read from uploads bucket
-- Versioning protects against accidental deletions/overwrites
-- Test uploads confirmed everything working
-```
-
-#### Notes & Observations:
-
-```
-Tagging Strategy - Key Insight:
-The tagging strategy I implemented will save me hours at year-end. By tagging
-every resource with Project, CostCenter, Environment, and Component, I'll be
-able to run a single command (./year-end-report.sh 2026) and see exactly how
-much each project cost. This is professional-grade AWS hygiene that most
-beginners skip.
-
-CLI vs Console - Aha Moment:
-Sometimes the "right" tool is the one that works! I tried applying the lifecycle
-policy via CLI (following infrastructure-as-code best practices), but ran into
-issues. Rather than spend 30 minutes debugging, I pivoted to the AWS Console
-and had it configured in 2 minutes.
-
-Lesson: Don't be dogmatic about "CLI only" or "Console only" - use the right
-tool for the situation. For one-time configurations during learning, the console's
-visual feedback is invaluable. For production automation, CLI/IaC is essential.
-
-In interviews, this shows adaptability and pragmatism over rigid adherence to
-"best practices." Real-world engineering is about getting things done effectively,
-not following rules blindly.
-
-Environment Variables - Best Practice:
-Using setup.sh to centralize all configuration (bucket names, region, tags) made
-this phase so much cleaner. Every command uses ${VARIABLES} instead of
-hardcoded values. This means:
-- Scripts are reusable across accounts
-- No risk of committing sensitive data to Git
-- Easy to adapt for future projects
-- Self-documenting (variable names explain their purpose)
-
-S3 Bucket Naming:
-Following the pattern {project-name}-{component}-{account-id} ensures globally
-unique names while keeping them descriptive. The account ID suffix prevents
-naming conflicts if I ever need multiple AWS accounts.
-```
-
-#### Screenshots Captured:
-
-- [x] S3 buckets in AWS Console showing all 3 buckets
-- [x] Bucket tags configuration (showing all 7 tags)
-- [x] Versioning enabled on uploads bucket
-- [x] Bucket policy JSON in console
-- [x] Lifecycle policy configuration screen (applied via console)
-- [ ] Cost Explorer (will capture after 24 hours when data populates)
 
 ---
 
-### Side Quest: Automated Tag Governance (1 hour)
+### Side Quest: Automated Tag Governance
 
-**Date:** January 16, 2026  
-**Time Spent:** 1 hour  
+**Date:** January 16, 2026
+**Time Spent:** 1 hour
 **Status:** ✅ Complete
 
 #### What I Did:
 
-- [x] Evaluated 3 tag governance options (AWS Config, Lambda automation, manual script)
-- [x] Decided on Lambda + EventBridge solution ($0.00 vs AWS Config $1/year)
+- [x] Evaluated AWS Config ($1/year) vs Lambda automation ($0.00)
 - [x] Created SNS topic for email notifications (TagAuditNotifications)
-- [x] Confirmed SNS email subscription (found in spam folder!)
 - [x] Created IAM role for Lambda (TagAuditLambdaRole)
-- [x] Attached policies (AWSLambdaBasicExecutionRole + custom TagAuditPolicy)
-- [x] Wrote Python Lambda function (tag_audit_function.py - 120 lines)
-- [x] Packaged Lambda with Python zipfile (zip command not available on Windows)
-- [x] Deployed Lambda to AWS
+- [x] Wrote Python Lambda function (tag_audit_function.py — 120 lines)
+- [x] Deployed Lambda to AWS (TagAuditFunction)
 - [x] Created EventBridge rule for weekly schedule (Mondays 9 AM UTC)
-- [x] Added Lambda invoke permission for EventBridge
-- [x] Configured EventBridge target
-- [x] Tested Lambda function manually
-- [x] Verified email notification received
-- [x] Created verification script (verify-tag-audit.sh)
-- [x] Updated cost tracker with Lambda and EventBridge line items
-- [x] Created comprehensive README.md for GitHub
+- [x] Tested manually — 100% compliance on first audit (6 resources)
+- [x] Created fix-tags.sh script for on-demand remediation
 
-#### Architecture Built:
+#### Architecture:
 
 ```
 EventBridge (Weekly: Mon 9AM UTC)
     ↓
 Lambda Function (TagAuditFunction)
-    ↓ scans all resources
+    ↓
 ResourceGroupsTaggingAPI
-    ↓ generates compliance report
+    ↓
 SNS Topic (TagAuditNotifications)
-    ↓ sends email
+    ↓
 Your Inbox 📧
-```
-
-#### Commands Used:
-
-```bash
-# Create SNS topic
-aws sns create-topic --name TagAuditNotifications --region ${REGION}
-
-# Subscribe email
-aws sns subscribe \
-  --topic-arn ${SNS_TOPIC_ARN} \
-  --protocol email \
-  --notification-endpoint your-email@example.com
-
-# Create IAM role
-aws iam create-role \
-  --role-name TagAuditLambdaRole \
-  --assume-role-policy-document file://lambda-audit-trust-policy.json
-
-# Attach policies
-aws iam attach-role-policy \
-  --role-name TagAuditLambdaRole \
-  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-
-# Package Lambda (using Python on Windows)
-python -c "import zipfile; zipfile.ZipFile('function.zip', 'w').write('tag_audit_function.py')"
-
-# Deploy Lambda
-aws lambda create-function \
-  --function-name TagAuditFunction \
-  --runtime python3.11 \
-  --role ${TAG_AUDIT_ROLE_ARN} \
-  --handler tag_audit_function.lambda_handler \
-  --zip-file fileb://lambda/tag-audit/function.zip \
-  --timeout 60 \
-  --memory-size 256 \
-  --environment "Variables={SNS_TOPIC_ARN=${SNS_TOPIC_ARN}}"
-
-# Create EventBridge schedule
-aws events put-rule \
-  --name TagAuditWeeklySchedule \
-  --schedule-expression "cron(0 9 ? * MON *)"
-
-# Add target
-aws events put-targets \
-  --rule TagAuditWeeklySchedule \
-  --targets "Id=1,Arn=${LAMBDA_ARN}"
 ```
 
 #### Cost Tracker:
 
-- SNS Topic creation: $0.00
-- SNS email notifications: $0.00 (4/month, within 1,000 free tier)
-- Lambda invocations: $0.00 (4/month, within 1M free tier)
-- Lambda compute: $0.00 (within 400K GB-seconds free tier)
-- EventBridge rules: $0.00 (first rule is free)
-- CloudWatch Logs: $0.00 (within 5GB free tier)
-- **Running total: $0.00**
-- **Savings vs AWS Config: $1.00/year**
-
-#### Challenges Faced:
-
-```
-Challenge 1: Missing IAM Permissions
-- Issue: Initially didn't have permission to create IAM roles
-- Error: AccessDenied when trying to create TagAuditLambdaRole
-- Solution: Added IAMFullAccess policy to doc-processing IAM user
-- Time spent: 5 minutes
-- Lesson: Check IAM permissions before starting infrastructure tasks
-
-Challenge 2: SNS Email Not Received
-- Issue: Subscribed to SNS topic but confirmation email never arrived
-- Attempts:
-  1. Checked email address was correct
-  2. Waited 10 minutes
-  3. Tried resubscribing
-- Solution: Found confirmation email in spam folder!
-- Time spent: 15 minutes searching
-- Lesson: Always check spam for AWS confirmation emails
-
-Challenge 3: Zip Command Not Found on Windows
-- Issue: `zip function.zip tag_audit_function.py` failed
-- Error: "zip: command not found"
-- Attempted: Git Bash doesn't have zip by default on Windows
-- Solution: Used Python's zipfile module instead (cross-platform)
-- Code: `python -c "import zipfile; zipfile.ZipFile('function.zip', 'w').write('tag_audit_function.py')"`
-- Alternative: Used PowerShell's Compress-Archive
-- Time spent: 5 minutes
-- Lesson: Always have cross-platform alternatives ready
-
-Challenge 4: Empty Environment Variables in Lambda Deploy
-- Issue: Lambda deployment failed with "Error parsing parameter '--environment'"
-- Error: "Expected: ',', received: 'EOF' for input: Variables={SNS_TOPIC_ARN=}"
-- Root cause: SNS_TOPIC_ARN variable was empty/not loaded
-- Solution: Explicitly set SNS_TOPIC_ARN before deployment
-- Time spent: 10 minutes debugging
-- Lesson: Always verify environment variables are set before using them
-```
-
-#### What Worked Well:
-
-```
-Success 1: Cost-Conscious Decision Making
-- Evaluated AWS Config ($0.08/month) vs Lambda ($0.00/month)
-- Chose Lambda automation - professional governance at zero cost
-- Added bonus: Learned Lambda, EventBridge, and SNS
-- Updated cost tracker to document decision
-
-Success 2: Lambda Function Architecture
-- Clean, well-documented Python code (120 lines)
-- Proper error handling and logging
-- Generates human-readable email reports
-- Identifies non-compliant resources by type
-- Groups violations for easy remediation
-
-Success 3: Automation Without Complexity
-- Weekly schedule (Mondays 9 AM UTC) - not too frequent, not too rare
-- Email notifications - no need to check logs manually
-- Completely serverless - no infrastructure to maintain
-- Set it and forget it - runs automatically
-
-Success 4: Documentation as I Built
-- Created README.md during the side quest
-- Updated cost tracker in real-time
-- Wrote verification script for testing
-- All tools and scripts ready for future use
-```
-
-#### Notes & Observations:
-
-```
-Tag Governance Philosophy:
-This side quest perfectly demonstrates cost-conscious engineering. AWS Config
-is the "enterprise" solution ($1/year), but for a 15-resource learning project,
-Lambda automation achieves the same governance goal at $0 while teaching three
-new AWS services. Sometimes the DIY solution is better than the turnkey one.
-
-AWS Free Tier is Generous:
-- Lambda: 1M requests/month (using 4 = 0.0004%)
-- SNS: 1,000 emails/month (using 4 = 0.4%)
-- EventBridge: First rule free
-This governance system will NEVER cost money at current usage levels.
-
-Professional-Grade Governance:
-Weekly automated audits with email reports is exactly what production teams use.
-The fact that it costs $0 doesn't make it less professional - it makes it smarter.
-This demonstrates operational maturity and cost optimization skills.
-
-Cross-Platform Development:
-Working on Windows revealed platform-specific issues (zip command, environment
-variables). Building workarounds (Python zipfile, explicit variable setting)
-shows adaptability and problem-solving skills.
-
-Learning Through Building:
-Instead of just reading documentation about Lambda, EventBridge, and SNS, I
-built a real, useful automation tool. The learning sticks better when solving
-actual problems.
-```
-
-#### First Audit Results:
-
-```
-Total Resources Scanned: 6
-- S3 buckets: 3
-- SNS topics: 1
-- IAM roles: 1
-- Lambda functions: 1
-
-Compliant Resources: 6 (100%)
-Non-Compliant Resources: 0
-
-✅ All resources properly tagged!
-
-Tags verified on all resources:
-- Project: doc-processing-pipeline
-- CostCenter: Project1
-- Environment: dev
-- Owner: [Your Name]
-- Component: uploads/processed/frontend/monitoring
-- CreatedDate: 2026-01-16
-- ManagedBy: implem
-```
-
-#### Screenshots Captured:
-
-- [x] SNS topic created in console
-- [x] Email subscription confirmed
-- [x] Lambda function deployed
-- [x] EventBridge rule configuration
-- [x] Sample email audit report
-- [x] CloudWatch logs showing successful execution
-- [x] First audit results (100% compliance)
-
-#### Files Created:
-
-- `lambda/tag-audit/tag_audit_function.py` (120 lines)
-- `lambda-audit-trust-policy.json` (IAM trust policy)
-- `tag-audit-policy.json` (custom IAM policy)
-- `verify-tag-audit.sh` (verification script)
-- `README.md` (comprehensive project documentation)
-- Updated `AWS_Project_Cost_Tracker.xlsx` (added Lambda + EventBridge costs)
-- Updated `TAGGING_STRATEGY.md` (added governance section)
-
-#### Key Learnings for Substack Article:
-
-```
-1. "Automated governance without AWS Config"
-   Instead of enabling AWS Config ($1/year), I built a Lambda function that
-   audits tags weekly and emails me reports—staying within Free Tier ($0) while
-   learning Lambda, EventBridge, and SNS. Sometimes the DIY solution teaches
-   more than the turnkey one.
-
-2. "Cost-conscious engineering is intentional, not cheap"
-   Choosing Lambda over AWS Config wasn't about being cheap—it was about being
-   intentional. For 15 resources, automated weekly audits are sufficient. The
-   saved dollar goes toward actual compute costs instead.
-
-3. "Platform-specific challenges build resilience"
-   Working on Windows revealed issues (zip command, Git Bash quirks) that Linux
-   users wouldn't face. Building cross-platform workarounds (Python zipfile,
-   PowerShell alternatives) demonstrates adaptability.
-
-4. "Learning by solving real problems"
-   This wasn't just "Lambda tutorial" - I built actual governance automation
-   that will run every week for the next year. The learning sticks better when
-   solving genuine operational needs.
-```
+- All within Free Tier
+- Savings vs AWS Config: $1.00/year
+- Running total: $0.00
 
 ---
 
 ### Phase 2: Lambda Function Development
 
-**Date:** January 17, 2026  
-**Time Spent:** 3 hours  
+**Date:** January 17, 2026
+**Time Spent:** 3 hours
 **Status:** ✅ Complete
 
 #### What I Did:
 
-- [x] Created IAM role for Lambda with proper permissions (DocProcessingLambdaRole)
-- [x] Attached policies: AWSLambdaBasicExecutionRole, S3FullAccess, TextractFullAccess, ComprehendFullAccess
-- [x] Wrote document_processor.py (200+ lines with Textract + Comprehend integration)
-- [x] Packaged Lambda function with boto3 dependencies (used PowerShell - see challenges!)
-- [x] Deployed Lambda function to AWS (DocumentProcessor)
+- [x] Created IAM role (DocProcessingLambdaRole) with S3, Textract, Comprehend permissions
+- [x] Wrote document_processor.py (200+ lines)
+- [x] Packaged and deployed Lambda (DocumentProcessor)
 - [x] Configured S3 trigger on uploads bucket
 - [x] Created test invoice image using Python PIL
 - [x] Tested end-to-end: upload → extract → analyze → save results
-- [x] Verified CloudWatch logs showing successful processing
-- [x] Confirmed extracted data in processed bucket as properly formatted JSON
-
-#### Commands Used:
-
-```bash
-# IAM Role Creation
-aws iam create-role --role-name DocProcessingLambdaRole \
-  --assume-role-policy-document file://lambda-trust-policy.json
-
-# Attach Policies (x4 policies for Lambda, S3, Textract, Comprehend)
-aws iam attach-role-policy --role-name DocProcessingLambdaRole \
-  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-aws iam attach-role-policy --role-name DocProcessingLambdaRole \
-  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
-aws iam attach-role-policy --role-name DocProcessingLambdaRole \
-  --policy-arn arn:aws:iam::aws:policy/AmazonTextractFullAccess
-aws iam attach-role-policy --role-name DocProcessingLambdaRole \
-  --policy-arn arn:aws:iam::aws:policy/ComprehendFullAccess
-
-# Package Lambda with PowerShell (Windows workaround)
-# In PowerShell terminal:
-Remove-Item function.zip -ErrorAction SilentlyContinue
-Compress-Archive -Path .\package\* -DestinationPath function.zip
-Compress-Archive -Path document_processor.py -Update -DestinationPath function.zip
-
-# Lambda Deployment
-aws lambda create-function \
-  --function-name DocumentProcessor \
-  --runtime python3.11 \
-  --role ${ROLE_ARN} \
-  --handler document_processor.lambda_handler \
-  --zip-file fileb://function.zip \
-  --timeout 60 \
-  --memory-size 512 \
-  --environment "Variables={PROCESSED_BUCKET=${PROCESSED_BUCKET}}"
-
-# S3 Trigger Configuration
-aws lambda add-permission --function-name DocumentProcessor \
-  --statement-id S3InvokeFunction \
-  --action lambda:InvokeFunction \
-  --principal s3.amazonaws.com \
-  --source-arn arn:aws:s3:::${UPLOAD_BUCKET}
-
-aws s3api put-bucket-notification-configuration \
-  --bucket ${UPLOAD_BUCKET} \
-  --notification-configuration file://s3-notification.json
-
-# Test by uploading invoice image
-python << 'EOF'
-from PIL import Image, ImageDraw, ImageFont
-# ... image generation code ...
-EOF
-
-aws s3 cp test-invoice.png s3://${UPLOAD_BUCKET}/uploads/
-aws logs filter-log-events --log-group-name "/aws/lambda/DocumentProcessor" --start-time $(($(date +%s) - 300))000
-aws s3 cp s3://${PROCESSED_BUCKET}/processed/test-invoice.png.json - | python -m json.tool
-```
+- [x] Verified CloudWatch logs and processed JSON output
 
 #### Cost Tracker:
 
-- Lambda invocations: $0.00 (Free Tier: 1M requests/month, used <10)
-- Lambda compute time: $0.00 (Free Tier: 400K GB-seconds)
-- Textract API calls: $0.00 (Free Tier: 1,000 pages first 3 months, used 1 page)
-- Comprehend API calls: $0.00 (Free Tier: 50K units first 12 months, used <100 units)
-- CloudWatch Logs: $0.00 (Free Tier: 5GB/month, used <1MB)
-- **Phase 2 Total: $0.00**
-- **Running total: $0.00**
+- Phase 2 total: $0.00
+- Running total: $0.00
 
 #### Challenges Faced:
 
 ```
-Challenge 1: The Great Windows Zip Command Saga (30 minutes of my life I'll never get back)
-- Issue: Automated deployment scripts failed with "zip: command not found"
-- Context: Git Bash on Windows doesn't include zip utility (because of course it doesn't)
-- Initial Attempt: "I'll just write a cross-platform Python script!" (narrator: this was hubris)
-- The Weeds: Spent 20 minutes debugging Python zipfile paths, Windows backslashes, and
-  environment variables while questioning all my life choices
-- Moment of Clarity: "Wait... why am I debugging automation scripts when PowerShell exists?"
-- Solution: Abandoned the automation rabbit hole, used PowerShell's Compress-Archive (2 commands)
-- Time to solution: 5 minutes once I stopped being clever
-- Lesson: Sometimes the fastest path forward is abandoning "perfect automation" for "thing
-  that actually works." Most AWS tutorials assume Linux. Real development on Windows means
-  accepting that you'll occasionally need to fight with path separators and missing utilities.
-  The real skill isn't having perfect scripts - it's knowing when to pivot.
-
-Challenge 2: IAM Permissions Speedbump
-- Issue: "AccessDenied" when trying to create DocProcessingLambdaRole
-- Cause: My IAM user didn't have permissions to create roles (oops)
-- Solution: Added IAMFullAccess policy via AWS Console
-- Time spent: 5 minutes
-- Lesson: Always verify IAM permissions before starting. For development, broad permissions
-  (IAMFullAccess) are fine. Production requires least-privilege policies.
-
-Challenge 3: CloudWatch Logs vs. Git Bash Path Translation
-- Issue: Log group path "/aws/lambda/DocumentProcessor" auto-converted to Windows path
-- Error: "Value 'C:/Program Files/Git/aws/lambda/DocumentProcessor' failed constraint"
-- Solution: Wrap log group names in quotes, or just use AWS Console
-- Lesson: Git Bash on Windows has quirky path translation. When AWS CLI complains about
-  paths, try quotes first.
-
-Challenge 4: "Why Won't Textract Read My Text File?" (A Brief Mystery)
-- Issue: UnsupportedDocumentException when processing test-document.txt
-- Root Cause: Textract only supports PDF, JPG, PNG - not plain text (reasonable, actually)
-- Solution: Generated realistic invoice image (800x1000 PNG) using Python PIL/Pillow
-- Result: Beautiful programmatically-created invoice with company name, line items, totals
-- Lesson: Always verify supported formats before creating test data. Textract does OCR on
-  images/PDFs - feeding it plain text is like asking a camera to photograph sound.
+Challenge: zip command not found on Windows Git Bash
+- Solution: Used PowerShell Compress-Archive instead of debugging automation
+- Lesson: Ship first, optimize later — the goal was a deployed Lambda, not perfect scripts
 ```
-
-#### What Worked Well:
-
-```
-Success 1: Pragmatism Beats Perfectionism
-- Manual PowerShell + AWS CLI deployment took 20 minutes vs. hours debugging automation
-- Lambda deployed successfully, S3 trigger configured correctly, everything working
-- Takeaway: The best solution is the one that ships. You can optimize later.
-
-Success 2: Lambda Code Worked On First Deploy (shocking, I know)
-- document_processor.py (200+ lines) deployed without any code modifications
-- Textract extracted text, forms, and key-value pairs correctly
-- Comprehend detected entities, sentiment, and key phrases as expected
-- Error handling and CloudWatch logging performed perfectly
-- This proves the value of working from well-tested examples
-
-Success 3: Event-Driven Architecture Just Works™
-- S3 → Lambda trigger configured correctly on first attempt
-- Upload document → automatic processing (no polling, no cron, no complexity)
-- Results appeared in processed bucket within seconds
-- This is the power of serverless: focus on logic, not infrastructure
-
-Success 4: Python PIL for Test Data Generation
-- Programmatically created realistic 800x1000 invoice image
-- Included: company header, invoice number, line items, subtotals, totals
-- Textract successfully extracted ALL text and recognized form structure
-- Reusable approach for future testing without needing real documents
-
-Success 5: Free Tier Coverage (AWS really is generous)
-- Lambda: 1M requests/month (used 10 = 0.001%)
-- Textract: 1,000 pages/3 months (used 1 = 0.1%)
-- Comprehend: 50K units/12 months (used 100 = 0.2%)
-- Total Phase 2 cost: $0.00 ✅
-```
-
-#### Notes & Observations:
-
-```
-Windows Development: The Hidden Cost of Cross-Platform Tutorials
-Most AWS tutorials live in a Linux utopia where `zip` commands work and paths use forward
-slashes. Working on Windows revealed the gaps: Git Bash lacks zip, path translation breaks
-CloudWatch commands, PowerShell handles archives differently. The solution wasn't fighting
-Windows - it was embracing native tools (PowerShell for packaging) while using cross-
-platform tools (AWS CLI) where they excel.
-
-In interviews, this demonstrates:
-• Adaptability: Pivoting quickly when blocked
-• Platform awareness: Understanding OS-specific tooling
-• Pragmatism: Choosing simplicity over dogmatism
-• Real-world experience: These are the actual issues devs encounter
-
-Lambda Function Architecture: Serverless in the Wild
-The document_processor.py function showcases event-driven serverless architecture:
-• S3 upload → automatic Lambda trigger (zero polling logic needed)
-• Async processing that scales automatically (1 doc or 10,000, same code)
-• Results saved to separate S3 bucket (clean separation of concerns)
-• Comprehensive CloudWatch logging (full operational visibility)
-
-What this eliminates:
-✗ Server provisioning and capacity planning
-✗ Load balancers and auto-scaling configuration
-✗ Process monitoring and restart logic
-✗ Infrastructure maintenance windows
-
-The pipeline processes documents at $0.034 each with zero operational overhead. That's
-the serverless promise delivered.
-
-Textract + Comprehend: When 1 + 1 = 3
-Textract alone extracts text, forms, and tables from images/PDFs (OCR on steroids).
-Comprehend alone analyzes text for entities, sentiment, and key phrases (NLP in a box).
-Together they transform: Unstructured document → Structured, analyzable, searchable data.
-
-Example flow:
-1. Invoice image uploaded
-2. Textract extracts: "Invoice #12345, Date: Jan 17, Amount: $6,210.00"
-3. Comprehend identifies: Invoice# (OTHER entity), Date (DATE entity), Amount (QUANTITY)
-4. Result: Structured JSON ready for database insert or business logic
-
-This combination turns a manual 3-minute data entry task into a 30-second automated process.
-
-The Weeds: A Cautionary Tale with a Happy Ending
-Phase 2's automation detour taught me something valuable about problem-solving. After 20
-minutes debugging cross-platform packaging scripts, I had a moment of clarity: "Am I
-optimizing for the right outcome?" The goal wasn't "perfect automation scripts" - it was
-"deployed Lambda function." Once I reframed the problem, the solution became obvious: use
-PowerShell, deploy, move on.
-
-This is the difference between being blocked and being productive. Sometimes you need to
-recognize when you're solving the wrong problem. Perfect automation is great for production
-infrastructure deployed 100 times. For a learning project deployed once, manual commands
-that work beat automated scripts that don't.
-
-The lesson: Don't let perfect be the enemy of done. Ship first, optimize later.
-```
-
-#### Screenshots Captured:
-
-- [x] IAM Role (DocProcessingLambdaRole) showing attached policies
-- [x] Lambda function in AWS Console (Configuration tab)
-- [x] Lambda environment variables (PROCESSED_BUCKET set correctly)
-- [x] Lambda monitoring tab (invocations, duration, success rate)
-- [x] S3 bucket notification configuration (showing Lambda trigger)
-- [x] CloudWatch Logs showing successful document processing
-- [x] Test invoice image (input): 800x1000 PNG with realistic invoice data
-- [x] Processed JSON results (output): showing Textract extractions + Comprehend analysis
-- [x] Cost Explorer showing $0.00 charges for Phase 2
-- [x] S3 bucket contents (uploads/ and processed/ directories)
-
-#### Files Created:
-
-- `document_processor.py` (200+ lines) - Main Lambda function with Textract/Comprehend
-- `lambda-trust-policy.json` (IAM trust policy for Lambda execution role)
-- `function.zip` (15MB packaged deployment with boto3 dependencies)
-- `s3-notification.json` (S3 event configuration linking uploads to Lambda)
-- `test-lambda-image.sh` (test script that generates invoice image and uploads)
-- `package/` directory (boto3, botocore, jmespath, s3transfer for Lambda runtime)
-
-#### Key Learnings for Substack Article:
-
-```
-1. "When automation becomes the problem, not the solution"
-   Debugging cross-platform packaging scripts for 20 minutes taught me a valuable lesson:
-   sometimes the "engineering" move is admitting you're solving the wrong problem. Switched
-   to PowerShell, deployed in 5 minutes. Engineering isn't about perfect tools - it's about
-   shipping working solutions.
-
-2. "Platform differences are real, and tutorials lie by omission"
-   Most AWS guides assume Linux. Windows developers face: missing zip, path translation
-   issues, PowerShell vs Bash quirks. Solution: hybrid tooling (native tools where they
-   excel, AWS CLI for cross-platform). This isn't a workaround - it's smart engineering.
-
-3. "Free Tier isn't marketing fluff - it's genuinely useful"
-   Entire Phase 2 cost: $0.00. Lambda (1M requests), Textract (1,000 pages), Comprehend
-   (50K units) - all free for development. You can build and test production-grade
-   infrastructure without spending a cent.
-
-4. "Event-driven architecture: the infrastructure you don't have to manage"
-   S3 upload → Lambda trigger → processing → results. Zero servers, zero polling, zero
-   complexity. Scales from 1 to 10,000 documents without code changes. This is why
-   serverless matters.
-
-5. "Getting unstuck: the skill tutorials don't teach"
-   The packaging detour wasn't wasted time - it taught me to recognize when I'm optimizing
-   for the wrong outcome. After 20 minutes in the weeds, I asked: "What's the actual goal?"
-   Answer: deployed Lambda, not perfect scripts. That question saved hours.
-```
-
----
 
 ---
 
 ### Phase 3: Textract Integration Deep Dive
 
-**Date:** January 31, 2026  
-**Time Spent:** 3 hours  
+**Date:** January 31, 2026
+**Time Spent:** 3 hours
 **Status:** ✅ Complete
 
-#### What I Did:
+#### Testing Results:
 
-- [x] Selected 15 diverse test documents (9 invoices, 6 receipts)
-- [x] Created automated testing toolkit (4 scripts)
-- [x] Uploaded all 15 documents to S3
-- [x] Verified Lambda processing for each document
-- [x] Analyzed Textract extraction accuracy
-- [x] Measured Comprehend entity detection
-- [x] Tracked processing times and costs
-- [x] Documented all results in comprehensive template
-
-#### Testing Results Summary:
-
-**Documents Tested:** 15 total
-
-- Simple: 4 documents (100% success)
-- Medium: 8 documents (100% success)
-- Complex: 3 documents (0% success - Textract compatibility issue)
-
-**Success Rate:** 12/15 (80%)
-
-**Performance Metrics:**
-
-- Average Processing Time: ~30-60 seconds
-- Average Entities Detected: 21.4 per document
-- Average Confidence Score: 94.9%
-- Total Cost: $0.038 for 15 documents
-- Cost per Document: $0.003170
-
-**Cost Projections:**
-
-- 500 documents/month: $1.59/month
-- Annual (500 docs/month): $19.08/year
-- ROI vs Manual Processing: 519% annually
-
-#### Key Findings:
-
-**✅ What Worked Excellently:**
-
-1. **High Accuracy on Standard Documents**
-   - 94.9% average confidence across successful extractions
-   - Consistent performance on receipts and invoices
-   - Entity detection averaged 21.4 per document
-   - All documents processed in under 60 seconds
-
-2. **Cost Efficiency**
-   - $0.003170 per document (97% cheaper than manual at $1.25)
-   - Well within Free Tier for testing phase
-   - Scales economically for production
-
-3. **Reliable Processing**
-   - 100% success rate on simple/medium complexity documents
-   - Consistent sentiment analysis (all Neutral)
-   - No Lambda timeout errors
-
-**⚠️ What Struggled:**
-
-1. **PDF Format Compatibility Issues**
-   - 20% failure rate (3/15 documents)
-   - All failures were complex invoices (>3,700 bytes)
-   - Error: `UnsupportedDocumentException` from Textract
-   - Root cause: PDF encoding/format incompatibility
-   - Documents are valid (readable in PDF viewers) but Textract cannot process them
-
-2. **Document Complexity Correlation**
-   - 100% success on documents <3,700 bytes
-   - 0% success on documents >3,700 bytes
-   - File size appears to correlate with PDF format complexity
-
-#### Production Recommendations:
-
-1. **Implement PDF Pre-validation**
-   - Check PDF format before sending to Textract
-   - Route incompatible formats to alternative processing
-   - Estimated implementation: 2-3 hours
-
-2. **Add PDF Normalization Pipeline**
-   - Use PyPDF2 or Ghostscript to rewrite PDFs
-   - Convert to Textract-compatible format before processing
-   - Fallback to OCR pipeline (pdf2image + Tesseract) for stubborn formats
-   - Estimated implementation: 4-6 hours
-
-3. **Enhanced Error Handling**
-   - Graceful failure notifications to users
-   - Retry logic with automatic format conversion
-   - Clear messaging about supported formats
-   - Estimated implementation: 2 hours
-
-#### Tools Created:
-
-**Testing Scripts:**
-
-1. `select-test-documents.py` - Selects diverse subset from 150 mock documents
-2. `upload-document.sh` - Uploads single document to S3 with timing
-3. `check-results.py` - Verifies processing and displays metrics
-4. `generate-test-documents.py` - Generates new test documents (bonus)
-
-**Documentation:**
-
-- `Phase3_Test_Results_Template.md` - Comprehensive tracking spreadsheet
-- `PHASE3_TESTING_GUIDE.md` - Step-by-step workflow
-- `PHASE3_TOOLKIT_SUMMARY.md` - Tool descriptions and setup
+- Documents tested: 15 (9 invoices, 6 receipts)
+- Success rate: 80% (12/15)
+- Failures: 3 complex PDFs — UnsupportedDocumentException
+- Average confidence: 94.9%
+- Cost per document: $0.003170
 
 #### Cost Tracker:
 
-- S3 uploads: $0.00 (negligible)
-- S3 storage: $0.00 (minimal)
-- Lambda invocations: $0.00 (15 invocations, within Free Tier)
-- Textract: $0.00 (15 pages, within 1,000 page/month Free Tier)
-- Comprehend: $0.038 (within 50K unit/month Free Tier)
-- **Running total: $0.038**
-- **Budget remaining: $24.96**
+- Comprehend: $0.038
+- Running total: $0.038
+- Budget remaining: $24.96
 
-#### Screenshots Captured:
-
-- [x] Upload script output showing S3 paths
-- [x] Check-results.py output with metrics
-- [x] Sample extracted JSON (invoice)
-- [x] Sample extracted JSON (receipt)
-- [x] Textract error for unsupported PDF
-- [x] Phase 3 cost breakdown
-
-#### Challenges Faced:
-
-Challenge 1: Windows Path Compatibility
-
-- Issue: Scripts had Linux paths (/home/claude/)
-- Solution: Updated all paths to relative paths (./test-documents/)
-- Time spent: 15 minutes
-- #### Lesson: Always use relative paths for cross-platform compatibility
-
-Challenge 2: Git Bash vs PowerShell
-
-- Issue: upload-document.sh is bash script, won't run in PowerShell
-- Solution: Used Git Bash terminal for all script execution
-- Alternative: Could create PowerShell .ps1 version
-  Time spent: 5 minutes troubleshooting
-- #### Lesson: Document required shell environment for scripts
-
-Challenge 3: Textract PDF Compatibility
-
-- Issue: 3 complex documents failed with UnsupportedDocumentException
-- Investigation: PDFs are valid and readable, but incompatible with Textract
-- Root cause: PDF format/encoding that Textract doesn't support
-- Impact: 20% failure rate
-- Solution: Proposed PDF normalization preprocessing step
-- Time spent: 30 minutes investigating
-- #### Lesson: Always test with edge cases and document failures
+---
 
 ### Phase 4: Lambda Optimization & PDF Preprocessing
 
@@ -1008,110 +219,36 @@ Challenge 3: Textract PDF Compatibility
 **Time Spent:** 2 hours
 **Status:** ✅ Complete
 
-#### Goal:
-
-Fix the 20% failure rate from Phase 3 by adding PDF preprocessing before Textract ingestion.
-3 complex PDFs failed with `UnsupportedDocumentException` — Phase 4 resolves this.
-
 #### What I Did:
 
-- [x] Built PyPDF2 Lambda layer (lambda/layers/pypdf2/)
-- [x] Installed PyPDF2 3.0.1 using Python 3.11 to match Lambda runtime
-- [x] Zipped layer using Python shutil (zip not available on Windows Git Bash)
-- [x] Deployed layer to AWS (pypdf2-layer:1)
-- [ ] Attach layer to DocumentProcessor Lambda function
-- [ ] Write PDF validation function
-- [ ] Implement PDF normalization logic
-- [ ] Update Lambda handler with preprocessing
-- [ ] Re-test 3 failed documents
-- [ ] Full regression test (all 15 documents)
-- [ ] Update cost tracker
+- [x] Built PyPDF2 Lambda layer (python3.11, 715KB)
+- [x] Deployed layer (pypdf2-layer:1, ARN: arn:aws:lambda:us-east-1:848747536965:layer:pypdf2-layer:1)
+- [x] Attached layer to DocumentProcessor
+- [x] Wrote PDF validation and normalization logic in document_processor.py
+- [x] Re-tested 3 failed documents — preprocessing worked, Textract still rejected them
+- [x] Deliberate decision: ship at 80% with documented remediation path (pdf2image + poppler)
+- [x] Full regression test — 12 previously passing documents still pass
 
 #### Architecture Change:
 
 ```
-BEFORE (Phase 3):
-S3 Upload → Lambda → Textract (20% failure on complex PDFs)
-
-AFTER (Phase 4):
-S3 Upload → Lambda → PyPDF2 Preprocessing → Textract (target: 100% success)
-```
-
-#### Layer Details:
-
-```
-Layer Name: pypdf2-layer
-Version: 1
-ARN: arn:aws:lambda:us-east-1:848747536965:layer:pypdf2-layer:1
-Runtime: python3.11
-Package: PyPDF2 3.0.1
-Size: 715KB
-Note: AWS does not support tagging Lambda layers — tracked here instead.
-```
-
-#### Key Learnings So Far:
-
-```
-Lambda Layers - Mental Model:
-Layers are pre-loaded kitchen tools. Instead of shipping all dependencies
-with every function deployment, layers mount to /opt/ at runtime and are
-shared across functions. Stable dependencies (PyPDF2) belong in layers;
-volatile business logic belongs in the function itself.
-
-When to use layers:
-- Multiple Lambda functions need the same dependency
-- Large dependencies that change rarely (PyPDF2, Pandas, NumPy)
-- Sharing internal utilities across a team or org
-- Approaching Lambda's 50MB deployment package size limit
-
-Python Version Matching:
-Always match local Python version to Lambda runtime. Building a layer with
-Python 3.13 locally but running Python 3.11 in Lambda causes silent failures
-for packages with C extensions. PyPDF2 is pure Python so it's forgiving,
-but this habit is critical for packages like Pandas or NumPy.
-
-pip --target flag:
-Installs packages to a specific folder instead of the global Python
-environment. Essential pattern for Lambda layer packaging.
-
-AWS Layer Tagging Limitation:
-AWS does not support tagging Lambda layers — only Lambda functions.
-Workaround: document layer resources in config files or the dev log.
-
-Windows Git Bash - zip not available:
-Used Python shutil.make_archive() as a cross-platform alternative.
-Pattern: when a CLI tool is missing, Python stdlib almost always has an equivalent.
+BEFORE: S3 Upload → Lambda → Textract (20% failure)
+AFTER:  S3 Upload → Lambda → PyPDF2 Preprocessing → Textract (80% — preprocessing foundation in place)
 ```
 
 #### Challenges Faced:
 
 ```
-Challenge 1: Python Version Mismatch
-- Issue: Local Python 3.13 compiled .pyc files incompatible with Lambda 3.11
-- Detection: cpython-313 in .pyc filenames after install
-- Solution: Wiped folder, installed Python 3.11, reinstalled with explicit path
-- Lesson: Always verify python --version matches Lambda runtime before building layers
-
-Challenge 2: Python 3.11 Not on PATH After Install
-- Issue: python3.11 command not found even after installing Python 3.11
-- Root cause: Windows installer did not add versioned executable to PATH
-- Solution: Used full path /c/Users/carla/AppData/Local/Programs/Python/Python311/python.exe
-- Lesson: On Windows, use full paths for specific Python versions
-
-Challenge 3: pip not included with Python 3.11 install
-- Solution: python3.11 -m ensurepip --upgrade
-- Lesson: Always bootstrap pip on fresh Python installs
-
-Challenge 4: zip command not available on Windows Git Bash
-- Solution: Python shutil.make_archive() — cross-platform and reliable
-- Lesson: Python stdlib is a reliable fallback for missing CLI tools on Windows
+Challenge: PyPDF2 preprocessing worked perfectly — Textract still rejected the same 3 PDFs
+- Root cause: Problem was deeper than normalization — fundamental PDF encoding incompatibility
+- Decision: Document limitation, define remediation path (pdf2image + poppler), ship at 80%
+- Lesson: Not every test has to come back 100%. 80% with a documented path to 100% is honest.
 ```
 
 #### Cost Tracker:
 
-- Lambda layer storage: $0.00 (within Free Tier)
+- Phase 4 total: $0.00
 - Running total: $0.038
-- Budget remaining: $24.96
 
 ---
 
@@ -1120,386 +257,246 @@ Challenge 4: zip command not available on Windows Git Bash
 **Date:** March 6, 2026
 **Time Spent:** ~2 hours
 **Status:** ✅ Complete
-**Tag:** phase-5-complete
 
 #### What I Did:
 
 - [x] Built DocFlow static frontend (index.html, styles.css, app.js)
-- [x] Implemented drag-and-drop upload with file validation (PDF/JPG/PNG, 10MB limit)
-- [x] Built animated progress ring with 4 pipeline step indicators (S3 → Textract → Comprehend → Store)
-- [x] Built results cards showing extracted Textract fields, entities, sentiment bars, S3 key
-- [x] Built stats bar tracking docs processed, avg time, success rate, estimated cost
-- [x] Simulated pipeline at 80% success rate matching Phase 3/4 actuals
-- [x] Pre-wired Phase 6 API stubs in app.js (CONFIG.SIMULATE flag ready to flip)
-- [x] Fixed style.css → styles.css filename typo
+- [x] Drag-and-drop upload with file validation (PDF/JPG/PNG, 10MB limit)
+- [x] Animated progress ring with 4 pipeline step indicators
+- [x] Result cards showing extracted fields, entities, sentiment, S3 key
+- [x] Stats bar: docs processed, avg time, success rate, estimated cost
+- [x] CONFIG.SIMULATE = true (Phase 6 API stubs pre-wired)
 - [x] Deployed to S3 static website hosting
-- [x] Configured public access block + bucket policy
-- [x] Recorded 1-minute demo video (90% success rate on 10 docs)
-- [x] Updated portfolio project cards (copy, tags, DocFlow screenshot)
-- [x] Committed, tagged, merged to main
-
-#### Design Decisions:
-
-```
-Dark theme with grid background — matches technical/engineering aesthetic
-DM Mono for data fields — clearly separates labels from values
-Progress ring over spinner — shows actual progress not just "loading"
-Pipeline breadcrumb (S3 → Lambda → Textract → Comprehend → Output) —
-  educates viewers about the architecture while they wait
-Failure cards kept intentional — honest 80% rate, shows UnsupportedDocumentException
-  with documented remediation path from Phase 4
-Stats bar always visible — immediate value signal for portfolio viewers
-CONFIG.SIMULATE flag — clean separation between Phase 5 UI and Phase 6 API wiring
-```
-
-#### S3 Deployment:
-
-```
-Bucket: doc-processing-demo-frontend-848747536965
-URL: http://doc-processing-demo-frontend-848747536965.s3-website-us-east-1.amazonaws.com
-Public access block: disabled (frontend bucket only — by design)
-Bucket policy: PublicReadGetObject
-Content-type headers set explicitly on upload (critical for browser rendering)
-cache-control: no-cache on HTML/JS, max-age=3600 on CSS
-```
-
-#### Challenges Faced:
-
-```
-Challenge 1: style.css vs styles.css filename mismatch
-- Issue: File uploaded as style.css but index.html referenced styles.css
-- Impact: CSS not loading, unstyled page
-- Solution: Renamed locally, re-uploaded with corrected filename
-- Lesson: Always verify filenames match exactly before deploying
-
-Challenge 2: S3 BlockPublicPolicy error on bucket policy
-- Issue: AccessDenied when calling PutBucketPolicy — BlockPublicPolicy setting
-- Solution: Disabled public access block first, then applied bucket policy
-- Lesson: S3 public access block must be explicitly disabled before public
-  bucket policies can be applied — this is intentional AWS security behavior
-  Note: Only appropriate for frontend/static asset buckets, never uploads/processed buckets
-```
-
-#### Key Learnings:
-
-```
-aws s3 cp source destination — same as Unix cp but crosses local ↔ S3 boundary
---content-type flag is critical — without it S3 serves HTML as plain text
---cache-control "no-cache" on HTML/JS ensures browsers always fetch fresh copy
-S3 Block Public Access — four separate settings, all must be false for public hosting
-Production pattern: CloudFront → private S3 (Origin Access Control) instead of public bucket
-Phase 6 presigned URL pattern — Lambda generates temporary signed URL,
-  browser uploads directly to S3, no credentials exposed client-side
-```
-
-#### Demo Video:
-
-```
-Length: ~1 minute
-Success rate shown: 90% (10 docs, 1 failure)
-Structure: single doc first → bulk processing (shows both use cases)
-Platform: Loom (browser extension)
-Scheduled posts: LinkedIn, Instagram, Substack (captions drafted)
-```
-
-#### Portfolio Updates:
-
-```
-Updated project cards: Cloud Resume Challenge, FinOps Case Study,
-  Cloud Governance Playbook, Doc Processing Pipeline
-Changes: new copy (value-first format), tightened tags, DocFlow screenshot added
-Governance Playbook title updated: "The Cloud Governance Playbook I Wish Existed When I Started"
-```
+- [x] Recorded 1-minute Loom demo video
 
 #### Cost Tracker:
 
-- S3 static hosting: $0.00 (within Free Tier)
-- S3 PUT requests (file uploads): $0.00 (within Free Tier)
+- Phase 5 total: $0.00
 - Running total: $0.038
-- Budget remaining: $24.962
 
-#### Screenshots Captured:
-
-- [x] DocFlow frontend live (portfolio card image)
-- [x] Demo video recorded (10 docs, 90% success rate)
-- [x] LinkedIn engagement — peer validation from Full Stack Developer
-
-#### Side Quest: GitHub Repo Restructure
-
-```
-Status: Completed
-Goal: Flattened theDovelyDev/theDovelyDev → theDovelyDev/theprojectfolder (no wrapper folder)
-```
+---
 
 ### Phase 6: API Gateway Integration
 
-**Date:** 2026-03-18 / 2026-03-19  
-**Time Spent:** ~2.5 hours  
-**Status:** [x] Complete
+**Date:** 2026-03-18 / 2026-03-19
+**Time Spent:** ~2.5 hours
+**Status:** ✅ Complete
 
 #### What I Did:
 
 - [x] Created REST API (doc-processing-api, REGIONAL, ID: 0r8p6ap199)
-- [x] Set up POST /upload endpoint → APIUploadHandler Lambda
-- [x] Set up GET /results endpoint → APIResultsHandler Lambda
-- [x] Configured CORS on both resources (API Gateway + Lambda response headers)
-- [x] Created and deployed APIUploadHandler and APIResultsHandler Lambda functions
+- [x] POST /upload → APIUploadHandler Lambda
+- [x] GET /results → APIResultsHandler Lambda
+- [x] CORS configured on both resources (API Gateway + Lambda response headers)
 - [x] Deployed to production stage
-- [x] Updated frontend with live API endpoint, flipped CONFIG.SIMULATE to false
-- [x] Applied resource tags to both Lambdas and API Gateway
-- [x] Smoke tested via CLI and UI — confirmed end-to-end
-- [x] Verified uploads and results in S3, confirmed invocations in CloudTrail
+- [x] Flipped CONFIG.SIMULATE to false
+- [x] Frontend redeployed with live API endpoint
+- [x] Tags applied to all new resources
+- [x] Smoke tested via CLI and UI — 94.74% confidence on first real document
+- [x] Verified in S3 and CloudTrail
 
-#### API Testing:
+#### API Smoke Test:
+
 ```bash
 curl -X POST https://0r8p6ap199.execute-api.us-east-1.amazonaws.com/prod/upload \
   -H "Content-Type: application/json" \
   -d '{"fileName": "invoice_069_INV-2025-9308.pdf", "fileContent": "[base64]", "contentType": "application/pdf"}'
 
 Response: {"message": "File uploaded successfully", "documentId": "3e618659-8fc7-4f2c-81b3-2428b64732b6", "s3Key": "uploads/3e618659-8fc7-4f2c-81b3-2428b64732b6_invoice_069_INV-2025-9308.pdf"}
-
-curl "https://0r8p6ap199.execute-api.us-east-1.amazonaws.com/prod/results?documentId=3e618659-8fc7-4f2c-81b3-2428b64732b6"
-
-Response: Full extraction + Comprehend analysis returned — 94.74% confidence, status: success
 ```
 
 #### Cost Tracker:
 
-- API Gateway requests: <$0.01 (well within free tier)
-- Running total: ~$0.038
+- API Gateway: <$0.01
+- Running total: ~$0.52
 
 #### Challenges Faced:
+
 ```
 Challenge: Lambda zip packaged wrong handler file + nested zip
-- Error: Runtime.ImportModuleError
-- Root cause: shutil.make_archive() picked up all files in folder including
-  the zip itself; handler files had been placed in wrong directories
-- Solution: Rebuilt zips using zipfile module, explicitly targeting each handler file
+- Fix: Rebuilt zips using zipfile module, explicitly targeting each handler file
 - Lesson: Always verify zip contents with zipfile.namelist() before deploying
 
-Challenge: Syntax error in api_upload_handler.py
-- Error: Runtime.UserCodeSyntaxError on line 1
+Challenge: Syntax error in api_upload_handler.py line 1
 - Root cause: Filename header from context file formatting copied into the file
-- Solution: Removed the **api_upload_handler.py:** line, file started with import json
-- Lesson: Verify file contents in VSCode before zipping
+- Fix: Removed the errant header line
 
 Challenge: CloudWatch logs failing in Git Bash
-- Error: AWS CLI converting /aws/lambda/... to a Windows path
-- Solution: Use MSYS_NO_PATHCONV=1 prefix, or check logs via console
-- Lesson: Console is faster for one-off log checks on Windows
+- Fix: Use MSYS_NO_PATHCONV=1 or check logs via console
 ```
-
-#### Screenshots Captured:
-
-- [ ] API Gateway configuration
-- [ ] Successful curl smoke test output
-- [ ] UI end-to-end document upload
-- [ ] S3 uploads and processed buckets confirmed
-- [ ] CloudTrail invocation logs
 
 ---
 
 ### Phase 7: End-to-End Testing
 
-**Date:** 2026-03-19  
-**Time Spent:** ~1 hour  
-**Status:** [x] Complete
+**Date:** 2026-03-19
+**Time Spent:** ~1 hour
+**Status:** ✅ Complete
 
 #### What I Did:
 
-- [x] Implemented rate limiting via API Gateway Usage Plan (pre-publish FinOps gate)
-- [x] Created DocFlowKey API key, associated with prod stage
-- [x] Ran batch test against live API — all 150 mock documents
-- [x] Monitored results in real-time via batch_test.py
-- [x] Verified no failures or errors across full document set
+- [x] Implemented rate limiting via API Gateway Usage Plan (DocFlowKey)
+- [x] Rate: 5 req/s, burst 10, daily quota 100 requests
+- [x] Ran batch test — all 150 mock documents against live API
+- [x] 150/150 passed, 0 failures, 0 errors
 
 #### Testing Results:
 
-| Metric          | Target | Actual     | Status |
-| --------------- | ------ | ---------- | ------ |
-| Success rate    | >95%   | 100%       | ✅     |
-| Documents passed| 150    | 150/150    | ✅     |
-| Failures        | <5%    | 0          | ✅     |
-| Errors          | 0      | 0          | ✅     |
-| Avg Confidence  | >90%   | 80.88%     | ⚠️     |
+| Metric | Target | Actual | Status |
+|--------|--------|--------|--------|
+| Success rate | >95% | 100% | ✅ |
+| Documents passed | 150 | 150/150 | ✅ |
+| Failures | <5% | 0 | ✅ |
+| Errors | 0 | 0 | ✅ |
+| Avg Confidence | >90% | 80.88% | ⚠️ |
 
-> Confidence note: 80.88% average is consistent with Phase 3 findings. Complex PDFs pull the average down but all documents processed successfully. Documented limitation with remediation path (pdf2image + poppler) in Phase 4.
-
-#### Rate Limiting Configuration:
-
-- Rate: 5 requests/second
-- Burst: 10 requests
-- Daily quota: 100 requests
-- Worst-case daily Textract cost at quota: ~$0.32
+> Confidence note: 80.88% is consistent with Phase 3. Complex PDFs pull the average down but all documents processed successfully.
 
 #### Cost Tracker:
 
-- Textract free tier alert received: 85%+ of 100 pages/month (AnalyzeDocTables)
-- Textract overage charge: $3.55
-- Previous running total (Phases 1–6): ~$0.52
-- **True project total: ~$4.07**
+- Textract AnalyzeDocTables overage: $3.55 (hit 100 page/month free tier in single batch test)
+- Previous running total: ~$0.52
+- **Running total: ~$4.07**
 
-> FinOps note: The $3.55 overage came from a single 150-document batch test using Textract's AnalyzeDocTables feature — the more advanced table extraction capability. Rate limiting protects against per-second abuse but not monthly free tier consumption. In production, this cost is predictable and passes to the customer at scale. Building and testing at scale is what revealed it — that's the point of Phase 7.
+#### Key Lesson:
 
-#### Issues Found & Fixed:
 ```
-AWS Free Tier alert — Textract AnalyzeDocTables
-- Trigger: 150-document batch test against live API
-- Impact: $3.55 overage charge
-- Root cause: Free tier covers 100 pages/month for AnalyzeDocTables;
-  batch test consumed the full allotment in a single run
-- Fix: Rate limiting + daily quota cap (100 req/day) prevents this
-  going forward. Substack/LinkedIn publish held until cap verified.
+Rate limiting protects against per-second abuse — not monthly free tier consumption.
+Two different problems. Now I know both.
 ```
 
-#### Screenshots Captured:
-
-- [ ] Batch test terminal output showing 150/150
-- [ ] API Gateway Usage Plan configuration
-- [ ] AWS Free Tier alert email
-- [ ] Bills page showing $3.55 Textract overage
 ---
 
 ### Phase 8: Optimization & Cost Reduction
 
-**Date:** [DATE]  
-**Time Spent:** [HOURS]  
-**Status:** [ ] In Progress / [ ] Complete
+**Date:** 2026-03-21
+**Time Spent:** ~30 minutes
+**Status:** ✅ Complete
 
 #### What I Did:
 
-- [ ] Implemented S3 lifecycle policies (90 day → Glacier)
-- [ ] Right-sized Lambda memory allocation
-- [ ] Optimized Textract API calls
-- [ ] Added batch processing capability
-- [ ] Reduced unnecessary logging
+- [x] Right-sized DocumentProcessor Lambda: 512MB → 256MB (max memory used was 43MB)
+- [x] Increased APIResultsHandler timeout: 3s → 10s (reliability improvement)
+- [x] Smoke tested post-optimization — 94.74% confidence, status: success
+- [x] S3 lifecycle policies: already implemented in Phase 1 ✅
+- [x] Batch processing: already implemented via batch_test.py ✅
 
 #### Before/After Optimization:
 
-| Metric              | Before    | After      | Savings |
-| ------------------- | --------- | ---------- | ------- |
-| Lambda memory       | 512MB     | [ACTUAL]MB | [%]     |
-| Avg processing time | [TIME]s   | [TIME]s    | [%]     |
-| Cost per doc        | $[AMOUNT] | $[AMOUNT]  | [%]     |
+| Metric | Before | After | Savings |
+|--------|--------|-------|---------|
+| DocumentProcessor memory | 512MB | 256MB | 50% compute cost reduction |
+| APIResultsHandler timeout | 3s | 10s | Reliability improvement |
 
-#### Cost Tracker - Final:
+#### Cost Tracker:
 
-- Total development cost: $[FINAL AMOUNT]
-- Under budget? ✅/❌ by $[AMOUNT]
-
-#### Key Optimizations:
-
-```
-[Describe what worked]
-
-Example:
-1. Reduced Lambda memory from 512MB → 256MB (no performance impact)
-   - Saved: 30% on compute costs
-
-2. Implemented lifecycle policy for S3
-   - Old documents → Glacier after 90 days
-   - Saved: 90% on storage for archived docs
-```
+- Phase 8 total: $0.00
+- Running total: ~$4.07
 
 ---
 
 ### Phase 9: Documentation & Portfolio Prep
 
-**Date:** [DATE]  
-**Time Spent:** [HOURS]  
-**Status:** [ ] In Progress / [ ] Complete
+**Date:** 2026-03-21 / 2026-03-24
+**Time Spent:** ~3 hours
+**Status:** ✅ Complete
 
 #### What I Did:
 
-- [ ] Created comprehensive README
-- [ ] Wrote architecture documentation
-- [ ] Captured all screenshots
-- [ ] Recorded demo video (2-3 minutes)
-- [ ] Updated LinkedIn with project
-- [ ] Published portfolio page
+- [x] Created comprehensive README (updated through Phase 10)
+- [x] Wrote Architecture_DataFlow_Documentation.md
+- [x] Built three LucidChart architecture diagrams (overview + 2 flow diagrams)
+- [x] Captured phase-by-phase screenshots (Phases 1–8 + Phase 10)
+- [x] Recorded demo video (Loom — DocFlow pipeline walkthrough)
+- [x] Updated portfolio site card (theprojectfolder.com)
+- [x] Updated main repo README with Phase 10 additions
+- [x] Wrote Substack article v4 (dataflow as backbone)
+- [x] Updated AWS_Project_Cost_Tracker.xlsx with final actuals
 
 #### Portfolio Assets Created:
 
-- [ ] README.md (with architecture diagram)
-- [ ] Demo video (uploaded to YouTube/Vimeo)
-- [ ] 10 key screenshots
-- [ ] Cost analysis spreadsheet
-- [ ] This development log / Substack article
+- [x] README.md — full project arc, architecture diagram, cost analysis, margin analysis
+- [x] Architecture_DataFlow_Documentation.md — technical reference with data formats
+- [x] architecture_diagram.mermaid — version-controlled diagram
+- [x] Three LucidChart PNGs — overview, Upload & Process flow, Dashboard & Export flow
+- [x] Demo video — Loom recording of live pipeline
+- [x] Screenshots — 14 assets covering all phases
+- [x] AWS_Project_Cost_Tracker.xlsx — final actuals: $6.90 total
+- [x] Substack article draft — v4 pending final edit and publish
 
 #### GitHub Repository:
 
-- URL: [YOUR REPO URL]
-- Stars: [TRACK OVER TIME]
-- Forks: [TRACK OVER TIME]
+- URL: https://github.com/theDovelyDev/theprojectfolder/tree/main/IDR_pipeline
 
 ---
 
-## Technical Challenges & Solutions
+### Phase 10: Persistence & Output Layer
 
-### Challenge 1: [YOUR BIGGEST CHALLENGE]
+**Date:** 2026-03-24
+**Time Spent:** ~3 hours
+**Status:** ✅ Complete
 
-**The Problem:**
+#### What I Did:
 
-```
-[Detailed description]
-```
+- [x] Created DynamoDB table: DocFlowRecords (PAY_PER_REQUEST billing)
+- [x] Updated DocumentProcessor to parse documentId from S3 key (fixed UUID mismatch bug)
+- [x] Updated DocumentProcessor to write extracted record to DynamoDB after processing
+- [x] Created DocFlowNotifications SNS topic — dedicated topic separate from tag audit
+- [x] Updated DocumentProcessor to send SNS email notification on successful processing
+- [x] Built APIRecordsHandler Lambda — GET /records and GET /export endpoints
+- [x] Wired /records and /export to API Gateway with CORS
+- [x] Built dashboard.html — records table, stats cards, search, CSV export, detail modal
+- [x] Updated app.js — runRealPipeline fully wired, View in Dashboard link on result cards
+- [x] Added nav links between index.html and dashboard.html
+- [x] Tagged all new resources
+- [x] Fixed Decimal serialization error (DynamoDB → JSON)
+- [x] Added AWS_DEFAULT_REGION to config/setup.sh
 
-**What I Tried:**
+#### Why Phase 10 Existed:
 
-1. [First attempt]
-2. [Second attempt]
-3. [Third attempt]
+The pipeline was technically complete after Phase 7 — but not practically complete. Data extracted and displayed on a page with nowhere to go is a demo, not a workflow. An SMB owner using this in practice would still be manually cataloging everything. Phase 10 added the output layer that makes the pipeline actually useful: persistent queryable records, email notifications, a dashboard, and CSV export.
 
-**The Solution:**
+#### Cost Tracker:
 
-```
-[What ultimately worked]
-```
+- DynamoDB: ~$0.00 (PAY_PER_REQUEST, within free tier)
+- SNS: ~$0.00 (within free tier)
+- Phase 10 total: ~$0.00
+- **True project total: ~$6.90**
 
-**Key Takeaway:**
-
-```
-[What you learned]
-```
-
----
-
-### Challenge 2: Managing AWS Costs
-
-**The Problem:**
-
-```
-I was worried about costs spiraling during development, especially with AI services
-that charge per API call.
-```
-
-**What I Tried:**
-
-1. Set up budget alerts at $25
-2. Used Cost Explorer daily
-3. Tracked every API call in spreadsheet
-
-**The Solution:**
+#### Challenges Faced:
 
 ```
-- Used Free Tier strategically (Textract: 1,000 pages free for 3 months)
-- Tested with small document batches first
-- Implemented cost tracking in my development log
-- Final cost: $8.47 (well under $25 budget)
+Challenge: documentId mismatch — dashboard showing 0 records
+- Root cause: DocumentProcessor was generating a new uuid instead of
+  parsing the documentId from the S3 key filename
+- Fix: Extract documentId from key.split('/')[-1].split('_')[0]
+- Lesson: Lambda functions triggered by S3 events must parse identifiers
+  from the S3 key — not generate new ones
+
+Challenge: Decimal serialization error
+- Error: Object of type Decimal is not JSON serializable
+- Root cause: DynamoDB returns numeric types as Python Decimal objects
+- Fix: Custom DecimalEncoder class passed to json.dumps in APIRecordsHandler
+- Lesson: Always add DecimalEncoder when serializing DynamoDB results to JSON
+
+Challenge: IAM role permissions — SNS and DynamoDB
+- Pattern: Role missing permissions for each new service Lambda calls
+- Fix: Added DocFlowSNSPolicy and updated DocFlowDynamoDBPolicy inline policies
+- Lesson: Every new AWS service call = check the role first, not just the user
+
+Challenge: AWS_DEFAULT_REGION not set
+- Error: NoRegion — You must specify a region
+- Root cause: setup.sh exported REGION but AWS CLI reads AWS_DEFAULT_REGION
+- Fix: Added export AWS_DEFAULT_REGION="us-east-1" to config/setup.sh
 ```
 
-**Key Takeaway:**
+#### Screenshots Captured:
 
-```
-AWS Free Tier is generous if you plan carefully. Cost Explorer is your friend.
-Budget alerts saved me from accidentally leaving resources running.
-```
-
----
-
-### Challenge 3: [ANOTHER CHALLENGE]
-
-[FILL IN YOUR CHALLENGES]
+- [x] Dashboard with records populated
+- [x] Detail modal showing extracted data
+- [x] CSV export downloaded
+- [x] SNS notification email
+- [x] DynamoDB table with items
 
 ---
 
@@ -1507,85 +504,46 @@ Budget alerts saved me from accidentally leaving resources running.
 
 ### Technical Skills Gained
 
-- [ ] AWS Lambda serverless architecture
-- [ ] S3 event-driven triggers
-- [ ] API Gateway REST API design
-- [ ] IAM roles and permissions
-- [ ] AWS Textract OCR integration
-- [ ] AWS Comprehend NLP integration
-- [ ] CloudWatch monitoring and logging
-- [ ] Cost optimization strategies
+- [x] AWS Lambda serverless architecture
+- [x] S3 event-driven triggers
+- [x] API Gateway REST API design
+- [x] IAM roles and permissions (least-privilege)
+- [x] AWS Textract OCR integration
+- [x] AWS Comprehend NLP integration
+- [x] DynamoDB schema design and serialization
+- [x] SNS notification patterns
+- [x] CloudWatch monitoring and logging
+- [x] Cost optimization and FinOps guardrails
 
-### Soft Skills Developed
-
-- [ ] Problem decomposition (breaking 28-hour project into phases)
-- [ ] Documentation (this log!)
-- [ ] Cost management and budgeting
-- [ ] Time tracking and estimation
-- [ ] Git workflow (dev branch → main merges)
-
-### Biggest "Aha!" Moments
+### Biggest Aha Moments
 
 ```
-1. CLI vs Console: Pragmatism Over Dogmatism (Phase 1)
-   During Phase 1, I tried applying the S3 lifecycle policy via CLI following
-   "infrastructure-as-code best practices." The command failed. After 10 minutes
-   of troubleshooting, I pivoted to the AWS Console and had it configured in
-   2 minutes.
+1. Ship what works, document what doesn't (Phase 4)
+   PyPDF2 preprocessing worked perfectly — Textract still rejected the same
+   3 PDFs. The real fix (pdf2image + poppler) would take another 1-2 hours.
+   End of week deadline. I stopped. Documented the limitation, defined the
+   remediation path, shipped the preprocessing foundation.
+   Not every test has to come back 100% to be a passing score.
 
-   AHA: Don't be dogmatic about "CLI only" or "Console only" - use the right
-   tool for the situation. For one-time configurations during learning, the
-   console's visual feedback is invaluable. For production automation, CLI/IaC
-   is essential. Real-world engineering is about getting things done effectively,
-   not following rules blindly.
+2. Rate limiting ≠ cost protection (Phase 7)
+   Rate limiting protects against per-second abuse. It does not protect against
+   monthly free tier consumption. Hit the Textract AnalyzeDocTables free tier
+   ceiling in a single batch test — $3.55 overage. Two different problems,
+   two different solutions. Now I know both.
 
-   This moment taught me that adaptability and pragmatism are more valuable than
-   rigid adherence to "best practices." In interviews, this shows problem-solving
-   flexibility rather than religious devotion to a single approach.
+3. A pipeline that extracts data but has nowhere to send it isn't complete (Phase 10)
+   Almost shipped without the persistence and output layer. The data landed
+   in S3 as JSON and displayed on a page — still a manual cataloging problem.
+   Phase 10 is the difference between a demo and a product.
 
-2. Tagging Strategy: Future-Proofing From Day One (Phase 1)
-   I almost skipped implementing a comprehensive tagging strategy because it felt
-   like "extra work" for a learning project. But I pushed through and created
-   TAGGING_STRATEGY.md with Project, CostCenter, Environment, Owner, Component,
-   CreatedDate, and ManagedBy tags.
+4. Every new AWS service call = check the role (Phase 10)
+   Users feel tangible because you log in as them. Roles feel abstract.
+   But every Lambda calling a new service needs the role permission updated —
+   not the user. SNS and DynamoDB both caught me on this in the same phase.
 
-   AHA: Professional-grade AWS hygiene costs 30 minutes now but saves hours later.
-   At year-end, I'll run ONE command (./year-end-report.sh 2026) and instantly see:
-   "Project1 cost $43, Project2 cost $67, Project3 cost $28." This level of cost
-   visibility is what separates hobbyist projects from professional portfolios.
-
-   The extra 30 minutes to set up proper tagging demonstrates forward-thinking and
-   operational maturity - exactly what hiring managers look for.
-
-3. Environment Variables: Self-Documenting, Reusable Infrastructure (Phase 1)
-   Instead of hardcoding bucket names and account IDs, I created setup.sh with
-   all configuration centralized: PROJECT_NAME, REGION, ACCOUNT_ID, and all tags.
-
-   AHA: Using ${VARIABLES} instead of hardcoded values makes code self-documenting
-   AND reusable. Every command reads like:
-   "aws s3 mb s3://${PROJECT_NAME}-uploads-${ACCOUNT_ID}"
-
-   This means anyone (including future me) can immediately understand what each
-   value represents. Plus, adapting this project for a new AWS account or different
-   project is literally just changing 3 variables in setup.sh.
-
-   This is the difference between "code that works" and "code that's maintainable."
-
-4. [YOUR MOMENT - Add more as you progress through phases]
-   Example: "Serverless doesn't mean 'no servers'—it means 'no server management.'
-   Lambda still runs on servers, but AWS handles all the scaling/patching."
-```
-
-### What I'd Do Differently Next Time
-
-```
-1. [REFLECTION]
-   Example: "Start with cost estimation calculator BEFORE building"
-
-2. [REFLECTION]
-   Example: "Test with production-sized documents earlier"
-
-3. [REFLECTION]
+5. CONFIG.SIMULATE is a FinOps pattern, not just a dev convenience (Phase 5/6)
+   Build and demo the full frontend experience without burning real API budget.
+   Only flip the switch after rate limiting is in place. This order matters.
 ```
 
 ---
@@ -1594,269 +552,75 @@ Budget alerts saved me from accidentally leaving resources running.
 
 ### Final Metrics
 
-**Performance:**
+| Metric | Result |
+|--------|--------|
+| Documents tested | 150 |
+| Success rate | 100% |
+| Avg extraction confidence | 80.88% |
+| Avg processing time | ~30 seconds |
+| Cost per document | $0.034 |
+| Total build cost | $6.90 |
+| vs. manual processing | 97% cheaper |
 
-- Average processing time: [ACTUAL] seconds
-- Success rate: [ACTUAL]%
-- Extraction accuracy: [ACTUAL]%
-- Documents tested: 150
-
-**Cost (Development):**
-
-- Budgeted: $11-15
-- Actual: $[ACTUAL]
-- Variance: [OVER/UNDER] by $[AMOUNT]
-
-**Cost (Production Model):**
-
-- Per document: $[ACTUAL]
-- Monthly (500 docs): $[ACTUAL]
-- Annual: $[ACTUAL]
-
-**ROI Analysis:**
+### ROI Analysis
 
 ```
-Manual Processing Cost:
-- Time: 3 minutes per document
-- Staff rate: $25/hour
-- Cost per document: $1.25
-- Monthly cost (500 docs): $625
+Manual Processing (500 docs/month):
+├─ Time: 3 min/doc × 500 = 25 hours/month
+├─ Cost: $25/hour × 25 hours = $625/month
+└─ Annual: $7,500
 
-Automated Processing Cost:
-- Time: 30 seconds per document
-- AWS cost: $0.034 per document
-- Monthly cost (500 docs): $17
+Automated Processing (500 docs/month):
+├─ AWS Cost: ~$18/month
+└─ Annual: $216
 
-Savings:
-- Per document: $1.22 (97% reduction)
-- Monthly: $608
-- Annual: $7,296
-- ROI: 3,558%
+Annual Savings: $7,284
+ROI: 3,558%
 ```
 
-### Business Impact
+### Margin Analysis (If Sold)
 
-```
-For a small accounting firm processing 500 invoices/month:
-- Time saved: 20.8 hours/month (83% reduction)
-- Cost saved: $608/month
-- Payback period: < 1 week
-- 3-year savings: $21,888
-```
+| Model | Monthly Revenue | Monthly Cost | Margin |
+|-------|----------------|--------------|--------|
+| SaaS — SMB tier ($99/month) | $99 | $18 | $81 |
+| Managed service ($299/month) | $299 | $18 | $281 |
+| Consulting implementation | $2,500–$5,000 one-time | $6.90 build | — |
 
 ---
 
 ## What's Next
 
-### Potential Enhancements
+### Future Enhancements
 
-- [ ] Add support for handwritten documents (AWS Textract custom models)
-- [ ] Implement batch processing queue with SQS
-- [ ] Create admin dashboard with analytics
-- [ ] Add webhook notifications for processing completion
-- [ ] Support 20+ languages (Comprehend multi-language)
-- [ ] Implement document classification (invoice vs receipt vs form)
-- [ ] Add user authentication (AWS Cognito)
-- [ ] Build mobile app version
+- [ ] OCR fallback: pdf2image + poppler for complex PDFs (Phase 4 remediation path)
+- [ ] SQS queue for batch processing at scale
+- [ ] Cognito authentication for multi-user access
+- [ ] QuickSight dashboard upgrade (~$18/user/month)
+- [ ] Dedicated SNS topic per customer
+- [ ] Document classification (invoice vs. receipt vs. contract)
+- [ ] Handwritten document support via Textract custom models
+- [ ] Webhook integration for QuickBooks, Xero, accounting software
 
-### Other AWS Projects Planned
+### Projects Queue
 
-1. [Next project idea]
-2. [Next project idea]
-3. [Next project idea]
-
----
-
-## Appendix: Resources That Helped
-
-### Documentation
-
-- AWS Textract Developer Guide: [link]
-- AWS Comprehend Documentation: [link]
-- AWS Lambda Best Practices: [link]
-
-### Tutorials & Inspiration
-
-- [Tutorial name]: [link]
-- [Blog post]: [link]
-
-### Tools Used
-
-- AWS CLI
-- VS Code (with AWS Toolkit extension)
-- Postman (API testing)
-- draw.io (architecture diagrams)
-
-### Cost Tracking
-
-- Detailed spreadsheet: [link to your cost tracker]
-- AWS Cost Explorer screenshots: [included above]
-
----
-
-## How to Follow My Journey
-
-**GitHub:** [Your GitHub profile]  
-**LinkedIn:** [Your LinkedIn]  
-**Portfolio:** [Your portfolio site]  
-**Substack:** [Your Substack - if you create one]
-
-**Coming up next:** [Tease your next project]
-
----
-
-## FAQ for Readers
-
-**Q: Can I replicate this project?**  
-A: Absolutely! Full code and implementation guide available in my GitHub repo: [link]
-
-**Q: What was the hardest part?**  
-A: [Your answer]
-
-**Q: How long did it really take?**  
-A: [Actual hours], spread over [number] days
-
-**Q: What if I don't have AWS experience?**  
-A: [Your advice]
-
-**Q: Is the Free Tier really enough?**  
-A: [Your experience]
-
----
-
-## Final Thoughts
-
-[Write your reflection here after completing the project]
-
-Example template:
-
-> When I started this project, I [initial feeling/thought]. After 28 hours of
-> development, I learned that [key insight]. The most surprising part was [surprise].
-> If you're considering building something similar, my advice is [advice].
->
-> This project taught me that [lesson]. I'm excited to apply these skills to [next goal].
-
----
-
-## Acknowledgments
-
-Thanks to:
-
-- [Anyone who helped]
-- [Resources you used]
-- [Communities that supported you]
-
----
-
-**Project Status:** [In Progress / Complete]  
-**Last Updated:** [DATE]  
-**Total Time Invested:** [HOURS]  
-**Final Cost:** $[AMOUNT]  
-**Worth It?** [YES/NO - and why]
-
----
-
-_This log serves as both development documentation and the foundation for my Substack article. It captures the real, unfiltered journey—challenges, victories, and lessons learned._
-
----
-
-## Notes Section (Private - Don't Publish)
-
-Use this space for quick notes during development:
-
-```
-[Quick thoughts, reminders, ideas]
-
-Example:
-- Remember to screenshot the CloudWatch dashboard before teardown
-- That error message at 11pm was due to incorrect IAM permissions
-- Good quote for article: "Serverless isn't about servers, it's about time"
-- Follow up: Check if Textract supports handwriting better now
-```
+1. Budget Research Agent — LangGraph, human-in-the-loop cost controls
+2. DNS Failover with Route 53 — build, validate ~60s RTO, tear down, document
+3. BI/Analytics portfolio — PostgreSQL, Looker Studio, AWS data pipeline
 
 ---
 
 ## Changelog
 
-**January 16, 2026** - Started project  
-**January 16, 2026** - Completed Pre-Development Setup (AWS account, IAM, CLI config, budget alerts)  
-**January 16, 2026** - Completed Phase 1 (S3 buckets with comprehensive tagging, versioning, policies, lifecycle rules)  
-**January 16, 2026** - Completed Side Quest: Automated Tag Governance (Lambda, EventBridge, SNS - weekly audits)  
-**February 2026** - Completed Phase 2 (Lambda functions)  
-**February 2026** - Completed Phase 3 (Textract integration - 80% success rate, 12/15 docs)  
-**March 4, 2026** - Completed Phase 4 (Lambda Optimization & PDF Preprocessing - PyPDF2 layer, preprocessing pipeline, 80% success rate maintained)  
-**March 5, 2026** - Completed Phase 5 (DocFlow frontend deployed to S3 — drag-and-drop upload, animated pipeline visualization, simulated 80% success rate, Phase 6 API stubs pre-wired. Portfolio project cards updated. Demo video recorded.)
-**March 18, 20226** - Completed Phase 6 (API Gateway)  
-**[DATE]** - Completed Phase 7 (End-to-end testing)  
-**[DATE]** - Completed Phase 8 (Optimization)  
-**[DATE]** - Completed Phase 9 (Documentation & portfolio prep)  
-**[DATE]** - Project complete!  
-**[DATE]** - Published Substack article
-
----
-
-## Article Outline (For Substack Conversion)
-
-When converting this log to a Substack article, use this structure:
-
-### Title Options:
-
-1. "I Built an AI Document Processor on AWS for $8.47 (Here's How)"
-2. "From Zero to AI: Building a Serverless Document Pipeline in 28 Hours"
-3. "My First AWS AI Project: Processing 150 Documents with Textract & Comprehend"
-
-### Article Flow:
-
-1. **Hook** (200 words)
-   - The problem (manual document processing is slow/expensive)
-   - What I built (AI-powered automation)
-   - Results teaser (80% time savings, $0.034 per document)
-
-2. **Why I Built This** (300 words)
-   - Learning goals
-   - Career transition context
-   - Portfolio motivation
-
-3. **The Architecture** (400 words)
-   - Simple diagram
-   - 6 layers explained briefly
-   - Tech stack overview
-
-4. **Building It: The Journey** (800 words)
-   - Phase-by-phase highlights (not all details)
-   - Focus on 2-3 biggest challenges
-   - Include code snippets
-   - Share "aha!" moments
-
-5. **Testing at Scale** (300 words)
-   - 150 mock documents
-   - Results & accuracy
-   - Cost breakdown
-
-6. **What I Learned** (400 words)
-   - Technical skills
-   - Unexpected insights
-   - What I'd do differently
-
-7. **The Results** (300 words)
-   - Final metrics
-   - ROI analysis
-   - Business impact
-
-8. **Try It Yourself** (200 words)
-   - Link to GitHub
-   - Link to implementation guide
-   - Encouragement
-
-9. **What's Next** (150 words)
-   - Future enhancements
-   - Next projects
-   - Call to action (follow, subscribe)
-
-**Total Target Length:** 2,500-3,000 words  
-**Reading Time:** 10-12 minutes  
-**Tone:** Technical but accessible, honest about challenges
-
----
-
-**Remember:** This log is your raw material. The Substack article will be a polished, storytelling version of this journey. Keep this document honest and detailed—you'll mine it for the good parts later!
+**January 16, 2026** — Pre-development setup complete
+**January 16, 2026** — Phase 1 complete (S3 buckets, tagging, lifecycle policies)
+**January 16, 2026** — Side Quest complete (automated tag governance — Lambda, EventBridge, SNS)
+**January 17, 2026** — Phase 2 complete (Lambda + DocumentProcessor)
+**January 31, 2026** — Phase 3 complete (Textract testing — 80% success rate, 12/15 docs)
+**March 4, 2026** — Phase 4 complete (PyPDF2 preprocessing layer, 80% maintained, limitation documented)
+**March 6, 2026** — Phase 5 complete (DocFlow frontend deployed to S3, Loom demo recorded)
+**March 18–19, 2026** — Phase 6 complete (API Gateway, live endpoints, CONFIG.SIMULATE flipped)
+**March 19, 2026** — Phase 7 complete (150-doc batch test, 100% success, $3.55 Textract overage)
+**March 21, 2026** — Phase 8 complete (Lambda right-sized 512MB → 256MB)
+**March 21–24, 2026** — Phase 9 complete (README, architecture docs, LucidChart diagrams, Substack draft)
+**March 24, 2026** — Phase 10 complete (DynamoDB, SNS, dashboard, CSV export)
+**March 24, 2026** — Project complete. Total cost: $6.90. Total time: ~35 hours.
