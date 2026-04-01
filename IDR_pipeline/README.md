@@ -48,50 +48,8 @@ A fully serverless AWS pipeline that:
 ## 🏗️ Architecture
 
 ```
-User
-  │
-  ▼
-Frontend (S3 Static Hosting)
-  │  drag-and-drop upload UI
-  ▼
-API Gateway (REST API)
-  │  POST /upload  │  GET /results
-  ▼                ▼
-APIUploadHandler   APIResultsHandler
-(Lambda)           (Lambda)
-  │
-  ▼
-S3 Uploads Bucket
-  │  S3 event trigger
-  ▼
-document-processor (Lambda)
-  │
-  ├──────────────────────┐
-  ▼                      ▼
-AWS Textract         AWS Comprehend
-(text extraction,    (entity detection,
- key-value pairs,     sentiment analysis,
- table data)          key phrases)
-  │
-  ▼
-S3 Processed Bucket
-(results JSON)
-  │
-  ▼
-CloudWatch (logging + monitoring)
+![DocFlow Architecture Overview](docs/screenshots/docflow-architecture-overview.png)
 
-document-processor Lambda (existing)
-  │  after Textract + Comprehend
-  ▼
-DynamoDB — store extracted record
-  │
-  ├── SNS notification → email
-  │
-  └── APIResultsHandler (updated)
-        │
-        ├── GET /results?documentId=  (existing)
-        ├── GET /records              (new — all records)
-        └── GET /export               (new — CSV download)
 ```
 
 ### Data Flow
