@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DocFlow — Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #080a0d;
+      --surface: #0f1318;
+      --surface-2: #161c24;
+      --border: #1e2a38;
+      --accent: #00e5a0;
+      --accent-dim: rgba(0,229,160,0.1);
+      --accent-mid: rgba(0,229,160,0.4);
+      --white: #e8ecf0;
+      --muted: #5a7080;
+      --warn: #ffb347;
+      --danger: #ff4d6d;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── Deck Container ── */
+    .deck { width: 100vw; height: 100vh; position: relative; }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 60px 80px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 100;
+      background: rgba(15,19,24,0.9);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 10px 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.2s ease;
+    }
+
+    .nav-btn:hover { color: var(--white); }
+    .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      width: 18px;
+      border-radius: 3px;
+    }
+
+    /* ── Grid background ── */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.3;
+      z-index: 0;
+    }
+
+    /* ── Slide label ── */
+    .slide-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* ── Typography ── */
+    .display {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--white);
+    }
+
+    .display .accent { color: var(--accent); }
+    .display .muted { color: var(--muted); }
+
+    .headline {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .headline .accent { color: var(--accent); }
+
+    .body-lg {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: var(--white);
+      font-weight: 300;
+    }
+
+    .body-sm {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: rgba(232,236,240,0.7);
+      font-weight: 300;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ── Layout helpers ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      flex: 1;
+      align-items: start;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+      align-items: start;
+    }
+
+    .col { display: flex; flex-direction: column; gap: 16px; }
+
+    .spacer { flex: 1; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .card-accent {
+      border-color: var(--accent-mid);
+      background: var(--accent-dim);
+    }
+
+    .card-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .card-value.accent { color: var(--accent); }
+    .card-value.warn { color: var(--warn); }
+
+    .card-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Stat row ── */
+    .stat-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 140px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 48px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin: 20px 0;
+    }
+
+    /* ── Table ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .data-table th {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(30,42,56,0.5);
+      color: var(--white);
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr.highlight td { background: var(--accent-dim); color: var(--accent); }
+    .data-table .accent-text { color: var(--accent); font-weight: 500; }
+    .data-table .muted-text { color: var(--muted); }
+
+    /* ── Tag ── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface-2);
+    }
+
+    .tag-accent {
+      border-color: var(--accent-mid);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* ── List ── */
+    .check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: rgba(232,236,240,0.85);
+    }
+
+    .check-item .check {
+      color: var(--accent);
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Flow ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .flow-node {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--white);
+    }
+
+    .flow-node.accent {
+      border-color: var(--accent-mid);
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* ── Slide-specific ── */
+
+    /* Slide 1: Cover */
+    #slide-1 {
+      justify-content: center;
+    }
+
+    #slide-1 .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    #slide-1 .tagline {
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-weight: 300;
+      margin-top: 24px;
+      max-width: 520px;
+    }
+
+    #slide-1 .built-by {
+      position: absolute;
+      bottom: 80px;
+      right: 80px;
+      text-align: right;
+    }
+
+    /* Slide 9: Footer */
+    #slide-9 { justify-content: center; align-items: center; text-align: center; }
+
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<div class="deck">
+
+  <!-- ── SLIDE 1: Cover ── -->
+  <div class="slide active" id="slide-1">
+    <div class="eyebrow">DocFlow — Product Pitch</div>
+    <div class="display">
+      STOP PAYING<br>
+      YOUR STAFF TO<br>
+      <span class="accent">TYPE INVOICES.</span>
+    </div>
+    <p class="tagline">An AI document processing pipeline that extracts structured data from invoices and receipts — automatically, in 30 seconds, at $0.034 per document.</p>
+    <div class="built-by">
+      <div class="mono" style="color: var(--muted); margin-bottom: 4px;">Built by</div>
+      <div style="font-size: 1rem; font-weight: 500;">Carlandra Williams</div>
+      <div class="mono" style="color: var(--accent); margin-top: 4px;">FinOps · AWS · AI/ML</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: The Problem ── -->
+  <div class="slide" id="slide-2">
+    <div class="slide-label">The Problem</div>
+    <div class="headline">Your staff is doing<br><span class="accent">$625/month</span> of data entry.</div>
+    <div class="divider"></div>
+    <div class="two-col" style="margin-top: 8px;">
+      <div class="col">
+        <p class="body-lg">Every invoice that comes in gets opened by a human, read by a human, and typed into a spreadsheet by a human.</p>
+        <p class="body-sm" style="margin-top: 8px;">That's 3 minutes per document. 500 documents a month is 25 hours. At $25/hour in staff time, that's $625 a month on work that shouldn't require human hands.</p>
+        <p class="body-sm" style="margin-top: 12px;">The person doing it isn't bad at their job. The job is just the wrong use of their time.</p>
+      </div>
+      <div class="col" style="gap: 12px;">
+        <div class="card">
+          <div class="card-label">Manual Processing Cost</div>
+          <div class="card-value warn">$625</div>
+          <div class="card-sub">per month · 500 documents · $25/hr staff</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Time Wasted</div>
+          <div class="card-value warn">25 hrs</div>
+          <div class="card-sub">per month on data entry</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Cost Per Document</div>
+          <div class="card-value warn">$1.25</div>
+          <div class="card-sub">in staff time, per invoice</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: The Solution ── -->
+  <div class="slide" id="slide-3">
+    <div class="slide-label">The Solution</div>
+    <div class="headline">DocFlow: upload a doc,<br>get back <span class="accent">structured data.</span></div>
+    <div class="divider"></div>
+    <div class="two-col" style="margin-top: 8px;">
+      <div class="col">
+        <p class="body-sm">DocFlow is a serverless AWS pipeline that reads invoices and receipts automatically — extracting vendor names, invoice numbers, amounts, due dates, and line items without anyone touching a keyboard.</p>
+        <div style="margin-top: 24px;">
+          <div class="flow">
+            <div class="flow-node accent">Upload</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node">Textract OCR</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node">Comprehend NLP</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node accent">Structured Data</div>
+          </div>
+        </div>
+        <div style="margin-top: 24px;" class="check-list">
+          <div class="check-item"><span class="check">✓</span> Vendor name, invoice number, totals, due dates</div>
+          <div class="check-item"><span class="check">✓</span> Entity detection and sentiment analysis</div>
+          <div class="check-item"><span class="check">✓</span> Queryable dashboard — sortable, searchable, exportable</div>
+          <div class="check-item"><span class="check">✓</span> Direct sync to QuickBooks and Xero</div>
+          <div class="check-item"><span class="check">✓</span> Email notification per processed document</div>
+        </div>
+      </div>
+      <div class="col" style="gap: 12px;">
+        <div class="card card-accent">
+          <div class="card-label">Processing Time</div>
+          <div class="card-value accent">30 sec</div>
+          <div class="card-sub">vs. 3 minutes manually</div>
+        </div>
+        <div class="card card-accent">
+          <div class="card-label">Cost Per Document</div>
+          <div class="card-value accent">$0.034</div>
+          <div class="card-sub">vs. $1.25 in staff time</div>
+        </div>
+        <div class="card card-accent">
+          <div class="card-label">Batch Test Result</div>
+          <div class="card-value accent">100%</div>
+          <div class="card-sub">success rate · 150 documents · live API</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: Unit Economics ── -->
+  <div class="slide" id="slide-4">
+    <div class="slide-label">Unit Economics</div>
+    <div class="headline">The math that makes<br>the price <span class="accent">defensible.</span></div>
+    <div class="divider"></div>
+    <div class="two-col" style="margin-top: 8px;">
+      <div>
+        <p class="body-sm" style="margin-bottom: 20px;">DocFlow costs $0.034 to process one document. That's the unit cost — the denominator against which every pricing decision gets measured.</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Per Document</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Textract (OCR + Tables)</td><td class="accent-text">$0.0165</td></tr>
+            <tr><td>Comprehend (NLP × 3)</td><td class="accent-text">$0.0003</td></tr>
+            <tr><td>Lambda (4 functions)</td><td class="muted-text">~$0.000002</td></tr>
+            <tr><td>S3 + DynamoDB + SNS</td><td class="muted-text">~$0.000003</td></tr>
+            <tr class="highlight"><td><strong>Total unit cost</strong></td><td><strong>$0.034</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col" style="gap: 12px;">
+        <div class="card card-accent">
+          <div class="card-label">Cost Reduction vs. Manual</div>
+          <div class="card-value accent">97%</div>
+          <div class="card-sub">$1.25 manual → $0.034 automated</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Monthly Savings at 500 docs</div>
+          <div class="card-value">$608</div>
+          <div class="card-sub">$625 manual cost − $17 infrastructure</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Payback Period</div>
+          <div class="card-value accent">Month 1</div>
+          <div class="card-sub">savings exceed subscription cost immediately</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: Pricing Tiers ── -->
+  <div class="slide" id="slide-5">
+    <div class="slide-label">Pricing</div>
+    <div class="headline">Three tiers.<br><span class="accent">One ROI story.</span></div>
+    <div class="divider"></div>
+    <div class="three-col" style="margin-top: 8px; align-items: stretch;">
+
+      <div class="card" style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <div class="card-label">Starter</div>
+          <div class="card-value" style="font-size: 2.8rem;">$99</div>
+          <div class="card-sub">per month</div>
+        </div>
+        <div class="mono" style="color: var(--muted);">500 docs/month</div>
+        <div class="check-list" style="gap: 8px;">
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Full pipeline</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Dashboard + CSV export</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Email notifications</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> QuickBooks / Xero sync</div>
+        </div>
+        <div class="spacer"></div>
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <div class="mono">Infrastructure: ~$17/mo</div>
+          <div class="mono" style="color: var(--accent); margin-top: 4px;">Margin: ~$79 (80%)</div>
+        </div>
+      </div>
+
+      <div class="card card-accent" style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <div class="card-label" style="color: var(--accent);">Growth — Most Popular</div>
+          <div class="card-value accent" style="font-size: 2.8rem;">$249</div>
+          <div class="card-sub">per month</div>
+        </div>
+        <div class="mono" style="color: var(--accent);">1,500 docs/month</div>
+        <div class="check-list" style="gap: 8px;">
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Everything in Starter</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Document classification</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Mobile upload</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Priority support</div>
+        </div>
+        <div class="spacer"></div>
+        <div style="border-top: 1px solid var(--accent-mid); padding-top: 12px;">
+          <div class="mono" style="color: var(--accent);">Infrastructure: ~$51/mo</div>
+          <div class="mono" style="color: var(--accent); margin-top: 4px;">Margin: ~$193 (78%)</div>
+        </div>
+      </div>
+
+      <div class="card" style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <div class="card-label">Scale</div>
+          <div class="card-value" style="font-size: 2.8rem;">$599</div>
+          <div class="card-sub">per month</div>
+        </div>
+        <div class="mono" style="color: var(--muted);">Unlimited docs</div>
+        <div class="check-list" style="gap: 8px;">
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Everything in Growth</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Multi-location support</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> Dedicated onboarding</div>
+          <div class="check-item" style="font-size: 0.85rem;"><span class="check">✓</span> SLA guarantee</div>
+        </div>
+        <div class="spacer"></div>
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <div class="mono">Infrastructure: ~$102–$150/mo</div>
+          <div class="mono" style="color: var(--accent); margin-top: 4px;">Margin: ~$449+ (75%+)</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: ROI By Tier ── -->
+  <div class="slide" id="slide-6">
+    <div class="slide-label">Return on Investment</div>
+    <div class="headline">Every tier pays for itself<br><span class="accent">in month one.</span></div>
+    <div class="divider"></div>
+    <table class="data-table" style="margin-top: 16px;">
+      <thead>
+        <tr>
+          <th>Tier</th>
+          <th>Docs/Month</th>
+          <th>Manual Cost</th>
+          <th>DocFlow Price</th>
+          <th>Monthly Savings</th>
+          <th>Annual Savings</th>
+          <th>ROI</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Starter</td>
+          <td>500</td>
+          <td class="muted-text">$625</td>
+          <td>$99</td>
+          <td class="accent-text">$526</td>
+          <td class="accent-text">$6,312</td>
+          <td class="accent-text">531%</td>
+        </tr>
+        <tr class="highlight">
+          <td><strong>Growth</strong></td>
+          <td>1,500</td>
+          <td class="muted-text">$1,875</td>
+          <td>$249</td>
+          <td><strong>$1,626</strong></td>
+          <td><strong>$19,512</strong></td>
+          <td><strong>653%</strong></td>
+        </tr>
+        <tr>
+          <td>Scale</td>
+          <td>3,000+</td>
+          <td class="muted-text">$3,750+</td>
+          <td>$599</td>
+          <td class="accent-text">$3,151+</td>
+          <td class="accent-text">$37,812+</td>
+          <td class="accent-text">526%+</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 32px; display: flex; gap: 16px;">
+      <div class="card" style="flex: 1;">
+        <div class="card-label">Consulting Implementation</div>
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 4px;">
+          <div class="card-value">$3,500–$6,000</div>
+          <div class="card-sub">one-time · deploy + train + 30 days support</div>
+        </div>
+      </div>
+      <div class="card card-accent" style="flex: 1;">
+        <div class="card-label">Build Cost Recovery</div>
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 4px;">
+          <div class="card-value accent">1 engagement</div>
+          <div class="card-sub">recoups the entire $6.90 build cost</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: Complete Product Roadmap ── -->
+  <div class="slide" id="slide-7">
+    <div class="slide-label">Product Roadmap</div>
+    <div class="headline">Built to sell,<br><span class="accent">not to demo.</span></div>
+    <div class="divider"></div>
+    <div class="two-col" style="margin-top: 8px;">
+      <div>
+        <p class="body-sm" style="margin-bottom: 20px;">The core pipeline is production-ready. Three weeks of additional engineering ships a complete, sellable SaaS product.</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Estimate</th>
+              <th>Cost Impact</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Core pipeline</td><td class="accent-text">Built ✓</td><td class="muted-text">$17–$150/mo</td></tr>
+            <tr><td>Multi-tenancy</td><td class="muted-text">2–3 days</td><td class="muted-text">+$0</td></tr>
+            <tr><td>Cognito auth</td><td class="muted-text">1 day</td><td class="muted-text">+$0.0055/user</td></tr>
+            <tr><td>Stripe billing</td><td class="muted-text">3–4 days</td><td class="muted-text">2.9% + $0.30/txn</td></tr>
+            <tr><td>QuickBooks + Xero</td><td class="muted-text">3–4 days</td><td class="muted-text">+$0</td></tr>
+            <tr><td>Document classification</td><td class="muted-text">2–3 days</td><td class="muted-text">+~$0.001/doc</td></tr>
+            <tr><td>Mobile upload</td><td class="muted-text">2–3 days</td><td class="muted-text">+$0</td></tr>
+            <tr class="highlight"><td><strong>Total to sellable SaaS</strong></td><td><strong>~3 weeks</strong></td><td><strong>Negligible</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col" style="gap: 12px;">
+        <div class="card card-accent">
+          <div class="card-label">Current State</div>
+          <div style="font-size: 1rem; font-weight: 500; margin-top: 8px;">Production-ready pipeline</div>
+          <div class="body-sm" style="margin-top: 8px;">Full extraction, dashboard, CSV export, DynamoDB persistence, SNS notifications. 100% success rate on 150-doc live test.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Consulting Path (Now)</div>
+          <div style="font-size: 1rem; font-weight: 500; margin-top: 8px;">Deploy in customer's AWS account</div>
+          <div class="body-sm" style="margin-top: 8px;">Train their team, provide 30 days of support. First dollar in week one. $3,500–$6,000 per engagement.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">SaaS Path (3 Weeks)</div>
+          <div style="font-size: 1rem; font-weight: 500; margin-top: 8px;">Multi-tenant, auth, billing</div>
+          <div class="body-sm" style="margin-top: 8px;">Add Stripe, Cognito, accounting integrations. Launch at $99/month with 80% gross margin.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: Why This Builder ── -->
+  <div class="slide" id="slide-8">
+    <div class="slide-label">Why Me</div>
+    <div class="headline">FinOps lens.<br><span class="accent">Engineering hands.</span></div>
+    <div class="divider"></div>
+    <div class="two-col" style="margin-top: 8px;">
+      <div class="col">
+        <p class="body-sm">I'm a Senior FinOps practitioner transitioning into AI/ML engineering. I built DocFlow with a cost tracker running the entire time — because I know what happens when cloud engineers don't think about cost from day one.</p>
+        <div style="margin-top: 24px;" class="check-list">
+          <div class="check-item"><span class="check">✓</span> Rate limiting before go-live — not after the bill arrives</div>
+          <div class="check-item"><span class="check">✓</span> PAY_PER_REQUEST DynamoDB — pay nothing when nothing runs</div>
+          <div class="check-item"><span class="check">✓</span> CONFIG.SIMULATE — build without burning API budget</div>
+          <div class="check-item"><span class="check">✓</span> Automated tag governance — weekly compliance, $0 cost</div>
+          <div class="check-item"><span class="check">✓</span> $6.90 total build cost — and I know why every dollar was spent</div>
+        </div>
+        <div style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag tag-accent">AWS AI Practitioner</span>
+          <span class="tag tag-accent">FinOps Certified</span>
+          <span class="tag tag-accent">FinOps Engineer</span>
+          <span class="tag">AWS CCP</span>
+          <span class="tag">Oracle AI Foundations</span>
+        </div>
+      </div>
+      <div class="col" style="gap: 12px;">
+        <div class="card">
+          <div class="card-label">Total Build Cost</div>
+          <div class="card-value accent">$6.90</div>
+          <div class="card-sub">10 phases · ~35 hours · January–March 2026</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Batch Test Result</div>
+          <div class="card-value accent">150/150</div>
+          <div class="card-sub">100% success rate on live API</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Infrastructure Cost at Scale</div>
+          <div class="card-value">~$18/mo</div>
+          <div class="card-sub">500 docs/month · no free tier</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 9: Close ── -->
+  <div class="slide" id="slide-9">
+    <div class="display" style="text-align: center; margin-bottom: 32px;">
+      <span class="muted">$6.90</span> TO BUILD.<br>
+      <span class="accent">$99/MONTH</span> TO SELL.<br>
+      <span class="muted">3 WEEKS</span> TO SHIP.
+    </div>
+    <p style="text-align: center; color: var(--muted); font-size: 1rem; margin-bottom: 40px; font-weight: 300;">The unit economics work. The market exists. The gap is three engineering sprints and a Stripe account.</p>
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+      <a href="https://github.com/theDovelyDev/theprojectfolder/tree/main/IDR_pipeline" target="_blank" style="text-decoration: none;">
+        <div class="card" style="padding: 16px 28px; text-align: center; cursor: pointer;">
+          <div class="mono">GitHub</div>
+          <div style="font-size: 0.9rem; margin-top: 4px; color: var(--white);">theDovelyDev/theprojectfolder</div>
+        </div>
+      </a>
+      <a href="https://carlandrainthecloud.substack.com" target="_blank" style="text-decoration: none;">
+        <div class="card card-accent" style="padding: 16px 28px; text-align: center; cursor: pointer;">
+          <div class="mono" style="color: var(--accent);">Substack</div>
+          <div style="font-size: 0.9rem; margin-top: 4px; color: var(--white);">carlandrainthecloud</div>
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/carlandra-williams" target="_blank" style="text-decoration: none;">
+        <div class="card" style="padding: 16px 28px; text-align: center; cursor: pointer;">
+          <div class="mono">LinkedIn</div>
+          <div style="font-size: 0.9rem; margin-top: 4px; color: var(--white);">carlandra-williams</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <button class="nav-btn" id="prevBtn" disabled>←</button>
+  <div class="progress-dots" id="dots"></div>
+  <span class="slide-counter" id="counter">1 / 9</span>
+  <button class="nav-btn" id="nextBtn">→</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+  const dotsEl = document.getElementById('dots');
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, total - 1));
+    slides[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${total}`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+</script>
+
+</body>
+</html>
