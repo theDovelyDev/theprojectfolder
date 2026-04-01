@@ -42,12 +42,13 @@ Serverless frontend (S3 + CloudFront), API Gateway + Lambda backend, DynamoDB vi
 **Serverless AI pipeline for automated document extraction and analysis**
 Event-driven architecture that processes invoices, receipts, and forms in 30 seconds at $0.034/doc — versus 3 minutes and $1.25 manually. Because if you can automate it, you should.
 **Tech:** AWS (S3, Lambda, Textract, Comprehend, API Gateway, EventBridge), Python, FinOps
-🔗 [GitHub](./IDR_pipeline) | Project writeup on Substack coming soon.
+🔗 [GitHub](./IDR_pipeline) | [Substack](https://open.substack.com/pub/carlandrainthecloud/p/ship-what-works-document-what-doesnt?r=5vlddv&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)
 
 ---
 
 ### 🚧 In Progress / Planned
 
+- **Budget Research Agent** - A research agent that stops and asks permission before spending your money.  
 - **3-Tier Web Application** - VPC, EC2, RDS, Load Balancer architecture
 - **Data Pipeline Project** - ETL with AWS Glue and data warehousing
 - **DNS Failover with Route 53** - High availability architecture for static sites
