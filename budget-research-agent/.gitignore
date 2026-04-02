@@ -27,11 +27,3 @@ Thumbs.db
 .idea/
 
 # Project specific
-mock_documents/
-test-documents/
-*.pdf
-lambda/package/
-lambda/function.zip
-test-invoice.png
-test-*.png
-Doc_Processing_Development_Log.md
