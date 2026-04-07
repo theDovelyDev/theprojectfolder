@@ -73,17 +73,17 @@ This tagging strategy enables:
 - **Services Used:** S3, Lambda, Textract, Comprehend, API Gateway, CloudWatch, EventBridge, SNS
 - **Description:** AI-powered document extraction and analysis system
 - **Estimated Monthly Cost:** $17 (500 documents)
-- **Status:** ✅ In Development (Phase 1 Complete)
+- **Status:** ✅ Complete
 
-### Project 2: [Your Next Project]
-
-- **Project Tag:** `[project-name-here]`
+### Project 2: Budget-Conscious Research Agent
+- **Project Tag:** `budget-research-agent`
 - **CostCenter:** `Project2`
-- **Start Date:** TBD
+- **Start Date:** April 7, 2026
 - **Environment:** `dev`
-- **Services Used:** TBD
-- **Description:** TBD
-- **Estimated Monthly Cost:** TBD
+- **Services Used:** Fargate, ECR, API Gateway, CloudWatch, IAM
+- **Description:** LangGraph agent with budget kill switch and human-in-the-loop interrupt
+- **Estimated Monthly Cost:** ~$0.50/day (Fargate, dev only)
+- **Status:** 🚧 In Development (Phase 1)
 
 ### Project 3: [Future Project]
 
