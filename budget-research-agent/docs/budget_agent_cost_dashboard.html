@@ -1,0 +1,492 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap');
+
+  .dash {
+    font-family: 'DM Sans', sans-serif;
+    padding: 1.5rem 0;
+    color: var(--color-text-primary);
+  }
+
+  .dash-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    padding-bottom: 1rem;
+  }
+
+  .dash-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .dash-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #BA7517;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .metric-card {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 14px 16px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .metric-value {
+    font-size: 22px;
+    font-weight: 500;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-primary);
+  }
+
+  .metric-value.amber { color: #BA7517; }
+  .metric-value.danger { color: var(--color-text-danger); }
+  .metric-value.success { color: #3B6D11; }
+
+  .metric-sub {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .budget-bar-wrap {
+    margin-bottom: 1.5rem;
+  }
+
+  .budget-bar-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .budget-track {
+    height: 8px;
+    background: var(--color-background-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 0.5px solid var(--color-border-tertiary);
+  }
+
+  .budget-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: #BA7517;
+    transition: width 0.4s ease;
+  }
+
+  .budget-fill.warning { background: #E24B4A; }
+
+  .query-log {
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .log-header {
+    padding: 10px 14px;
+    background: var(--color-background-secondary);
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.05em;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+
+  .log-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 70px 70px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .log-row:last-child { border-bottom: none; }
+
+  .log-query {
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .route-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .route-chat {
+    background: #E6F1FB;
+    color: #185FA5;
+  }
+
+  .route-research {
+    background: #FAEEDA;
+    color: #854F0B;
+  }
+
+  .log-cost {
+    color: var(--color-text-secondary);
+    text-align: right;
+  }
+
+  .log-status {
+    text-align: right;
+  }
+
+  .status-ok { color: #3B6D11; }
+  .status-interrupt { color: #E24B4A; }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .control-group {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 14px 16px;
+  }
+
+  .control-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 10px;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .slider-val {
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    min-width: 48px;
+    color: #BA7517;
+  }
+
+  .sim-btn {
+    width: 100%;
+    padding: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-secondary);
+    background: transparent;
+    color: var(--color-text-primary);
+    margin-top: 8px;
+    transition: background 0.15s;
+  }
+
+  .sim-btn:hover { background: var(--color-background-secondary); }
+  .sim-btn.primary {
+    background: #BA7517;
+    color: #FAEEDA;
+    border-color: #BA7517;
+  }
+  .sim-btn.primary:hover { background: #854F0B; border-color: #854F0B; }
+
+  .interrupt-banner {
+    background: #FCEBEB;
+    border: 0.5px solid #F09595;
+    border-radius: var(--border-radius-md);
+    padding: 12px 16px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #A32D2D;
+    display: none;
+    margin-bottom: 1rem;
+  }
+
+  .chart-section { margin-bottom: 0.5rem; }
+  .chart-label {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+</style>
+
+<div class="dash">
+  <div class="dash-header">
+    <span class="dash-title">Budget Research Agent — Cost Dashboard</span>
+    <span class="dash-live"><span class="live-dot"></span>live</span>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric-card">
+      <div class="metric-label">TOTAL SPENT</div>
+      <div class="metric-value amber" id="totalSpent">$0.0000</div>
+      <div class="metric-sub">of <span id="budgetLimit">$0.05</span> limit</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">QUERIES RUN</div>
+      <div class="metric-value" id="queryCount">0</div>
+      <div class="metric-sub">this session</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">RESEARCH LOOPS</div>
+      <div class="metric-value" id="loopCount">0</div>
+      <div class="metric-sub">total iterations</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">BUDGET STATUS</div>
+      <div class="metric-value success" id="budgetStatus">CLEAR</div>
+      <div class="metric-sub" id="budgetPct">0% used</div>
+    </div>
+  </div>
+
+  <div class="budget-bar-wrap">
+    <div class="budget-bar-header">
+      <span>budget consumed</span>
+      <span id="barLabel">$0.0000 / $0.05</span>
+    </div>
+    <div class="budget-track">
+      <div class="budget-fill" id="budgetBar" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div class="interrupt-banner" id="interruptBanner">
+    KILL SWITCH TRIGGERED — budget threshold reached. Agent paused. Awaiting approval to continue.
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <div class="control-label">MAX_BUDGET</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="25" value="5" step="1" id="budgetSlider" style="flex:1">
+        <span class="slider-val" id="budgetSliderVal">$0.05</span>
+      </div>
+      <div class="control-label" style="margin-top:12px;">MAX_ITERATIONS</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="3" step="1" id="iterSlider" style="flex:1">
+        <span class="slider-val" id="iterSliderVal">3</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="control-label">SIMULATE QUERY</div>
+      <button class="sim-btn primary" onclick="simulateQuery('chat')">+ chat query (~$0.0002)</button>
+      <button class="sim-btn" style="margin-top:6px" onclick="simulateQuery('research')">+ research query (~$0.005)</button>
+      <button class="sim-btn" style="margin-top:6px" onclick="resetDash()">reset session</button>
+    </div>
+  </div>
+
+  <div class="query-log">
+    <div class="log-header">QUERY LOG</div>
+    <div id="logBody"></div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-label">COST PER QUERY</div>
+    <div style="position:relative; width:100%; height:160px;">
+      <canvas id="costChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  let state = {
+    totalCost: 0,
+    queries: 0,
+    loops: 0,
+    budget: 0.05,
+    maxIter: 3,
+    interrupted: false,
+    log: [],
+    chartData: []
+  };
+
+  const chatQueries = [
+    'How are you today?',
+    'What is FinOps?',
+    'Explain LangGraph in one sentence',
+    'What does a router node do?'
+  ];
+
+  const researchQueries = [
+    'Latest AWS cost optimization 2025',
+    'What companies laid off most in 2025?',
+    'Current Anthropic API pricing',
+    'LangGraph vs CrewAI comparison'
+  ];
+
+  const chart = new Chart(document.getElementById('costChart'), {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [{
+        data: [],
+        backgroundColor: [],
+        borderRadius: 3,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: '#888780', autoSkip: true, maxRotation: 0 },
+          grid: { display: false },
+          border: { display: false }
+        },
+        y: {
+          ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: '#888780',
+            callback: v => '$' + v.toFixed(4) },
+          grid: { color: 'rgba(136,135,128,0.15)' },
+          border: { display: false }
+        }
+      }
+    }
+  });
+
+  function simulateQuery(type) {
+    if (state.interrupted) return;
+
+    const isChatType = type === 'chat';
+    const routerCost = 0.000070 + (Math.random() * 0.000010);
+    const queryCost = isChatType
+      ? routerCost + 0.000120 + (Math.random() * 0.000040)
+      : routerCost + 0.004500 + (Math.random() * 0.000800);
+
+    const loops = isChatType ? 0 : 1;
+    const query = isChatType
+      ? chatQueries[state.queries % chatQueries.length]
+      : researchQueries[Math.floor(state.queries / 2) % researchQueries.length];
+
+    state.totalCost += queryCost;
+    state.queries += 1;
+    state.loops += loops;
+
+    const pct = Math.min((state.totalCost / state.budget) * 100, 100);
+    const exceeded = state.totalCost >= state.budget;
+    if (exceeded) state.interrupted = true;
+
+    state.log.unshift({ query, type, cost: queryCost, loops, exceeded });
+    state.chartData.push({ label: 'Q' + state.queries, cost: queryCost, type });
+
+    updateUI(pct, exceeded);
+  }
+
+  function updateUI(pct, exceeded) {
+    document.getElementById('totalSpent').textContent = '$' + state.totalCost.toFixed(4);
+    document.getElementById('queryCount').textContent = state.queries;
+    document.getElementById('loopCount').textContent = state.loops;
+    document.getElementById('budgetPct').textContent = pct.toFixed(1) + '% used';
+    document.getElementById('barLabel').textContent = '$' + state.totalCost.toFixed(4) + ' / $' + state.budget.toFixed(2);
+
+    const bar = document.getElementById('budgetBar');
+    bar.style.width = pct.toFixed(1) + '%';
+    if (pct > 80) bar.classList.add('warning');
+    else bar.classList.remove('warning');
+
+    const statusEl = document.getElementById('budgetStatus');
+    if (exceeded) {
+      statusEl.textContent = 'INTERRUPT';
+      statusEl.className = 'metric-value danger';
+      document.getElementById('interruptBanner').style.display = 'block';
+    } else if (pct > 80) {
+      statusEl.textContent = 'WARNING';
+      statusEl.className = 'metric-value amber';
+    } else {
+      statusEl.textContent = 'CLEAR';
+      statusEl.className = 'metric-value success';
+    }
+
+    const logBody = document.getElementById('logBody');
+    logBody.innerHTML = state.log.slice(0, 6).map(r => `
+      <div class="log-row">
+        <span class="log-query">${r.query}</span>
+        <span><span class="route-badge ${r.type === 'chat' ? 'route-chat' : 'route-research'}">${r.type}</span></span>
+        <span class="log-cost">$${r.cost.toFixed(4)}</span>
+        <span class="log-status ${r.exceeded ? 'status-interrupt' : 'status-ok'}">${r.exceeded ? 'INTERRUPT' : 'ok'}</span>
+      </div>
+    `).join('');
+
+    chart.data.labels = state.chartData.map(d => d.label);
+    chart.data.datasets[0].data = state.chartData.map(d => d.cost);
+    chart.data.datasets[0].backgroundColor = state.chartData.map(d =>
+      d.type === 'chat' ? '#378ADD' : '#BA7517'
+    );
+    chart.update();
+  }
+
+  function resetDash() {
+    state = { totalCost: 0, queries: 0, loops: 0, budget: state.budget, maxIter: state.maxIter, interrupted: false, log: [], chartData: [] };
+    document.getElementById('interruptBanner').style.display = 'none';
+    document.getElementById('budgetBar').style.width = '0%';
+    document.getElementById('budgetBar').classList.remove('warning');
+    document.getElementById('logBody').innerHTML = '';
+    chart.data.labels = [];
+    chart.data.datasets[0].data = [];
+    chart.update();
+    updateUI(0, false);
+  }
+
+  document.getElementById('budgetSlider').addEventListener('input', function() {
+    state.budget = this.value * 0.01;
+    document.getElementById('budgetSliderVal').textContent = '$' + state.budget.toFixed(2);
+    document.getElementById('budgetLimit').textContent = '$' + state.budget.toFixed(2);
+  });
+
+  document.getElementById('iterSlider').addEventListener('input', function() {
+    state.maxIter = parseInt(this.value);
+    document.getElementById('iterSliderVal').textContent = this.value;
+  });
+</script>
