@@ -138,9 +138,30 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
 ---
 
 ### Phase 3: Router Node
-**Date:** [DATE]
-**Time Spent:** [HOURS]
-**Status:** ⬜ Not Started
+**Date:** April 7, 2026
+**Time Spent:** ~1 hour
+**Status:** ✅ Complete
+
+#### What I Did:
+- [x] Defined AgentState TypedDict in graph.py
+- [x] Built router_node using Claude Haiku
+- [x] Built route_decision edge function
+- [x] Built chat_responder_node
+- [x] Wired graph together in build_graph()
+- [x] Tested all four routing scenarios successfully
+
+#### Challenges Faced:
+```
+Challenge 1: API key not loading
+- Error: Could not resolve authentication method
+- Solution: Added load_dotenv() to top of nodes.py
+- Lesson: load_dotenv() must be called before the Anthropic client initializes
+```
+
+#### Cost Tracker:
+- Routing cost per query: ~$0.000070 (well under $0.001 target)
+- Chat response cost per query: ~$0.000130
+- Running total: ~$0.001
 
 ---
 
