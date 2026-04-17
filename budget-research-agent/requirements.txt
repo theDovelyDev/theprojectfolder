@@ -1,0 +1,13 @@
+anthropic==0.89.0
+langchain-anthropic==1.4.0
+langchain-core==1.2.26
+langgraph==1.1.6
+langgraph-checkpoint==4.0.1
+langgraph-prebuilt==1.0.9
+langgraph-sdk==0.3.12
+python-dotenv==1.2.2
+tavily-python==0.7.23
+fastapi==0.115.12
+uvicorn==0.34.0
+pydantic==2.12.5
+httpx==0.28.1
