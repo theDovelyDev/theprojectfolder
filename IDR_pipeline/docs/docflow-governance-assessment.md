@@ -11,6 +11,23 @@
 
 DocFlow is a serverless AWS pipeline that extracts and analyzes structured data from invoices and receipts using AWS Textract (OCR) and AWS Comprehend (NLP). This assessment maps the current state of DocFlow's governance controls against the NIST AI Risk Management Framework (AI RMF 1.0) across four functions: Govern, Map, Measure, and Manage.
 
+**Assessment Scoring Rubric**
+
+Alignment status for each NIST AI RMF function is determined by the following criteria:
+
+| Status | Definition| DocFlow Threshold|
+|--------|-----------| -----------------|
+|🟢 Aligned | All core controls for this function are implemented and documented. Gaps are minor or cosmetic. | ≥80% of controls present with no High-risk gaps
+|🟡 Partial | Core controls are partially implemented. At least one Medium-risk gap exists with no remediation in place. | 40–79% of controls present, or ≥1 unmitigated Medium gap
+|🔴 Not Aligned | Few or no controls implemented. High-risk gaps present with no remediation path defined. |<40% of controls present, or ≥1 unmitigated High gap
+
+**Notes on scoring:**
+
+- Scoring reflects current state at time of assessment — March 2026
+- Risk ratings (Low, Medium, High) reflect potential impact in a general enterprise deployment context, not current single-tenant portfolio use
+- A "Partial" rating does not indicate failure — it indicates a known gap with a documented remediation path
+- This is a self-assessment. Independent third-party scoring may differ.
+
 **Overall Assessment: Partially Aligned**
 
 DocFlow demonstrates strong operational governance practices derived from FinOps discipline — cost controls, resource tagging, audit trails, and documented limitations. It has material gaps in areas specific to AI governance: bias evaluation, data provenance, explainability documentation, and formal risk categorization.
@@ -61,12 +78,12 @@ Phase-by-phase development log captures every architectural decision, trade-off,
 
 ### Gaps
 
-| Gap | Risk | Remediation |
-|-----|------|-------------|
-| No formal AI governance policy | Medium | Define acceptable use, prohibited use cases, escalation path |
-| No designated AI risk owner separate from developer | Medium | For enterprise: assign governance role distinct from builder role |
-| No user communication about AI involvement | Low-Medium | Disclose that outputs are AI-generated and require verification |
-| No incident response plan for AI failures | Medium | Define what constitutes a failure, who is notified, and how |
+| ID | Gap | Risk | Remediation |
+|-----|-----|------|-------------|
+| GOV-01 | No formal AI governance policy | Medium | Define acceptable use, prohibited use cases, escalation path |
+| GOV-02 | No designated AI risk owner separate from developer | Medium | For enterprise: assign governance role distinct from builder role |
+|GOV-03 | No user communication about AI involvement | Low-Medium | Disclose that outputs are AI-generated and require verification |
+| GOV-04 | No incident response plan for AI failures | Medium | Define what constitutes a failure, who is notified, and how |
 
 ---
 
@@ -97,12 +114,12 @@ Both are black-box managed services. Input/output behavior is observable. Intern
 
 ### Gaps
 
-| Gap | Risk | Remediation |
-|-----|------|-------------|
-| No formal risk categorization by NIST AI RMF tier | Low (current scale) | Classify as Limited Risk; document basis for classification |
-| No training data provenance for Textract or Comprehend | Medium | Review AWS model cards and service documentation; document known data characteristics |
-| No stakeholder impact assessment | Low-Medium | Identify all parties affected by DocFlow outputs (staff, vendors, auditors) |
-| No prohibited use documentation | Low | Define explicitly what DocFlow should not be used for |
+| ID | Gap | Risk | Remediation |
+|------|------|------|-------------|
+| MAP-01 | No formal risk categorization by NIST AI RMF tier | Low (current scale) | Classify as Limited Risk; document basis for classification |
+| MAP-02 | No training data provenance for Textract or Comprehend | Medium | Review AWS model cards and service documentation; document known data characteristics |
+| MAP-03 | No stakeholder impact assessment | Low-Medium | Identify all parties affected by DocFlow outputs (staff, vendors, auditors) |
+| MAP-04 | No prohibited use documentation | Low | Define explicitly what DocFlow should not be used for |
 
 ---
 
@@ -139,13 +156,13 @@ Textract returns per-block confidence scores. DocFlow calculates and stores aver
 
 ### Gaps
 
-| Gap | Risk | Remediation |
-|-----|------|-------------|
-| No bias evaluation on Textract or Comprehend outputs | Medium | Test against diverse document samples; document performance variance by document type, language, and formatting |
-| No confidence calibration analysis | Medium | Validate that confidence scores correlate with actual accuracy |
-| No drift monitoring | Low (static model) | AWS managed models update without notice; implement periodic regression testing |
-| Sentiment analysis not validated for document processing context | Low | All 150 test documents returned NEUTRAL — validate this is expected, not a model limitation |
-| No adversarial testing | Medium | Test with malformed, adversarial, or edge-case documents |
+| ID | Gap | Risk | Remediation |
+|------|-----|------|-------------|
+| MEA-01 | No bias evaluation on Textract or Comprehend outputs | Medium | Test against diverse document samples; document performance variance by document type, language, and formatting |
+| MEA-02 | No confidence calibration analysis | Medium | Validate that confidence scores correlate with actual accuracy |
+| MEA-03 | No drift monitoring | Low (static model) | AWS managed models update without notice; implement periodic regression testing |
+| MEA-04 | Sentiment analysis not validated for document processing context | Low | All 150 test documents returned NEUTRAL — validate this is expected, not a model limitation |
+| MEA-05 | No adversarial testing | Medium | Test with malformed, adversarial, or edge-case documents |
 
 ---
 
@@ -178,13 +195,13 @@ Weekly tag audit Lambda confirms resource ownership and governance metadata comp
 
 ### Gaps
 
-| Gap | Risk | Remediation |
-|-----|------|-------------|
-| No human review queue for low-confidence extractions | Medium | Implement confidence threshold (e.g., <85%) that routes to human review |
-| No feedback loop for incorrect extractions | Medium | Allow users to flag incorrect results; use to monitor model performance over time |
-| No formal SLA or uptime commitment | Low (portfolio) | For enterprise: define acceptable downtime, recovery time objective |
-| No data retention or deletion policy | Medium | Define how long extracted data is retained in DynamoDB and S3; implement lifecycle rules |
-| Multi-tenancy not implemented | High (for SaaS) | Customer data isolation required before any multi-customer deployment |
+| ID | Gap | Risk | Remediation |
+|-----|-----|------|-------------|
+| MAN-01 | No human review queue for low-confidence extractions | Medium | Implement confidence threshold (e.g., <85%) that routes to human review |
+| MAN-02 | No feedback loop for incorrect extractions | Medium | Allow users to flag incorrect results; use to monitor model performance over time |
+| MAN-03 | No formal SLA or uptime commitment | Low (portfolio) | For enterprise: define acceptable downtime, recovery time objective |
+| MAN-04 | No data retention or deletion policy | Medium | Define how long extracted data is retained in DynamoDB and S3; implement lifecycle rules |
+| MAN-05 | Multi-tenancy not implemented | High (for SaaS) | Customer data isolation required before any multi-customer deployment |
 
 ---
 
@@ -193,27 +210,84 @@ Weekly tag audit Lambda confirms resource ownership and governance metadata comp
 Before DocFlow could be deployed in a general enterprise context, the following would be required:
 
 ### Must Have
-- [ ] Multi-tenancy — tenant isolation at DynamoDB and S3 layer
-- [ ] Authentication — Cognito or equivalent; no anonymous API access
-- [ ] Data retention policy — define and implement automated deletion
-- [ ] Human review queue — confidence threshold routing
-- [ ] Formal risk classification document (NIST AI RMF tier)
-- [ ] AI use disclosure to end users
-- [ ] Incident response runbook
+- [ ] **MAN-05** — Multi-tenancy — tenant isolation at DynamoDB and S3 layer
+- [ ] **GOV-02** — Authentication — Cognito or equivalent; no anonymous API access
+- [ ] **MAN-04** — Data retention policy — define and implement automated deletion
+- [ ] **MAN-01** — Human review queue — confidence threshold routing
+- [ ] **MAP-01** — Formal risk classification document (NIST AI RMF tier)
+- [ ] **GOV-03** — AI use disclosure to end users
+- [ ] **GOV-04** — Incident response runbook
 
 ### Should Have
-- [ ] Bias evaluation across document types and demographics
-- [ ] Training data provenance documentation for Textract and Comprehend
-- [ ] Confidence calibration analysis
-- [ ] Periodic regression testing against held-out document set
-- [ ] Feedback mechanism for incorrect extractions
-- [ ] Formal SLA
+- [ ] **MEA-01** — Bias evaluation across document types and demographics
+- [ ] **MAP-02** — Training data provenance documentation for Textract and Comprehend
+- [ ] **MEA-02** — Confidence calibration analysis
+- [ ] **MEA-03** — Periodic regression testing against held-out document set
+- [ ] **MAN-02** — Feedback mechanism for incorrect extractions
+- [ ] **MAN-03** — Formal SLA
 
 ### Nice to Have
-- [ ] Adversarial testing protocol
-- [ ] Third-party audit of AI system outputs
-- [ ] Model drift monitoring
-- [ ] Explainability documentation for Comprehend entity classifications
+- [ ] **MEA-05** — Adversarial testing protocol
+- [ ] **GOV-05** — Third-party audit of AI system outputs
+- [ ] **MEA-03** — Model drift monitoring
+- [ ] **MEA-06** — Explainability documentation for Comprehend entity classifications
+
+---
+## Remediation Path
+
+Gaps identified in this assessment are prioritized into three horizons based on risk level and effort required for enterprise deployment.
+
+### Immediate (~2 weeks · $0 infrastructure impact)
+
+These items are blockers — DocFlow cannot be responsibly deployed to a multi-customer or regulated enterprise environment without them.
+
+| ID | Item | Effort | Cost Impact |
+|----|------|--------|-------------|
+| MAN-05 | Multi-tenancy — tenant isolation at S3 and DynamoDB | 2–3 days | +$0 |
+| GOV-02 | Cognito authentication — no anonymous API access | 1 day | +$0.0055/MAU |
+| MAN-04 | Data retention policy + automated deletion | 1 day | Reduces S3/DynamoDB cost |
+| MAN-01 | Human review queue for low-confidence extractions | 1–2 days | +$0 |
+| MAP-01 | Formal NIST AI RMF risk classification document | 4 hours | $0 |
+| GOV-03 | AI use disclosure to end users | 2 hours | $0 |
+| GOV-04 | Incident response runbook | 4 hours | $0 |
+
+**Total immediate remediation: ~2 weeks, negligible infrastructure cost increase**
+
+### Short-Term (30–60 Days · ~$5/month ongoing)
+
+These items reduce ongoing risk and build the evidence base for model trustworthiness.
+
+| ID | Item | Effort | Cost Impact |
+|----|------|--------|-------------|
+| MEA-01 | Bias evaluation across document types | 1 week | +$0 (testing cost only) |
+| MAP-02 | Training data provenance (Textract + Comprehend) | 3–4 days research | $0 |
+| MEA-02 | Confidence calibration analysis | 3–4 days | +$0 |
+| MEA-03 | Monthly regression testing protocol | 2 days setup | +~$5/month |
+| MAN-02 | Feedback mechanism for incorrect extractions | 2–3 days | +$0 |
+| MAN-03 | Formal SLA definition | 1 day | $0 |
+
+**Total short-term remediation: ~3 weeks engineering, ~$5/month ongoing**
+
+### Long-Term (90+ Days · $5K–$15K audit)
+
+These items reflect mature AI governance practice and are appropriate once the system has production usage data to analyze.
+
+| ID | Item | Effort | Cost Impact |
+|----|------|--------|-------------|
+| GOV-05 | Third-party independent AI system audit | External engagement | $5,000–$15,000 one-time |
+| MEA-03 | Automated model drift monitoring | 1 week | +~$10/month (CloudWatch) |
+| MEA-06 | Explainability documentation for Comprehend | 1–2 weeks research | $0 |
+| MEA-05 | Adversarial testing protocol | 1 week | $0 |
+
+**Total long-term: external audit is the largest investment; infrastructure additions are minimal**
+
+### Remediation Summary
+
+| Horizon | Effort | Cost | Risk Reduction |
+|---------|--------|------|----------------|
+| Immediate | ~2 weeks | ~$0 | High — resolves all deployment blockers |
+| Short-term | ~3 weeks | ~$5/month | Medium — builds evidence base |
+| Long-term | Ongoing | $5K–$15K (audit) | Low — mature governance practice |
 
 ---
 

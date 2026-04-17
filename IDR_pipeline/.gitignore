@@ -34,4 +34,6 @@ lambda/package/
 lambda/function.zip
 test-invoice.png
 test-*.png
-Doc_Processing_Development_Log.md
+docs\Doc_Processing_Development_Log.md
+docs\substack-ai-governance.md
+docs\docflow-pitch-deck.html
