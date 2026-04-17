@@ -142,40 +142,101 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
 **Time Spent:** ~1 hour
 **Status:** ✅ Complete
 
-#### What I Did:
-- [x] Defined AgentState TypedDict in graph.py
-- [x] Built router_node using Claude Haiku
-- [x] Built route_decision edge function
-- [x] Built chat_responder_node
-- [x] Wired graph together in build_graph()
+#### What I Built:
+- [x] Defined AgentState TypedDict in graph.py — the state dictionary 
+      that flows through every node
+- [x] Built router_node using Claude Haiku for cheap query classification
+- [x] Built route_decision edge function — reads state["route"] and tells
+      LangGraph where to go next
+- [x] Built chat_responder_node for non-research queries
+- [x] Wired full graph in build_graph()
+- [x] Fixed API key loading — added load_dotenv() before Anthropic client init
 - [x] Tested all four routing scenarios successfully
 
-#### Challenges Faced:
-```
-Challenge 1: API key not loading
-- Error: Could not resolve authentication method
-- Solution: Added load_dotenv() to top of nodes.py
-- Lesson: load_dotenv() must be called before the Anthropic client initializes
-```
+#### Key Decisions:
+- Claude Haiku chosen for routing — cheapest model, one-word output, 
+  classification doesn't need Sonnet-level reasoning
+- System prompt defines exactly two categories: chat and research
+- Edge function is separate from the node — Haiku classifies, 
+  route_decision routes. Two separate jobs.
 
 #### Cost Tracker:
-- Routing cost per query: ~$0.000070 (well under $0.001 target)
+- Routing cost per query: ~$0.000070 (target was <$0.001 ✅)
 - Chat response cost per query: ~$0.000130
 - Running total: ~$0.001
 
 ---
 
-### Phase 4: Budget Kill Switch
-**Date:** [DATE]
-**Time Spent:** [HOURS]
-**Status:** ⬜ Not Started
+### Phase 4: Budget Kill Switch & Researcher Node
+**Date:** April 7, 2026
+**Time Spent:** ~2 hours
+**Status:** ✅ Complete
+
+#### What I Built:
+- [x] Built budget.py with check_budget() function and budget_gate edge
+- [x] Built tools.py with Tavily search wrapper (search_web())
+- [x] Added researcher_node to nodes.py — calls Tavily then Claude Sonnet
+- [x] Added needs_more_research edge function to nodes.py
+- [x] Wired full graph in graph.py with all four nodes and three 
+      conditional edges
+- [x] Tested chat and research routes end-to-end
+
+#### Key Decisions:
+- check_budget() is pure Python — no API call, no external service.
+  Runs before every research loop inside the Fargate container
+- budget_gate and needs_more_research are edge functions — they read 
+  state and return a string, they don't do work
+- Tavily chosen for search — built for LLM agents, clean output, 
+  free tier covers full dev cycle
+- Claude Sonnet used for research synthesis — best reasoning for 
+  complex multi-source answers
+- Human-in-the-loop interrupt message implemented as display only —
+  full yes/no resume workflow documented as planned Phase 2 feature
+
+#### Three Conditional Edges:
+- route_decision — chat or research?
+- budget_gate — budget exceeded or clear?
+- needs_more_research — loop back or done?
+
+#### Cost Tracker:
+- Routing cost per query: ~$0.000070
+- Research cost per query: ~$0.0049 (target was $0.02-0.04 ✅)
+- Running total: ~$0.012
 
 ---
 
-### Phase 5: Testing
-**Date:** [DATE]
-**Time Spent:** [HOURS]
-**Status:** ⬜ Not Started
+### Phase 5: Testing, CLI & Cost Tracker
+**Date:** April 7, 2026
+**Time Spent:** ~1 hour
+**Status:** ✅ Complete
+
+#### What I Built:
+- [x] Wrote tests/test_agent.py with three test scenarios
+- [x] Test 1: Chat route — confirmed cheap, correct answer
+- [x] Test 2: Research route — confirmed Tavily + Sonnet firing correctly
+- [x] Test 3: Budget interrupt — confirmed kill switch fires at $0.05
+- [x] Named agent CARA (Cost-Aware Research Agent)
+- [x] Built main.py CLI with CARA branding
+- [x] Created COST_TRACKER_GUIDE.md
+- [x] Built interactive cost dashboard (HTML artifact)
+
+#### Key Decisions:
+- pytest collects 0 items on run() functions — ran tests directly 
+  with python -m tests.test_agent instead
+- Budget interrupt test requires total_cost: 0.04999 not 0.0499 —
+  router adds ~$0.000077 which tips it just over $0.05
+- CARA named for portfolio and Substack recording clarity
+- Cost dashboard built as simulated demo — will wire to live Fargate 
+  API endpoint in Phase 6
+
+#### Challenges:
+- Budget interrupt didn't fire at 0.0499 — root cause: router runs 
+  first and adds cost BEFORE budget check. Solution: start at 0.04999
+  so router cost tips it over the threshold
+
+#### Cost Tracker:
+- Phase 5 testing: ~$0.015 (chat + research + interrupt tests)
+- Running total: ~$0.027
 
 ---
 
