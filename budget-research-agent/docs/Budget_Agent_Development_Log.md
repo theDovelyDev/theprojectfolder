@@ -240,11 +240,30 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
 
 ---
 
-### Phase 6: Deployment to Fargate
-**Date:** [DATE]
-**Time Spent:** [HOURS]
-**Status:** ⬜ Not Started
+### Phase 6: Deployment to AWS Fargate
+**Date:** April 2026
+**Time Spent:** In progress
+**Status:** 🚧 In Progress
 
+#### What I've Done So Far:
+- [x] Renamed agent from CAP to CARA (Cost-Aware Research Agent)
+- [x] Updated main.py, README.md, and dev log with CARA branding
+- [x] Created architecture diagram in LucidChart (technical + simplified)
+      - Full infrastructure diagram: Fargate boundary, Secrets Manager,
+        CloudWatch, chat/research paths, HITL planned section
+      - Simplified data flow diagram for Substack/general audience
+- [x] Created app.py — FastAPI wrapper with /research and /health endpoints
+- [x] Created Dockerfile using python:3.11-slim base image
+- [x] Populated requirements.txt with production dependencies only
+- [x] Installed fastapi and uvicorn
+- [x] Built cara container image (Docker 29.4.0, ARM64)
+- [x] Tested container locally via Docker Desktop
+      - Health endpoint: {"status":"ok","agent":"C.A.R.A."} ✅
+      - Chat route: $0.0002, correct answer ✅
+      - Research route: $0.0048, Tavily + Sonnet firing correctly ✅
+      - CPU spike visible in Docker Desktop Stats tab during research ✅
+
+#### Lessons Learned So Far:
 ---
 
 ### Phase 7: Documentation & Portfolio Prep
