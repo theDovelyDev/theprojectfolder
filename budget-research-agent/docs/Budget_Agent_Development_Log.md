@@ -241,7 +241,7 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
 ---
 
 ### Phase 6: Deployment to AWS Fargate
-**Date:** April 2026
+**Date:** April 18, 2026
 **Time Spent:** In progress
 **Status:** 🚧 In Progress
 
@@ -262,6 +262,30 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
       - Chat route: $0.0002, correct answer ✅
       - Research route: $0.0048, Tavily + Sonnet firing correctly ✅
       - CPU spike visible in Docker Desktop Stats tab during research ✅
+- [x] Created AWS Budget alert for CARA (CARA-Project2-Budget, $10 limit)
+- [x] Tagged all hosting account (102587257710) resources
+      - Cloud Resume Challenge resources tagged as Project0
+      - S3 buckets, CloudFront, Lambda, DynamoDB, IAM policies, CFT stacks
+      - Component tags added via console to bypass CFT system tag restriction
+- [x] Set up HostingTagAuditFunction in hosting account
+      - SNS topic, IAM role, Lambda, EventBridge Scheduler
+      - Improved three-section report format (fully tagged, missing, untagged)
+      - Weekly schedule confirmed active
+- [x] Updated sandbox TagAuditFunction with improved report format
+      - Per-project breakdown by KNOWN_PROJECTS
+      - Summary counts + three grouped lists per project
+- [x] Created ECR repository `cara` in correct sandbox account (848747536965)
+
+#### Still To Do:
+- [ ] Debug manual Lambda invoke not sending email (sandbox TagAuditFunction)
+- [ ] Set up CloudWatch alarm with auto-stop for idle Fargate
+- [ ] Push CARA image to ECR
+- [ ] Create ECS cluster and Fargate task definition
+- [ ] Configure Secrets Manager for API keys
+- [ ] Deploy and test live endpoint
+- [ ] Wire cost dashboard to live Fargate API
+- [ ] Deploy dashboard to theprojectfolder.com
+
 
 #### Lessons Learned So Far:
 ---
