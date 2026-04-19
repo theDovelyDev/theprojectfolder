@@ -1,27 +1,28 @@
 #!/bin/bash
+# Apply standard Project 2 tags to any resource by ARN
+# Usage: bash fix-tags.sh <resource-arn> <component-value>
+# Example: bash fix-tags.sh arn:aws:s3:::my-bucket container
 
-# Usage: ./fix-tags.sh <resource-arn>
-
-RESOURCE_ARN=$1
-
-if [ -z "$RESOURCE_ARN" ]; then
-    echo "Usage: ./fix-tags.sh <resource-arn>"
-    exit 1
-fi
-
-# Load standard tags
 source setup.sh
 
-echo "Applying standard tags to: $RESOURCE_ARN"
+RESOURCE_ARN=$1
+COMPONENT=$2
 
-# Apply all required tags
-aws resourcegroupstaggingapi tag-resources \
-    --resource-arn-list "$RESOURCE_ARN" \
-    --tags "{\"Project\":\"${PROJECT_TAG}\",\"CostCenter\":\"${COST_CENTER}\",\"Environment\":\"${ENVIRONMENT}\",\"CreatedDate\":\"${CREATED_DATE}\",\"ManagedBy\":\"${MANAGED_BY}\"}" \
-    --profile doc-processing-dev
-
-if [ $? -eq 0 ]; then
-    echo "✅ Tags applied successfully"
-else
-    echo "❌ Failed to apply tags"
+if [ -z "$RESOURCE_ARN" ] || [ -z "$COMPONENT" ]; then
+  echo "❌ Usage: bash fix-tags.sh <resource-arn> <component-value>"
+  echo "   Component values: container | api | monitoring | iam | config"
+  exit 1
 fi
+
+echo "🏷️  Applying tags to: ${RESOURCE_ARN}"
+echo "   Component: ${COMPONENT}"
+echo ""
+
+aws resourcegroupstaggingapi tag-resources \
+  --resource-arn-list "${RESOURCE_ARN}" \
+  --tags "{\"Project\":\"${PROJECT_TAG}\",\"CostCenter\":\"${COST_CENTER}\",\"Environment\":\"${ENVIRONMENT}\",\"CreatedDate\":\"${CREATED_DATE}\",\"ManagedBy\":\"${MANAGED_BY}\",\"Component\":\"${COMPONENT}\"}" \
+  --region "${REGION}" \
+  --profile "${AWS_PROFILE}"
+
+echo ""
+echo "✅ Tags applied. Verify with: bash verify-tag-audit.sh"
