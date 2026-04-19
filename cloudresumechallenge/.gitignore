@@ -3,7 +3,7 @@
 *.pem
 *credentials*
 .env
-setup.sh
+
 
 # Python
 __pycache__/
@@ -27,3 +27,4 @@ Thumbs.db
 .idea/
 
 # Project specific
+*.sh
