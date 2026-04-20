@@ -323,7 +323,42 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
 
 ---
 
-### Phase 7: Documentation & Portfolio Prep
+### Phase 7: CARA Live UI + Cost Dashboard
+**Date:** April 20, 2026
+**Time Spent:** In progress
+**Status:** 🚧 In Progress
+
+#### Spec:
+- Single page at theprojectfolder.com/cara
+- Left: chat interface wired to Fargate /research endpoint
+- Right: live cost dashboard reading real total_cost from agent state
+- Offline state: "CARA is offline" when Fargate desired count = 0
+- Visual identity: amber/dark theme consistent with CARA branding
+
+#### Build Sequence:
+- [ ] Add CORSMiddleware to app.py
+- [ ] Rebuild and push Docker image (linux/amd64)
+- [ ] Start Fargate (desired count = 1)
+- [ ] Build single page HTML (chat + dashboard)
+- [ ] Test end to end against live Fargate endpoint
+- [ ] Deploy to theprojectfolder.com/cara via GitHub Actions
+- [ ] Verify GA4 tracking firing correctly
+- [ ] Stop Fargate (desired count = 0)
+- [ ] Update CloudWatch auto-stop alarms to reflect new testing session
+
+#### What I Did:
+[fill in during build]
+
+#### Challenges Faced:
+[fill in during build]
+
+#### Cost Tracker:
+- Fargate (Phase 7 testing): TBD
+- Running total: ~$0.09 + Phase 7 costs
+
+---
+
+### Phase8: Documentation & Portfolio Prep
 **Date:** [DATE]
 **Time Spent:** [HOURS]
 **Status:** ⬜ Not Started

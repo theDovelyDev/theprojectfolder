@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.A.R.A. — Cost-Aware Research Agent</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --surface: #f8f7f5;
+            --surface2: #f1efe8;
+            --border: rgba(186,117,23,0.2);
+            --text: #2c2c2a;
+            --text-muted: #888780;
+            --text-dim: #5f5e5a;
+            --amber: #BA7517;
+            --amber-light: #EF9F27;
+            --amber-dim: rgba(186, 117, 23, 0.15);
+            --danger: #E24B4A;
+            --success: #3B6D11;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'Syne', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface);
+        }
+
+        .logo {
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            color: var(--amber-light);
+        }
+
+        .logo span {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.8rem;
+            margin-left: 0.75rem;
+            font-family: var(--mono);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-dot.online {
+            background: #639922;
+            animation: pulse-green 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: var(--danger);
+        }
+
+        @keyframes pulse-green {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* Main layout */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 0;
+            height: calc(100vh - 57px);
+        }
+
+        /* Left: Chat panel */
+        .chat-panel {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+        }
+
+        .panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: var(--surface);
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        /* Offline state */
+        .offline-banner {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            gap: 1rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .offline-banner.visible {
+            display: flex;
+        }
+
+        .offline-icon {
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--danger);
+            font-size: 1.25rem;
+        }
+
+        .offline-banner h2 {
+            font-family: var(--sans);
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .offline-banner p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-width: 280px;
+            line-height: 1.6;
+        }
+
+        /* Welcome state */
+        .welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            gap: 0.75rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .welcome h2 {
+            font-family: var(--sans);
+            font-size: 1.1rem;
+            color: var(--amber-light);
+        }
+
+        .welcome p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-width: 300px;
+            line-height: 1.7;
+        }
+
+        .example-queries {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .example-query {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            text-align: left;
+            transition: border-color 0.15s, color 0.15s;
+        }
+
+        .example-query:hover {
+            border-color: var(--amber);
+            color: var(--amber-light);
+        }
+
+        /* Message bubbles */
+        .message {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message.cara {
+            align-items: flex-start;
+        }
+
+        .bubble {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .message.user .bubble {
+            background: var(--amber-dim);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .message.cara .bubble {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .message.cara .bubble.interrupted {
+            border-color: var(--danger);
+            background: rgba(226, 75, 74, 0.08);
+        }
+
+        .meta {
+            display: flex;
+            gap: 0.75rem;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .route-badge {
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 0.62rem;
+        }
+
+        .route-badge.chat {
+            background: #E6F1FB; 
+            color: #185FA5;
+        }
+
+        .route-badge.research {
+            background: #FAEEDA; 
+            color: #854F0B;
+        }
+
+        .thinking {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-width: 85%;
+        }
+
+        .thinking-dots span {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--amber);
+            animation: blink 1.2s infinite;
+        }
+
+        .thinking-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .thinking-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0.2;
+            }
+
+            40% {
+                opacity: 1;
+            }
+        }
+
+        /* Input area */
+        .input-area {
+            border-top: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            background: var(--surface);
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+
+        .input-wrap {
+            flex: 1;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            transition: border-color 0.15s;
+        }
+
+        .input-wrap:focus-within {
+            border-color: var(--amber);
+        }
+
+        textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            resize: none;
+            line-height: 1.5;
+            max-height: 120px;
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            background: var(--amber);
+            border: none;
+            border-radius: 6px;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .send-btn:hover {
+            background: var(--amber-light);
+        }
+
+        .send-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .send-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: #080a0d;
+        }
+
+        /* Right: Dashboard panel */
+        .dashboard-panel {
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            overflow-y: auto;
+        }
+
+        .dashboard-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .dashboard-panel::-webkit-scrollbar-thumb {
+            background: var(--border);
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metric {
+            background: var(--surface);
+            padding: 1rem 1.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+
+        .metric-value {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .metric-value.amber {
+            color: var(--amber-light);
+        }
+
+        .metric-value.danger {
+            color: var(--danger);
+        }
+
+        .metric-value.success { 
+            color: #3B6D11; 
+        }
+
+        .metric-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-family: var(--mono);
+        }
+
+        /* Budget bar */
+        .budget-section {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .budget-track {
+            height: 6px;
+            background: var(--surface2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .budget-fill {
+            height: 100%;
+            background: var(--amber);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .budget-fill.warning {
+            background: var(--danger);
+        }
+
+        /* Interrupt banner */
+        .interrupt-banner {
+            display: none;
+            margin: 0.75rem 1.25rem;
+            padding: 0.75rem 1rem;
+            background: rgba(226, 75, 74, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            color: var(--danger);
+            line-height: 1.5;
+        }
+
+        .interrupt-banner.visible {
+            display: block;
+        }
+
+        /* Query log */
+        .log-section {
+            flex: 1;
+        }
+
+        .log-header {
+            padding: 0.75rem 1.25rem;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .log-empty {
+            padding: 1.5rem 1.25rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .log-row {
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid rgba(186, 117, 23, 0.08);
+            display: grid;
+            grid-template-columns: 1fr 80px 70px 70px;
+            gap: 0.5rem;
+            align-items: center;
+            font-size: 0.7rem;
+        }
+
+        .log-query {
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .log-cost {
+            color: var(--text-muted);
+            font-size: 0.65rem;
+        }
+
+        .log-status {
+            font-size: 0.65rem;
+        }
+
+        .log-status.ok {
+            color: #97C459;
+        }
+
+        .log-status.interrupted {
+            color: var(--danger);
+        }
+
+        /* Reset button */
+        .reset-btn {
+            margin: 0.75rem 1.25rem;
+            padding: 0.5rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+            width: calc(100% - 2.5rem);
+        }
+
+        .reset-btn:hover {
+            border-color: var(--amber);
+            color: var(--amber-light);
+        }
+
+        /* Footer */
+        .cara-footer {
+            padding: 0.6rem 1.25rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .cara-footer a {
+            color: var(--amber);
+            text-decoration: none;
+        }
+
+        .cara-footer a:hover {
+            color: var(--amber-light);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            C.A.R.A.
+            <span>Cost-Aware Research Agent</span>
+        </div>
+        <div class="status-pill">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">checking...</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+            <div class="panel-header">conversation</div>
+
+            <div class="messages" id="messages">
+                <!-- Offline state -->
+                <div class="offline-banner" id="offlineBanner">
+                    <div class="offline-icon">✕</div>
+                    <h2>CARA is offline</h2>
+                    <p>The agent is not currently running. Check back soon or follow
+                        <a href="https://carlandrainthecloud.substack.com" style="color:var(--amber)">Carlandra in the
+                            Cloud</a>
+                        for updates on when CARA is live.
+                    </p>
+                </div>
+
+                <!-- Welcome state -->
+                <div class="welcome" id="welcomeState">
+                    <h2>Ask CARA anything</h2>
+                    <p>CARA routes your query to the right model — cheap classification,
+                        expensive research only when needed. Kill switch fires at $0.05.</p>
+                    <div class="example-queries">
+                        <button class="example-query" onclick="useExample(this)">What are the latest AWS cost
+                            optimization tools in 2025?</button>
+                        <button class="example-query" onclick="useExample(this)">What is FinOps and why does it matter
+                            for AI?</button>
+                        <button class="example-query" onclick="useExample(this)">How does LangGraph compare to
+                            CrewAI?</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrap">
+                    <textarea id="queryInput" placeholder="Ask CARA..." rows="1" onkeydown="handleKey(event)"
+                        oninput="autoResize(this)"></textarea>
+                </div>
+                <button class="send-btn" id="sendBtn" onclick="sendQuery()" disabled>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2 21l21-9L2 3v7l15 2-15 2z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Panel -->
+        <div class="dashboard-panel">
+            <div class="panel-header">live cost dashboard</div>
+
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-label">total spent</div>
+                    <div class="metric-value amber" id="totalSpent">$0.0000</div>
+                    <div class="metric-sub">of $0.05 limit</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">queries</div>
+                    <div class="metric-value" id="queryCount">0</div>
+                    <div class="metric-sub">this session</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">research loops</div>
+                    <div class="metric-value" id="loopCount">0</div>
+                    <div class="metric-sub">total iterations</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">kill switch</div>
+                    <div class="metric-value success" id="killStatus">clear</div>
+                    <div class="metric-sub" id="budgetPct">0% used</div>
+                </div>  
+            </div>
+
+            <div class="budget-section">
+                <div class="budget-header">
+                    <span>budget consumed</span>
+                    <span id="budgetLabel">$0.0000 / $0.05</span>
+                </div>
+                <div class="budget-track">
+                    <div class="budget-fill" id="budgetFill" style="width:0%"></div>
+                </div>
+            </div>
+
+            <div class="interrupt-banner" id="interruptBanner">
+                Kill switch triggered — $0.05 threshold reached. Agent paused.
+            </div>
+
+            <div class="log-section">
+                <div class="log-header">query log</div>
+                <div id="logBody">
+                    <div class="log-empty">no queries yet</div>
+                </div>
+            </div>
+
+            <button class="reset-btn" onclick="resetSession()">reset session</button>
+
+            <div class="cara-footer">
+                built by <a
+                    href="https://theprojectfolder.com?utm_source=cara&utm_medium=ui&utm_campaign=portfolio">Carlandra
+                    in the Cloud</a>
+                &nbsp;·&nbsp;
+                <a
+                    href="https://carlandrainthecloud.substack.com?utm_source=cara&utm_medium=ui&utm_campaign=portfolio">substack</a>
+                &nbsp;·&nbsp;
+                <a
+                    href="https://github.com/theDovelyDev?utm_source=cara&utm_medium=ui&utm_campaign=portfolio">github</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API = 'https://67bw5r3zvj.execute-api.us-east-1.amazonaws.com/prod';
+        const BUDGET = 0.05;
+
+        let session = {
+            totalCost: 0,
+            queries: 0,
+            loops: 0,
+            interrupted: false,
+            log: []
+        };
+
+        // Check if CARA is online
+        async function checkStatus() {
+            try {
+                const res = await fetch(`${API}/health`, { signal: AbortSignal.timeout(5000) });
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    setOnline(true);
+                } else {
+                    setOnline(false);
+                }
+            } catch {
+                setOnline(false);
+            }
+        }
+
+        function setOnline(online) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            const offline = document.getElementById('offlineBanner');
+            const welcome = document.getElementById('welcomeState');
+            const sendBtn = document.getElementById('sendBtn');
+            const input = document.getElementById('queryInput');
+
+            if (online) {
+                dot.className = 'status-dot online';
+                text.textContent = 'online';
+                offline.classList.remove('visible');
+                welcome.style.display = 'flex';
+                sendBtn.disabled = false;
+                input.disabled = false;
+            } else {
+                dot.className = 'status-dot offline';
+                text.textContent = 'offline';
+                offline.classList.add('visible');
+                welcome.style.display = 'none';
+                sendBtn.disabled = true;
+                input.disabled = true;
+            }
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendQuery();
+            }
+        }
+
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+        }
+
+        function useExample(btn) {
+            const input = document.getElementById('queryInput');
+            input.value = btn.textContent;
+            autoResize(input);
+            input.focus();
+        }
+
+        function hideWelcome() {
+            const welcome = document.getElementById('welcomeState');
+            if (welcome) welcome.style.display = 'none';
+        }
+
+        function addMessage(role, content, meta) {
+            hideWelcome();
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            if (meta && meta.interrupted) bubble.classList.add('interrupted');
+            bubble.textContent = content;
+            div.appendChild(bubble);
+
+            if (meta) {
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'meta';
+
+                if (meta.route) {
+                    const badge = document.createElement('span');
+                    badge.className = `route-badge ${meta.route}`;
+                    badge.textContent = meta.route;
+                    metaDiv.appendChild(badge);
+                }
+
+                if (meta.cost !== undefined) {
+                    const cost = document.createElement('span');
+                    cost.textContent = `$${meta.cost.toFixed(4)}`;
+                    metaDiv.appendChild(cost);
+                }
+
+                if (meta.loops !== undefined && meta.loops > 0) {
+                    const loops = document.createElement('span');
+                    loops.textContent = `${meta.loops} loop${meta.loops > 1 ? 's' : ''}`;
+                    metaDiv.appendChild(loops);
+                }
+
+                div.appendChild(metaDiv);
+            }
+
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function addThinking() {
+            hideWelcome();
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = 'message cara';
+            div.id = 'thinking';
+            div.innerHTML = `
+      <div class="thinking">
+        <span>CARA is thinking</span>
+        <div class="thinking-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>`;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function removeThinking() {
+            const t = document.getElementById('thinking');
+            if (t) t.remove();
+        }
+
+        function updateDashboard(cost, route, loops, interrupted) {
+            session.totalCost += cost;
+            session.queries += 1;
+            session.loops += loops || 0;
+
+            const pct = Math.min((session.totalCost / BUDGET) * 100, 100);
+
+            document.getElementById('totalSpent').textContent = `$${session.totalCost.toFixed(4)}`;
+            document.getElementById('queryCount').textContent = session.queries;
+            document.getElementById('loopCount').textContent = session.loops;
+            document.getElementById('budgetLabel').textContent = `$${session.totalCost.toFixed(4)} / $${BUDGET.toFixed(2)}`;
+
+            const fill = document.getElementById('budgetFill');
+            fill.style.width = `${pct.toFixed(1)}%`;
+            if (pct > 80) fill.classList.add('warning');
+
+            const killStatus = document.getElementById('killStatus');
+            if (interrupted || session.interrupted) {
+                session.interrupted = true;
+                killStatus.textContent = 'triggered';
+                killStatus.className = 'metric-value danger';
+                document.getElementById('interruptBanner').classList.add('visible');
+            } else if (pct > 80) {
+                killStatus.textContent = 'warning';
+                killStatus.className = 'metric-value amber';
+            }
+
+            addLogRow(cost, route, interrupted);
+        }
+
+        function addLogRow(cost, route, interrupted) {
+            const logBody = document.getElementById('logBody');
+            const empty = logBody.querySelector('.log-empty');
+            if (empty) empty.remove();
+
+            const row = document.createElement('div');
+            row.className = 'log-row';
+            row.innerHTML = `
+      <span class="log-query">Query ${session.queries}</span>
+      <span class="route-badge ${route}">${route}</span>
+      <span class="log-cost">$${cost.toFixed(4)}</span>
+      <span class="log-status ${interrupted ? 'interrupted' : 'ok'}">${interrupted ? 'interrupt' : 'ok'}</span>
+
+    `;
+            logBody.insertBefore(row, logBody.firstChild);
+        }
+
+        async function sendQuery() {
+            const input = document.getElementById('queryInput');
+            const query = input.value.trim();
+            if (!query || session.interrupted) return;
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            input.value = '';
+            input.style.height = 'auto';
+
+            addMessage('user', query);
+            addThinking();
+
+            try {
+                const res = await fetch(`${API}/research`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await res.json();
+                removeThinking();
+
+                addMessage('cara', data.answer, {
+                    route: data.route,
+                    cost: data.cost,
+                    loops: data.loops,
+                    interrupted: data.interrupted
+                });
+
+                updateDashboard(data.cost, data.route, data.loops, data.interrupted);
+
+            } catch (err) {
+                removeThinking();
+                addMessage('cara', 'Something went wrong — CARA may have gone offline. Please try again.');
+                setOnline(false);
+            }
+
+            if (!session.interrupted) sendBtn.disabled = false;
+            input.focus();
+        }
+
+        function resetSession() {
+            session = { totalCost: 0, queries: 0, loops: 0, interrupted: false, log: [] };
+
+            document.getElementById('totalSpent').textContent = '$0.0000';
+            document.getElementById('queryCount').textContent = '0';
+            document.getElementById('loopCount').textContent = '0';
+            document.getElementById('budgetLabel').textContent = '$0.0000 / $0.05';
+            document.getElementById('budgetFill').style.width = '0%';
+            document.getElementById('budgetFill').classList.remove('warning');
+            document.getElementById('killStatus').textContent = 'clear';
+            document.getElementById('killStatus').className = 'metric-value success';
+            document.getElementById('interruptBanner').classList.remove('visible');
+            document.getElementById('logBody').innerHTML = '<div class="log-empty">no queries yet</div>';
+
+            const messages = document.getElementById('messages');
+            messages.innerHTML = `
+      <div class="welcome" id="welcomeState">
+        <h2>Ask CARA anything</h2>
+        <p>CARA routes your query to the right model — cheap classification, 
+        expensive research only when needed. Kill switch fires at $0.05.</p>
+        <div class="example-queries">
+          <button class="example-query" onclick="useExample(this)">What are the latest AWS cost optimization tools in 2025?</button>
+          <button class="example-query" onclick="useExample(this)">What is FinOps and why does it matter for AI?</button>
+          <button class="example-query" onclick="useExample(this)">How does LangGraph compare to CrewAI?</button>
+        </div>
+      </div>`;
+
+            if (!session.interrupted) {
+                document.getElementById('sendBtn').disabled = false;
+            }
+        }
+
+        // Init
+        checkStatus();
+        setInterval(checkStatus, 30000);
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</body>
+
+</html>
