@@ -241,53 +241,86 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
 ---
 
 ### Phase 6: Deployment to AWS Fargate
-**Date:** April 18, 2026
-**Time Spent:** In progress
-**Status:** 🚧 In Progress
+**Date:** April 18-19, 2026
+**Time Spent:** ~4 hours
+**Status:** ✅ Complete
 
-#### What I've Done So Far:
-- [x] Renamed agent from CAP to CARA (Cost-Aware Research Agent)
-- [x] Updated main.py, README.md, and dev log with CARA branding
-- [x] Created architecture diagram in LucidChart (technical + simplified)
-      - Full infrastructure diagram: Fargate boundary, Secrets Manager,
-        CloudWatch, chat/research paths, HITL planned section
-      - Simplified data flow diagram for Substack/general audience
-- [x] Created app.py — FastAPI wrapper with /research and /health endpoints
-- [x] Created Dockerfile using python:3.11-slim base image
-- [x] Populated requirements.txt with production dependencies only
-- [x] Installed fastapi and uvicorn
-- [x] Built cara container image (Docker 29.4.0, ARM64)
+#### What I Built:
+- [x] Created `app.py` — FastAPI wrapper with /research and /health endpoints
+- [x] Created `Dockerfile` using python:3.11-slim base image
+- [x] Populated `requirements.txt` with production dependencies only
+- [x] Built CARA container image locally (Docker 29.4.0, ARM64 machine)
 - [x] Tested container locally via Docker Desktop
       - Health endpoint: {"status":"ok","agent":"C.A.R.A."} ✅
-      - Chat route: $0.0002, correct answer ✅
-      - Research route: $0.0048, Tavily + Sonnet firing correctly ✅
-      - CPU spike visible in Docker Desktop Stats tab during research ✅
-- [x] Created AWS Budget alert for CARA (CARA-Project2-Budget, $10 limit)
-- [x] Tagged all hosting account (102587257710) resources
-      - Cloud Resume Challenge resources tagged as Project0
-      - S3 buckets, CloudFront, Lambda, DynamoDB, IAM policies, CFT stacks
-      - Component tags added via console to bypass CFT system tag restriction
-- [x] Set up HostingTagAuditFunction in hosting account
-      - SNS topic, IAM role, Lambda, EventBridge Scheduler
-      - Improved three-section report format (fully tagged, missing, untagged)
-      - Weekly schedule confirmed active
-- [x] Updated sandbox TagAuditFunction with improved report format
-      - Per-project breakdown by KNOWN_PROJECTS
-      - Summary counts + three grouped lists per project
-- [x] Created ECR repository `cara` in correct sandbox account (848747536965)
+      - Chat route: $0.0002 ✅
+      - Research route: $0.0048 ✅
+- [x] Created ECR repository `cara` in sandbox account (848747536965)
+- [x] Created `budget-research-agent-dev` IAM user with least-privilege permissions
+- [x] Updated `setup.sh` with `AWS_PROFILE=budget-research-agent-dev`
+- [x] Rebuilt image for `linux/amd64` (Fargate default platform)
+- [x] Pushed image to ECR successfully
+- [x] Created ECS cluster `cara-cluster`
+- [x] Created Fargate task definition `cara-task`
+      - linux/x86_64, 0.25 vCPU, 0.5GB RAM
+      - Environment variables set for API keys and budget config
+- [x] Created and deployed `cara-service` (1 desired task)
+- [x] Confirmed live endpoint responding to HTTP requests
+- [x] Set desired count to 0 after testing (cost control)
 
-#### Still To Do:
-- [ ] Debug manual Lambda invoke not sending email (sandbox TagAuditFunction)
-- [ ] Set up CloudWatch alarm with auto-stop for idle Fargate
-- [ ] Push CARA image to ECR
-- [ ] Create ECS cluster and Fargate task definition
-- [ ] Configure Secrets Manager for API keys
-- [ ] Deploy and test live endpoint
-- [ ] Wire cost dashboard to live Fargate API
-- [ ] Deploy dashboard to theprojectfolder.com
+#### Infrastructure Guardrails:
+- [x] Created `CaraAutoStopFunction` Lambda — sets ECS desired count to 0
+- [x] Created `CaraAutoStopNotifications` SNS topic for email alerts
+- [x] Created `CaraAutoStopLambdaRole` IAM role with least privilege
+- [x] Created two CloudWatch alarms wired directly to Lambda:
+      - `CARA-Idle-CPU-AutoStop` — CPU < 5% for 30 consecutive minutes
+      - `CARA-2Hour-AutoStop` — Memory < 5% for 2 consecutive hours
+- [x] Created architecture diagram for guardrails system
 
+#### Challenges Faced:
+- **Challenge 1**: Platform mismatch — ARM64 vs AMD64
+    - Error: ECS Deployment Circuit Breaker triggered
+    - Root cause: Image built on ARM64 machine, Fargate defaults to linux/x86_64
+    - Solution: Rebuilt with --platform linux/amd64 flag
+    - Lesson: Always specify --platform linux/amd64 for Fargate deployments regardless of local machine architecture
 
-#### Lessons Learned So Far:
+- **Challenge 2**: ECR created in wrong AWS account
+    - Created repo in hosting account (102587257710) instead of sandbox (848747536965)
+    - Solution: Deleted repo, recreated in correct account
+    - Lesson: Always verify account switcher before creating resources
+
+- **Challenge 3**: Missing ECR permissions on IAM user
+    - Error: AccessDeniedException on GetAuthorizationToken
+    - Solution: Added AmazonEC2ContainerRegistryFullAccess to user group
+    - Lesson: ECR auth requires explicit GetAuthorizationToken permission
+
+- **Challenge 4**: IAM inline policy scoped too narrowly
+    - Error: AccessDenied on CreateRole for CaraAutoStopLambdaRole
+    - Root cause: Policy Resource only allowed TagAuditLambdaRole
+    - Solution: Added CaraAutoStop* to Resource list
+    - Lesson: Per-project IAM policies need to be scoped to project patterns not specific resource names
+
+#### Key Decisions:
+- **AMD64 over ARM64** — Fargate default, avoids platform complexity in dev
+- **CloudWatch → Lambda directly** — cleaner than CloudWatch → SNS → Lambda
+- **Two alarm types** — CPU idle catches forgotten containers, memory+time
+  catches long-running sessions that aren't actively being used
+- **Desired count = 0 not service delete** — preserves configuration,
+  easy to restart, costs $0 when idle
+
+#### Docker Desktop Lesson:
+- Docker Desktop is an underrated local testing tool for containerized agents:
+    - Stats tab: watch CPU/memory spike during research loops in real time
+    - Logs tab: uvicorn output and request logs without CloudWatch
+    - Run button: set env vars visually without --env-file flag
+  - This was the first containerization project — Desktop made debugging significantly faster than CLI alone.
+
+#### Cost Tracker:
+- ECR storage: ~$0.01
+- Fargate (dev testing): ~$0.05
+- CloudWatch alarms: $0.00 (free tier)
+- Lambda invocations: $0.00 (free tier)
+- Running total: ~$0.09
+
 ---
 
 ### Phase 7: Documentation & Portfolio Prep
