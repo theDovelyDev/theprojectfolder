@@ -1,10 +1,24 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from agent.graph import build_graph
 from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI(title="C.A.R.A.", description="Cost-Aware Research Agent")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://theprojectfolder.com",
+        "https://www.theprojectfolder.com",
+        "http://localhost:8080",  # local testing
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 agent = build_graph()
 
 class Query(BaseModel):
