@@ -12,6 +12,7 @@ app.add_middleware(
     allow_origins=[
         "https://theprojectfolder.com",
         "https://www.theprojectfolder.com",
+        "http://dev.theprojectfolder.com.s3-website-us-east-1.amazonaws.com", # dev site testing
         "http://localhost:8080",  # local testing
     ],
     allow_credentials=True,
