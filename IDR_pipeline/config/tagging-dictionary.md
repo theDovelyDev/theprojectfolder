@@ -29,3 +29,4 @@
 | EventBridge — TagAuditWeeklySchedule | `monitoring` |
 | CloudWatch logs | `monitoring` |
 | IAM — TagAuditLambdaRole | `monitoring` |
+| IAM roles/policies    | `iam`            |
