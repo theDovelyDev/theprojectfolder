@@ -324,37 +324,61 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
 ---
 
 ### Phase 7: CARA Live UI + Cost Dashboard
-**Date:** April 20, 2026
-**Time Spent:** In progress
-**Status:** 🚧 In Progress
+**Date:** April 20-21, 2026
+**Time Spent:** ~4 hours
+**Status:** ✅ Complete
 
-#### Spec:
-- Single page at theprojectfolder.com/cara
-- Left: chat interface wired to Fargate /research endpoint
-- Right: live cost dashboard reading real total_cost from agent state
-- Offline state: "CARA is offline" when Fargate desired count = 0
-- Visual identity: amber/dark theme consistent with CARA branding
+#### What I Built:
+- [x] Created `content/cara.html` — single page UI with chat + dashboard
+- [x] Set up API Gateway (HTTP API) as stable HTTPS endpoint
+      - Routes: GET /health, POST /research
+      - Replaces raw Fargate IP — stable URL across task restarts
+- [x] Configured CORS at both FastAPI and API Gateway level
+- [x] Deployed to theprojectfolder.com/content/cara.html
+- [x] Wired SNS trigger to CaraAutoStopFunction
+      - Confirmed auto-stop working end to end
+      - CloudWatch alarm → SNS → Lambda → ECS desired count = 0
+- [x] Fixed chat_responder_node missing route in return dict
+- [x] Light theme with amber accents matching simulated dashboard style
 
-#### Build Sequence:
-- [ ] Add CORSMiddleware to app.py
-- [ ] Rebuild and push Docker image (linux/amd64)
-- [ ] Start Fargate (desired count = 1)
-- [ ] Build single page HTML (chat + dashboard)
-- [ ] Test end to end against live Fargate endpoint
-- [ ] Deploy to theprojectfolder.com/cara via GitHub Actions
-- [ ] Verify GA4 tracking firing correctly
-- [ ] Stop Fargate (desired count = 0)
-- [ ] Update CloudWatch auto-stop alarms to reflect new testing session
-
-#### What I Did:
-[fill in during build]
 
 #### Challenges Faced:
-[fill in during build]
+- **Challenge 1**: API Gateway returning 404
+    - Root cause: Stage URL includes /prod prefix — correct URL is https://67bw5r3zvj.execute-api.us-east-1.amazonaws.com/prod/health
+    - Lesson: HTTP API stages append stage name to the base URL
+
+- **Challenge 2**: CORS blocking POST requests
+    - Health check (GET) passed but research queries (POST) blocked
+    - Root cause: API Gateway has its own CORS settings separate from FastAPI
+    - Solution: Configure CORS directly in API Gateway console
+    - Lesson: CORS must be configured at every layer — FastAPI AND API Gateway
+
+- **Challenge 3**: Auto-stop Lambda had no trigger
+    - Fargate ran for ~9 hours overnight despite CPU alarm firing
+    - Root cause: CloudWatch alarm action didn't properly wire to Lambda
+    - Solution: SNS subscription + Lambda permission via console
+    - Confirmed working: manual SNS publish stopped Fargate immediately
+
+- **Challenge 4**: Chat route badge showing query text
+    - Root cause: chat_responder_node not returning route in state
+    - Solution: Added route: state["route"] to return dict
+
+#### Key Decisions:
+- **API Gateway over ALB** — stable HTTPS endpoint at near-zero cost
+  for controlled demo traffic. ALB reserved for if CARA goes fully public.
+- **SNS → Lambda over direct CloudWatch → Lambda** — more reliable,
+  SNS subscription model is the correct AWS pattern
+- **Light theme** — consistent with portfolio aesthetic preferences,
+  amber accents preserve CARA brand identity
 
 #### Cost Tracker:
-- Fargate (Phase 7 testing): TBD
-- Running total: ~$0.09 + Phase 7 costs
+- API Gateway: $0.00 (free tier)
+- Fargate (Phase 7 testing): ~$0.10
+- ECR storage: ~$0.01
+- Anthropic API (Phase 7 queries): ~$0.08 (verify in console)
+- Tavily: $0.00 (free tier)
+- **Phase 7 total: ~$0.19**
+- **Project running total: ~$0.28**
 
 ---
 
