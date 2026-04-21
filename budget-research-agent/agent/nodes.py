@@ -63,7 +63,8 @@ def chat_responder_node(state: dict) -> dict:
 
     return {
         "final_answer": response.content[0].text,
-        "total_cost": state["total_cost"] + node_cost
+        "total_cost": state["total_cost"] + node_cost,
+        "route": state["route"]
     }
 
 from agent.tools import search_web
