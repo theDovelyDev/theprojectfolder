@@ -10,8 +10,15 @@ SERVICE = os.environ['ECS_SERVICE']
 SNS_TOPIC_ARN = os.environ['SNS_TOPIC_ARN']
 
 def lambda_handler(event, context):
-    print(f"Auto-stop triggered at {datetime.utcnow()}")
-    print(f"Trigger: {event.get('source', 'unknown')}")
+    # Add this check at the top of lambda_handler
+    response = ecs.describe_services(cluster=CLUSTER, services=[SERVICE])
+    current_count = response['services'][0]['desiredCount']
+
+    if current_count == 0:
+        print("Service already stopped — exiting to prevent loop")
+        return {'status': 'already_stopped'}
+        print(f"Auto-stop triggered at {datetime.utcnow()}")
+        print(f"Trigger: {event.get('source', 'unknown')}")
 
     # Set desired count to 0
     response = ecs.update_service(

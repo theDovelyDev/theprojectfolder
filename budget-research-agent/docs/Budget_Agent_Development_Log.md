@@ -370,6 +370,42 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
   SNS subscription model is the correct AWS pattern
 - **Light theme** — consistent with portfolio aesthetic preferences,
   amber accents preserve CARA brand identity
+#### Architecture Decision: API Gateway + ALB vs Manual IP Updates
+
+**The Problem:**
+API Gateway provides a stable HTTPS endpoint for users, but its backend
+integrations are hardcoded to the Fargate task's public IP. Every time
+Fargate restarts (new deployment, auto-stop, scale event), the task gets
+a new IP — breaking the API Gateway → Fargate connection silently.
+
+**Options Considered:**
+
+| Option | Cost | Complexity | Stability |
+|--------|------|------------|-----------|
+| Manual IP update each session | $0.00 | Low | ❌ Breaks on restart |
+| Application Load Balancer (ALB) | ~$1.44/3 days | Medium | ✅ Always stable |
+| AWS Service Discovery | $0.00 | High | ✅ Always stable |
+| Elastic IP + NAT Gateway | >$1.44 | High | ✅ Always stable |
+
+**Decision: Add ALB for the 48-hour live window**
+
+$1.44 is the cost of making CARA reliably accessible to LinkedIn audience
+without requiring manual intervention during the live window. Without it,
+a single Fargate restart during the 48 hours would silently break the
+demo for all visitors.
+
+**The FinOps Lesson:**
+This is a real enterprise pattern at scale. The question is never "does
+infrastructure cost money?" It's "does the cost justify the reliability
+requirement?" For a no-revenue portfolio site in normal dev, manual
+updates are fine. For a time-boxed public demo with a live audience,
+$1.44 buys you reliability SLA. Same decision framework, different answer.
+
+**Impact:**
+- ALB added to architecture diagram in Phase 8
+- API Gateway integrations updated to point to ALB DNS name
+- Fargate IP changes become invisible to the stack
+- Auto-stop still works — ALB routes to 0 tasks gracefully
 
 #### Cost Tracker:
 - API Gateway: $0.00 (free tier)
