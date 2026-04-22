@@ -569,7 +569,7 @@
             padding: 0.75rem 1.25rem;
             border-bottom: 1px solid rgba(186, 117, 23, 0.08);
             display: grid;
-            grid-template-columns: 1fr 80px 70px 70px;
+            grid-template-columns: 1fr 80px 70px 120px 70px;
             gap: 0.5rem;
             align-items: center;
             font-size: 0.7rem;
@@ -722,7 +722,22 @@
                     <div class="metric-label">kill switch</div>
                     <div class="metric-value success" id="killStatus">clear</div>
                     <div class="metric-sub" id="budgetPct">0% used</div>
-                </div>  
+                </div>
+                <div class="metric">
+                    <div class="metric-label">total tokens in</div>
+                    <div class="metric-value success" id="killStatus">clear</div>
+                    <div class="metric-sub" id="budgetPct">running session total</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">total tokens out</div>
+                    <div class="metric-value success" id="killStatus">clear</div>
+                    <div class="metric-sub" id="budgetPct">running session total</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">cost per 1k tokens</div>
+                    <div class="metric-value amber" id="costPerToken">$0.0000</div>
+                    <div class="metric-sub">session average</div>
+                </div>
             </div>
 
             <div class="budget-section">
@@ -908,7 +923,10 @@
             session.loops += loops || 0;
 
             const pct = Math.min((session.totalCost / BUDGET) * 100, 100);
+            const totalTokens = session.totalTokensIn + session.totalTokensOut;
+            const costPer1k = totalTokens > 0 ? (session.totalCost / totalTokens) * 1000 : 0;
 
+            document.getElementById('costPerToken').textContent = `$${costPer1k.toFixed(4)}`;
             document.getElementById('totalSpent').textContent = `$${session.totalCost.toFixed(4)}`;
             document.getElementById('queryCount').textContent = session.queries;
             document.getElementById('loopCount').textContent = session.loops;
@@ -943,6 +961,7 @@
       <span class="log-query">Query ${session.queries}</span>
       <span class="route-badge ${route}">${route}</span>
       <span class="log-cost">$${cost.toFixed(4)}</span>
+      <span class="log-cost">${tokensIn.toLocaleString()} in / ${tokensOut.toLocaleString()} out</span>
       <span class="log-status ${interrupted ? 'interrupted' : 'ok'}">${interrupted ? 'interrupt' : 'ok'}</span>
 
     `;
