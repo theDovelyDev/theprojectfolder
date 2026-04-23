@@ -924,7 +924,7 @@
             if (t) t.remove();
         }
 
-        function updateDashboard(cost, route, loops, interrupted) {
+        function updateDashboard(cost, route, loops, interrupted, tokensIn, tokensOut) {
             session.totalCost += cost;
             session.queries += 1;
             session.loops += loops || 0;
@@ -1026,7 +1026,7 @@
         }
 
         function resetSession() {
-            session = { totalCost: 0, queries: 0, loops: 0, interrupted: false, log: [] };
+            session = { totalCost: 0, queries: 0, loops: 0,  totalTokensIn: 0, totalTokensOut: 0, interrupted: false, log: [] };
 
             document.getElementById('totalSpent').textContent = '$0.0000';
             document.getElementById('queryCount').textContent = '0';
