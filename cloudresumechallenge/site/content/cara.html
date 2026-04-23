@@ -725,18 +725,23 @@
                 </div>
                 <div class="metric">
                     <div class="metric-label">total tokens in</div>
-                    <div class="metric-value success" id="killStatus">clear</div>
-                    <div class="metric-sub" id="budgetPct">running session total</div>
+                    <div class="metric-value amber" id="tokensIn">0</div>
+                    <div class="metric-sub">running session total</div>
                 </div>
                 <div class="metric">
                     <div class="metric-label">total tokens out</div>
-                    <div class="metric-value success" id="killStatus">clear</div>
-                    <div class="metric-sub" id="budgetPct">running session total</div>
+                    <div class="metric-value amber" id="tokensOut">0</div>
+                    <div class="metric-sub">running session total</div>
                 </div>
                 <div class="metric">
                     <div class="metric-label">cost per 1k tokens</div>
                     <div class="metric-value amber" id="costPerToken">$0.0000</div>
                     <div class="metric-sub">session average</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">avg cost per query</div>
+                    <div class="metric-value amber" id="avgCostPerQuery">$0.0000</div>
+                    <div class="metric-sub">session efficiency</div>
                 </div>
             </div>
 
@@ -785,6 +790,8 @@
             totalCost: 0,
             queries: 0,
             loops: 0,
+            totalTokensIn: 0,
+            totalTokensOut: 0,
             interrupted: false,
             log: []
         };
@@ -921,16 +928,24 @@
             session.totalCost += cost;
             session.queries += 1;
             session.loops += loops || 0;
+            session.totalTokensIn += tokensIn;
+            session.totalTokensOut += tokensOut;
 
             const pct = Math.min((session.totalCost / BUDGET) * 100, 100);
             const totalTokens = session.totalTokensIn + session.totalTokensOut;
             const costPer1k = totalTokens > 0 ? (session.totalCost / totalTokens) * 1000 : 0;
+            const avgCost = session.queries > 0 ? session.totalCost / session.queries : 0;
 
-            document.getElementById('costPerToken').textContent = `$${costPer1k.toFixed(4)}`;
+
             document.getElementById('totalSpent').textContent = `$${session.totalCost.toFixed(4)}`;
             document.getElementById('queryCount').textContent = session.queries;
             document.getElementById('loopCount').textContent = session.loops;
             document.getElementById('budgetLabel').textContent = `$${session.totalCost.toFixed(4)} / $${BUDGET.toFixed(2)}`;
+            document.getElementById('totalTokensIn').textContent = session.totalTokensIn.toLocaleString();
+            document.getElementById('totalTokensOut').textContent = session.totalTokensOut.toLocaleString();
+            document.getElementById('costPerToken').textContent = `$${costPer1k.toFixed(4)}`;
+            document.getElementById('avgCostPerQuery').textContent = `$${avgCost.toFixed(4)}`;
+
 
             const fill = document.getElementById('budgetFill');
             fill.style.width = `${pct.toFixed(1)}%`;
@@ -1022,6 +1037,9 @@
             document.getElementById('killStatus').textContent = 'clear';
             document.getElementById('killStatus').className = 'metric-value success';
             document.getElementById('interruptBanner').classList.remove('visible');
+            document.getElementById('totalTokensIn').textContent = session.totalTokensIn.toLocaleString();
+            document.getElementById('totalTokensOut').textContent = session.totalTokensOut.toLocaleString();
+            document.getElementById('avgCostPerQuery').textContent = '$0.0000';
             document.getElementById('logBody').innerHTML = '<div class="log-empty">no queries yet</div>';
 
             const messages = document.getElementById('messages');
