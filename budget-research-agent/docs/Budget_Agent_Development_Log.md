@@ -370,6 +370,7 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
   SNS subscription model is the correct AWS pattern
 - **Light theme** — consistent with portfolio aesthetic preferences,
   amber accents preserve CARA brand identity
+  
 #### Architecture Decision: API Gateway + ALB vs Manual IP Updates
 
 **The Problem:**
