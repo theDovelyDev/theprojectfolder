@@ -17,6 +17,12 @@ class AgentState(TypedDict):
     final_answer: str
     budget_exceeded: bool
     awaiting_approval: bool
+    router_input_tokens:    int
+    router_output_tokens:   int
+    research_input_tokens:  int
+    research_output_tokens: int
+    total_input_tokens:     int
+    total_output_tokens:    int
 
 def build_graph():
     graph = StateGraph(AgentState)

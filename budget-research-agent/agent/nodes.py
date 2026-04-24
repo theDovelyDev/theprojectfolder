@@ -36,10 +36,13 @@ def router_node(state: dict) -> dict:
     print(f"[Router] Route: {route} | Cost: ${node_cost:.6f}")
 
     return {
-        "route": route,
-        "total_cost": state["total_cost"] + node_cost
+        "route":                response.content[0].text.strip().lower(),
+        "total_cost":           state["total_cost"] + node_cost,
+        "router_input_tokens":  input_tokens,
+        "router_output_tokens": output_tokens,
+        "total_input_tokens":   state.get("total_input_tokens", 0) + input_tokens,
+        "total_output_tokens":  state.get("total_output_tokens", 0) + output_tokens,
     }
-
 
 def route_decision(state: dict) -> str:
     """Edge function: tells LangGraph where to go after the router."""
@@ -103,10 +106,14 @@ def researcher_node(state: dict) -> dict:
     print(f"[Researcher] Cost this loop: ${node_cost:.6f}")
 
     return {
-        "search_results": state["search_results"] + search_results,
-        "final_answer": response.content[0].text,
-        "total_cost": state["total_cost"] + node_cost,
-        "iteration": state["iteration"] + 1
+        "search_results":         state["search_results"] + search_results,
+        "final_answer":           response.content[0].text,
+        "total_cost":             state["total_cost"] + node_cost,
+        "iteration":              state["iteration"] + 1,
+        "research_input_tokens":  input_tokens,
+        "research_output_tokens": output_tokens,
+        "total_input_tokens":     state.get("total_input_tokens", 0) + input_tokens,
+        "total_output_tokens":    state.get("total_output_tokens", 0) + output_tokens
     }
 
 

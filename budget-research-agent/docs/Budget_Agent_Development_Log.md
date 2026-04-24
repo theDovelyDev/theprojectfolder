@@ -370,6 +370,24 @@ The budget gate is a conditional edge: cost < $0.05 → keep going, cost ≥ $0.
   SNS subscription model is the correct AWS pattern
 - **Light theme** — consistent with portfolio aesthetic preferences,
   amber accents preserve CARA brand identity
+
+**Auto-Stop Alarm Calibration (Real Data)** — Overnight run (task left running ~8 hours, no active queries) provided baseline metrics:
+
+| Metric | Observed | Previous Threshold |
+|--------|----------|--------------------|
+| CPU utilization (idle) | 0.66–0.75% avg | < 20% |
+| Memory utilization (idle) | ~17% | < 5% |
+
+**Decision:** Retire `CARA-2Hour-AutoStop` — redundant given CPU behavior.
+Single alarm `CARA-Idle-CPU-AutoStop` updated to:
+- Threshold: CPU < 0.70%
+- Evaluation: 1 hour of consecutive readings
+- Logic: if someone is using CARA, CPU stays above 0.70%. When idle, 
+  CPU drops to ~0.70% and alarm fires within 1 hour.
+
+**FinOps note:** This is exactly how you right-size monitoring thresholds — 
+observe actual behavior first, then set guardrails based on real data.
+  
 #### Architecture Decision: API Gateway + ALB vs Manual IP Updates
 
 **The Problem:**
@@ -413,8 +431,10 @@ $1.44 buys you reliability SLA. Same decision framework, different answer.
 - ECR storage: ~$0.01
 - Anthropic API (Phase 7 queries): ~$0.08 (verify in console)
 - Tavily: $0.00 (free tier)
-- **Phase 7 total: ~$0.19**
-- **Project running total: ~$0.28**
+- DynamoDB: $0.00 (free tier)
+- Additional Fargate runtime (overnight): ~$0.08
+- **Phase 7 total: ~$0.27**
+- **Project running total: ~$0.36**
 
 ---
 

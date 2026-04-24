@@ -1,5 +1,5 @@
 # Budget-Conscious Research Agent
-## Project Zero: AI/ML Portfolio Project
+## Project Two: AI/ML Portfolio Project
 
 **Tagline:** A research agent that stops and asks permission before spending your money.  
 **Estimated Time:** 10–14 hours  
