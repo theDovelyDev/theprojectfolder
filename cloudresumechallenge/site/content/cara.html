@@ -725,12 +725,13 @@
                 </div>
                 <div class="metric">
                     <div class="metric-label">total tokens in</div>
-                    <div class="metric-value amber" id="tokensIn">0</div>
+                    <div class="metric-value amber" id="totalTokensIn">0</div>
                     <div class="metric-sub">running session total</div>
                 </div>
                 <div class="metric">
                     <div class="metric-label">total tokens out</div>
-                    <div class="metric-value amber" id="tokensOut">0</div>
+                    <div class="metric-value amber" id="totalTokensOut
+">0</div>
                     <div class="metric-sub">running session total</div>
                 </div>
                 <div class="metric">
@@ -962,10 +963,10 @@
                 killStatus.className = 'metric-value amber';
             }
 
-            addLogRow(cost, route, interrupted);
+            addLogRow(cost, route, loops, interrupted, tokensIn, tokensOut);
         }
 
-        function addLogRow(cost, route, interrupted) {
+        function addLogRow(cost, route, loops, interrupted, tokensIn, tokensOut) {
             const logBody = document.getElementById('logBody');
             const empty = logBody.querySelector('.log-empty');
             if (empty) empty.remove();
@@ -1011,9 +1012,17 @@
                     cost: data.cost,
                     loops: data.loops,
                     interrupted: data.interrupted
+
                 });
 
-                updateDashboard(data.cost, data.route, data.loops, data.interrupted);
+                updateDashboard(
+                    data.cost,
+                    data.route,
+                    data.loops,
+                    data.interrupted,
+                    data.tokens?.total_input || 0,
+                    data.tokens?.total_output || 0
+                );
 
             } catch (err) {
                 removeThinking();
@@ -1062,7 +1071,7 @@
 
         // Init
         checkStatus();
-        setInterval(checkStatus, 30000);
+        setInterval(checkStatus, 60000);
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 </body>
