@@ -20,10 +20,12 @@ def log_query(result, query):
         'total_cost':            str(result.get('cost', 0)),
         'loops':                 result.get('loops', 0),
         'interrupted':           result.get('interrupted', False),
-        'total_input_tokens':    result.get('tokens', {}).get('total_input', 0),
-        'total_output_tokens':   result.get('tokens', {}).get('total_output', 0),
-        'router_input_tokens':   result.get('tokens', {}).get('router_input', 0),
-        'research_input_tokens': result.get('tokens', {}).get('research_input', 0),
+        'total_input_tokens':    result.get('total_input_tokens', 0),
+        'total_output_tokens':   result.get('total_output_tokens', 0),
+        'router_input_tokens':   result.get('router_input_tokens', 0),
+        'router_output_tokens':   result.get('router_output_tokens', 0),
+        'research_input_tokens': result.get('research_input_tokens', 0),
+        'research_output_tokens': result.get('research_output_tokens', 0),
     })
 
 app = FastAPI(title="C.A.R.A.", description="Cost-Aware Research Agent")
