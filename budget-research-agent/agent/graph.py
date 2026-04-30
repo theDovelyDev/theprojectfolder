@@ -7,7 +7,7 @@ from agent.nodes import (
 )
 from agent.budget import check_budget, budget_gate
 
-class AgentState(TypedDict):
+class AgentState(TypedDict, total=False):
     query: str
     messages: List[dict]
     search_results: List[str]

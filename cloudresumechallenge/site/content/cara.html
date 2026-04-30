@@ -730,8 +730,7 @@
                 </div>
                 <div class="metric">
                     <div class="metric-label">total tokens out</div>
-                    <div class="metric-value amber" id="totalTokensOut
-">0</div>
+                    <div class="metric-value amber" id="totalTokensOut">0</div>
                     <div class="metric-sub">running session total</div>
                 </div>
                 <div class="metric">
@@ -922,10 +921,19 @@
 
         function removeThinking() {
             const t = document.getElementById('thinking');
-            if (t) t.remove();
+            console.log('removeThinking - element found:', t);
+            if (t) {
+                t.remove();
+                console.log('removeThinking - element removed');
+            } else {
+                console.log('removeThinking - element NOT found');
+            }
         }
 
         function updateDashboard(cost, route, loops, interrupted, tokensIn, tokensOut) {
+            console.log('updateDashboard params:', { cost, route, loops, interrupted, tokensIn, tokensOut });
+            console.log('tokensIn type:', typeof tokensIn, 'value:', tokensIn);
+            console.log('tokensOut type:', typeof tokensOut, 'value:', tokensOut);
             session.totalCost += cost;
             session.queries += 1;
             session.loops += loops || 0;
@@ -1006,6 +1014,9 @@
 
                 const data = await res.json();
                 removeThinking();
+                console.log('API response:', JSON.stringify(data));
+                console.log('tokens:', data.tokens);
+                console.log('total_input:', data.tokens?.total_input);
 
                 addMessage('cara', data.answer, {
                     route: data.route,
@@ -1035,6 +1046,8 @@
         }
 
         function resetSession() {
+             // Reset server-side session cost
+            fetch(`${API}/reset`, { method: 'POST' });
             session = { totalCost: 0, queries: 0, loops: 0,  totalTokensIn: 0, totalTokensOut: 0, interrupted: false, log: [] };
 
             document.getElementById('totalSpent').textContent = '$0.0000';
