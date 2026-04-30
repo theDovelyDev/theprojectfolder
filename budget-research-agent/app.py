@@ -17,9 +17,9 @@ def log_query(result, query):
         'timestamp':             datetime.utcnow().isoformat(),
         'query':                 query,
         'route':                 result.get('route'),
-        'total_cost':            str(result.get('cost', 0)),
-        'loops':                 result.get('loops', 0),
-        'interrupted':           result.get('interrupted', False),
+        'total_cost':            str(result.get('total_cost', 0)),
+        'loops':                 result.get('iteration', 0),
+        'interrupted':           result.get('budget_exceeded', False),
         'total_input_tokens':    result.get('total_input_tokens', 0),
         'total_output_tokens':   result.get('total_output_tokens', 0),
         'router_input_tokens':   result.get('router_input_tokens', 0),
@@ -48,16 +48,22 @@ agent = build_graph()
 class Query(BaseModel):
     query: str
 
+session_cost = 0.0
+
 @app.post("/research")
 async def research(q: Query):
+    global session_cost
     result = agent.invoke({
         "query": q.query,
         "messages": [], "search_results": [],
-        "total_cost": 0.0, "iteration": 0,
+        "total_cost": session_cost, "iteration": 0,
         "route": "", "final_answer": "",
         "budget_exceeded": False, "awaiting_approval": False
     })
     
+    session_cost = result["total_cost"]  # result already has running total
+
+
     log_query(result, q.query)
     
     return {
@@ -75,6 +81,12 @@ async def research(q: Query):
         "total_output":     result.get("total_output_tokens", 0)
         }
     }
+
+@app.post("/reset")
+def reset():
+    global session_cost
+    session_cost = 0.0
+    return {"status": "reset", "session_cost": session_cost}
 
 
 @app.get("/health")
